@@ -1,6 +1,4 @@
-// 环境相关 API Base 配置 + 一些独立 UI 脚本
-// 注意：Docsify 配置和插件仍然保留在 index.html 中，避免大规模重构。
-
+// 全局 UI 行为：布局 + 订阅入口按钮
 // 1. API Base：区分本地开发与线上部署
 (function() {
   if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
@@ -68,7 +66,7 @@
   });
 })();
 
-// 3. 自定义订阅管理按钮脚本
+// 3. 自定义订阅管理入口按钮脚本（左下角 📚）
 (function() {
   function createCustomButton() {
     if (document.getElementById('custom-toggle-btn')) return;
@@ -114,3 +112,4 @@
     createCustomButton();
   }
 })();
+

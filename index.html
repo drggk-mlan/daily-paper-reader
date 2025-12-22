@@ -1492,269 +1492,22 @@
               });
             }
             
-            // ==================== GitHub Token 相关逻辑 ====================
-            
-            // 从本地存储加载 GitHub Token 数据
-            const loadGithubToken = () => {
-              try {
-                const tokenData = localStorage.getItem('github_token_data');
-                if (tokenData) {
-                  const data = JSON.parse(tokenData);
-                  return data;
-                }
-              } catch (e) {
-                console.error('Failed to load GitHub token:', e);
-              }
-              return null;
-            };
-            
-            // 保存 GitHub Token 数据到本地存储
-            const saveGithubToken = (data) => {
-              try {
-                localStorage.setItem('github_token_data', JSON.stringify(data));
-              } catch (e) {
-                console.error('Failed to save GitHub token:', e);
-              }
-            };
-            
-            // 清除 GitHub Token 数据
-            const clearGithubToken = () => {
-              try {
-                localStorage.removeItem('github_token_data');
-              } catch (e) {
-                console.error('Failed to clear GitHub token:', e);
-              }
-            };
-            
-            // 更新登录按钮状态
-            const updateAuthButtonStatus = () => {
-              const tokenData = loadGithubToken();
-              if (tokenData && tokenData.token && tokenData.verified) {
-                githubAuthBtn.textContent = '登录成功';
-                githubAuthBtn.style.background = '#28a745';
-                githubAuthBtn.style.color = 'white';
-              } else {
-                githubAuthBtn.textContent = '未登录';
-                githubAuthBtn.style.background = '#6c757d';
-                githubAuthBtn.style.color = 'white';
-              }
-            };
-            
-            // 显示 Token 信息
-            const showTokenInfo = (userData) => {
-              if (githubTokenInfo && githubUserName && githubRepoName) {
-                githubUserName.textContent = userData.login || 'Unknown';
-                githubRepoName.textContent = userData.repo || 'Unknown';
-                
-                // 检查 Token 过期时间（如果有的话）
-                if (userData.expiry) {
-                  githubTokenExpiry.textContent = new Date(userData.expiry).toLocaleDateString('zh-CN');
-                } else {
-                  githubTokenExpiry.textContent = '永久';
-                }
-                
-                githubTokenInfo.style.display = 'block';
-              }
-            };
-            
-            // 隐藏 Token 信息
-            const hideTokenInfo = () => {
-              if (githubTokenInfo) {
-                githubTokenInfo.style.display = 'none';
-              }
-            };
-            
-            // 验证 GitHub Token 并检查权限
-            const verifyGithubToken = async (token) => {
-              try {
-                // 1. 获取用户信息
-                const userRes = await fetch('https://api.github.com/user', {
-                  headers: {
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                  }
-                });
-                
-                if (!userRes.ok) {
-                  throw new Error('Token 无效或已过期');
-                }
-                
-                const userData = await userRes.json();
-                
-                // 2. 检查权限 - 通过响应头的 X-OAuth-Scopes
-                const scopes = userRes.headers.get('X-OAuth-Scopes');
-                const scopeList = scopes ? scopes.split(',').map(s => s.trim()) : [];
-                
-                const requiredScopes = ['repo', 'workflow', 'gist'];
-                const missingScopes = requiredScopes.filter(scope => !scopeList.includes(scope));
-                
-                if (missingScopes.length > 0) {
-                  throw new Error(`缺少必要权限: ${missingScopes.join(', ')}`);
-                }
-                
-                // 3. 获取当前页面的仓库信息（从 URL 推断）
-                const currentUrl = window.location.href;
-                let repoOwner = '';
-                let repoName = '';
-                
-                // 尝试从 GitHub Pages URL 中提取仓库信息
-                // 格式: https://username.github.io/repo-name/
-                const githubPagesMatch = currentUrl.match(/https?:\/\/([^.]+)\.github\.io\/([^\/]+)/);
-                if (githubPagesMatch) {
-                  repoOwner = githubPagesMatch[1];
-                  repoName = githubPagesMatch[2];
-                } else {
-                  // 如果不是 GitHub Pages，尝试其他方式
-                  // 可以从 meta 标签或配置中读取
-                  repoOwner = userData.login; // 默认使用当前用户
-                }
-                
-                // 4. 如果有仓库信息，验证 Token 是否有权限访问该仓库
-                if (repoOwner && repoName) {
-                  const repoRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}`, {
-                    headers: {
-                      'Authorization': `token ${token}`,
-                      'Accept': 'application/vnd.github.v3+json'
-                    }
-                  });
-                  
-                  if (!repoRes.ok) {
-                    throw new Error(`无法访问仓库 ${repoOwner}/${repoName}，请确认 Token 权限`);
-                  }
-                  
-                  const repoData = await repoRes.json();
-                  
-                  // 检查是否有写入权限
-                  if (!repoData.permissions || !repoData.permissions.push) {
-                    throw new Error(`没有仓库 ${repoOwner}/${repoName} 的写入权限`);
-                  }
-                }
-                
-                return {
-                  valid: true,
-                  login: userData.login,
-                  name: userData.name,
-                  repo: repoOwner && repoName ? `${repoOwner}/${repoName}` : '未检测到仓库',
-                  scopes: scopeList
-                };
-              } catch (error) {
-                return {
-                  valid: false,
-                  error: error.message
-                };
-              }
-            };
-            
-            // 登录按钮点击事件 - 切换显示 Token 配置区域
-            if (githubAuthBtn && !githubAuthBtn._bound) {
-              githubAuthBtn._bound = true;
-              githubAuthBtn.addEventListener('click', () => {
-                if (githubTokenSection.style.display === 'none') {
-                  githubTokenSection.style.display = 'block';
-                  
-                  // 如果已登录，显示保存的信息
-                  const tokenData = loadGithubToken();
-                  if (tokenData && tokenData.verified) {
-                    showTokenInfo(tokenData);
-                  }
-                } else {
-                  githubTokenSection.style.display = 'none';
-                }
+            // ==================== GitHub Token 相关逻辑（委托到单独模块） ====================
+            if (window.SubscriptionsGithubToken) {
+              window.SubscriptionsGithubToken.init({
+                githubAuthBtn,
+                githubTokenSection,
+                githubTokenInput,
+                githubTokenToggleBtn,
+                githubTokenVerifyBtn,
+                githubTokenClearBtn,
+                githubTokenMessage,
+                githubTokenInfo,
+                githubUserName,
+                githubTokenExpiry,
+                githubRepoName,
               });
             }
-            
-            // Token 可见性切换
-            if (githubTokenToggleBtn && !githubTokenToggleBtn._bound) {
-              githubTokenToggleBtn._bound = true;
-              githubTokenToggleBtn.addEventListener('click', () => {
-                if (githubTokenInput.type === 'password') {
-                  githubTokenInput.type = 'text';
-                  githubTokenToggleBtn.textContent = '🙈';
-                } else {
-                  githubTokenInput.type = 'password';
-                  githubTokenToggleBtn.textContent = '👁️';
-                }
-              });
-            }
-            
-            // Token 验证并保存
-            if (githubTokenVerifyBtn && !githubTokenVerifyBtn._bound) {
-              githubTokenVerifyBtn._bound = true;
-              githubTokenVerifyBtn.addEventListener('click', async () => {
-                const token = githubTokenInput.value.trim();
-                
-                if (!token) {
-                  githubTokenMessage.innerHTML = '<span style="color:#dc3545;">❌ 请输入 GitHub Token</span>';
-                  return;
-                }
-                
-                // 显示验证中状态
-                githubTokenVerifyBtn.disabled = true;
-                githubTokenVerifyBtn.textContent = '验证中...';
-                githubTokenMessage.innerHTML = '<span style="color:#666;">正在验证 Token...</span>';
-                hideTokenInfo();
-                
-                // 执行验证
-                const result = await verifyGithubToken(token);
-                
-                if (result.valid) {
-                  // 保存到本地存储
-                  const tokenData = {
-                    token: token,
-                    verified: true,
-                    login: result.login,
-                    name: result.name,
-                    repo: result.repo,
-                    scopes: result.scopes,
-                    savedAt: new Date().toISOString()
-                  };
-                  
-                  saveGithubToken(tokenData);
-                  
-                  // 显示成功消息
-                  githubTokenMessage.innerHTML = `
-                    <div style="color:#28a745;">
-                      <strong>✅ 验证成功！</strong><br>
-                      用户: ${result.login}<br>
-                      仓库: ${result.repo}<br>
-                      权限: ${result.scopes.join(', ')}
-                    </div>
-                  `;
-                  
-                  showTokenInfo(tokenData);
-                  updateAuthButtonStatus();
-                  
-                  // 清空输入框
-                  githubTokenInput.value = '';
-                } else {
-                  // 显示错误消息
-                  githubTokenMessage.innerHTML = `<span style="color:#dc3545;">❌ ${result.error}</span>`;
-                  hideTokenInfo();
-                }
-                
-                // 恢复按钮状态
-                githubTokenVerifyBtn.disabled = false;
-                githubTokenVerifyBtn.textContent = '验证并保存';
-              });
-            }
-            
-            // Token 清除
-            if (githubTokenClearBtn && !githubTokenClearBtn._bound) {
-              githubTokenClearBtn._bound = true;
-              githubTokenClearBtn.addEventListener('click', () => {
-                if (confirm('确定要清除保存的 GitHub Token 吗？')) {
-                  clearGithubToken();
-                  githubTokenInput.value = '';
-                  githubTokenMessage.innerHTML = '<span style="color:#666;">Token 已清除</span>';
-                  hideTokenInfo();
-                  updateAuthButtonStatus();
-                }
-              });
-            }
-            
-            // 页面加载时初始化登录状态
-            updateAuthButtonStatus();
-            
             // ==================== GitHub Token 逻辑结束 ====================
             
             // 监听加载订阅数据的自定义事件（用于新按钮）
@@ -2044,21 +1797,37 @@
                 }
             }, 1); // 延迟 800ms 执行，等待 DOM 渲染完毕
 
-            // F. 确保 Arxiv 搜索 UI 存在
-            ensureArxivSearchUI();
-            
-            // G. 监听自定义事件，用于新按钮触发 UI 初始化
-            document.addEventListener('ensure-arxiv-ui', function() {
+            // F/G：订阅管理浮层交给 SubscriptionsManager 处理
+            // 这里仅在未加载新模块时，保留原有的回退逻辑
+            if (!window.SubscriptionsManager) {
+              // 确保 Arxiv 搜索 UI 存在
               ensureArxivSearchUI();
-            });
+              // 监听自定义事件，用于旧版按钮触发 UI 初始化
+              document.addEventListener('ensure-arxiv-ui', function () {
+                ensureArxivSearchUI();
+              });
+            }
           });
         }
       ]
     }
   </script>
   
-  <!-- 一些通用脚本：API Base 选择、本地 UI 行为（侧边栏拖拽、自定义订阅按钮） -->
-  <script src="docs/app.js"></script>
+  <!-- GitHub Token 订阅配置模块 -->
+  <script src="docs/subscriptions.github-token.js"></script>
+  <!-- 订阅关键词 / Zotero / 跟踪论文模块 -->
+  <script src="docs/subscriptions.keywords.js"></script>
+  <script src="docs/subscriptions.zotero.js"></script>
+  <script src="docs/subscriptions.tracked-papers.js"></script>
+  <script src="docs/subscriptions.manager.js"></script>
+  <script>
+    // 初始化订阅管理模块（使用左下角 📚 按钮触发）
+    if (window.SubscriptionsManager) {
+      window.SubscriptionsManager.init();
+    }
+  </script>
+  <!-- 一些通用脚本：布局 + 订阅入口按钮 + API Base 配置 -->
+  <script src="docs/ui.layout-and-subscriptions-entry.js"></script>
 
   <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
 </body>
