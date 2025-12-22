@@ -174,7 +174,7 @@ def main():
         score = paper.get("zotero_score", 0.0)
         print(f"[INFO] 处理第 {idx} 篇：{title}（Zotero 相似度得分：{score:.3f}）")
         try:
-            daily_job.process_single_paper(paper)
+            daily_job.process_single_paper(paper, source="zotero")
         except Exception as e:
             print(f"[ERROR] 处理论文失败：{title}，原因：{e}")
 
@@ -183,4 +183,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

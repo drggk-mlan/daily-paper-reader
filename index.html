@@ -504,7 +504,9 @@
     window.$docsify = {
       name: 'Daily Paper Reader',
       repo: '',
-      loadSidebar: true, // 开启侧边栏
+      // 从根目录加载，但文档内容与侧边栏都存放在 docs/ 下
+      loadSidebar: 'docs/_sidebar.md', // 开启侧边栏，路径指向 docs 目录
+      basePath: 'docs/',               // 所有 Markdown 路由以 docs/ 为前缀
       subMaxLevel: 2,
       
       // --- 核心：注册自定义插件 ---

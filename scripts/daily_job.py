@@ -4,6 +4,7 @@ import os
 import re
 import time
 import sqlite3
+import tempfile
 
 import arxiv
 import fitz  # PyMuPDF
@@ -257,7 +258,7 @@ def generate_paper_summary(paper_id: str, md_file_path: str, txt_file_path: str,
     return None
 
 
-def process_single_paper(paper: dict) -> None:
+def process_single_paper(paper: dict, source: str | None = None, keywords: list[str] | None = None) -> None:
     """
     处理单篇论文：
     - 下载 PDF
@@ -271,46 +272,71 @@ def process_single_paper(paper: dict) -> None:
     date = paper.get("published_date", TODAY)
     arxiv_id = paper.get("arxiv_id", "")
 
-    # 为避免同一天多篇论文重名，PAPER_ID 中加入 arxiv_id
+    # 为避免同一天多篇论文重名，文件名中加入 arxiv_id
     slug = slugify(paper_title)
-    if arxiv_id:
-        paper_id = f"{date}-{arxiv_id}-{slug}"
-    else:
-        paper_id = f"{date}-{slug}"
+    basename = f"{arxiv_id}-{slug}" if arxiv_id else slug
 
-    md_file_name = f"{paper_id}.md"
-    md_file_path = os.path.join(DOCS_DIR, md_file_name)
-    pdf_file_name = f"{paper_id}.pdf"
-    pdf_file_path = os.path.join(DOCS_DIR, pdf_file_name)
-    txt_file_name = f"{paper_id}.txt"
-    txt_file_path = os.path.join(DOCS_DIR, txt_file_name)
+    # 目录结构：docs/YYYYMM/DD/xxx.md
+    # 其中 YYYYMM 来自发布日期，DD 是天
+    try:
+        y, m, d = date.split("-")
+        ym = f"{y}{m}"
+        day = d
+    except Exception:
+        # 如果日期解析失败，退回到不分目录的平铺结构
+        ym = "unknown"
+        day = "00"
+
+    rel_dir = f"{ym}/{day}"
+    paper_id = f"{rel_dir}/{basename}"
+
+    target_dir = os.path.join(DOCS_DIR, ym, day)
+    md_file_name = f"{basename}.md"
+    md_file_path = os.path.join(target_dir, md_file_name)
+    txt_file_name = f"{basename}.txt"
+    txt_file_path = os.path.join(target_dir, txt_file_name)
 
     # 如果已经处理过同一篇论文，可以直接跳过（避免重复生成）
     if os.path.exists(md_file_path):
-        print(f"[SKIP] 已存在 Markdown：{md_file_name}")
+        print(f"[SKIP] 已存在 Markdown：{md_file_path}")
         return
 
-    os.makedirs(DOCS_DIR, exist_ok=True)
+    os.makedirs(target_dir, exist_ok=True)
 
-    # 1. 下载 PDF 原文到本地
+    # 1. 下载 PDF 原文到临时文件，仅用于抽取文本，不在 docs 中保留 PDF
     resp = requests.get(pdf_url, timeout=60)
     resp.raise_for_status()
-    with open(pdf_file_path, "wb") as f:
-        f.write(resp.content)
+    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=True) as tmp_pdf:
+        tmp_pdf.write(resp.content)
+        tmp_pdf.flush()
 
-    # 2. 使用 PyMuPDF 抽取文本内容，保存为 .txt 文件
-    pdf_text = extract_pdf_text(pdf_file_path)
+        # 2. 使用 PyMuPDF 抽取文本内容，保存为 .txt 文件
+        pdf_text = extract_pdf_text(tmp_pdf.name)
+
     with open(txt_file_path, "w", encoding="utf-8") as f:
         f.write(pdf_text)
 
     # 3. 生成对应的 Markdown 文件（用于 Docsify 展示）
+    # 标签区域：根据来源和关键词构建，颜色与订阅面板一致
+    tag_parts: list[str] = []
+    if source == "keywords" and keywords:
+        for kw in keywords:
+            tag_parts.append(
+                f'<span class="tag-label tag-green">keywords: {kw}</span>'
+            )
+    elif source == "zotero":
+        tag_parts.append(
+            '<span class="tag-label tag-blue">zotero: recommended</span>'
+        )
+    tags_html = " ".join(tag_parts) if tag_parts else ""
+
     content = f"""
 # {paper_title}
 
 **Authors**: {', '.join(paper_authors) if paper_authors else 'Unknown'}
 **Date**: {date}
 
-[Download PDF]({pdf_url})
+{"**Tags**: " + tags_html if tags_html else ""}
 
 ---
 
@@ -335,7 +361,7 @@ def process_single_paper(paper: dict) -> None:
 
     # 4. 更新 _sidebar.md (把新文章插到最前面)
     sidebar_path = os.path.join(DOCS_DIR, "_sidebar.md")
-    # Docsify 中的路由 ID 与 paper_id 对应
+    # Docsify 中的路由 ID 与 paper_id 对应（包含年月日子目录）
     new_entry = f"  * [{date} - {paper_title}]({paper_id})\n"
 
     lines = []
@@ -359,7 +385,7 @@ def process_single_paper(paper: dict) -> None:
         with open(sidebar_path, "a", encoding="utf-8") as f:
             f.write("\n* Daily Papers\n" + new_entry)
 
-    print(f"[OK] 生成 {md_file_name}, {pdf_file_name}, {txt_file_name}")
+    print(f"[OK] 生成 {md_file_path}, {txt_file_path}")
 
 
 def main():
@@ -377,7 +403,7 @@ def main():
     for idx, paper in enumerate(papers, start=1):
         print(f"[INFO] 处理第 {idx} 篇：{paper['title']}")
         try:
-            process_single_paper(paper)
+            process_single_paper(paper, source="keywords", keywords=keywords)
         except Exception as e:
             # 单篇失败不影响其他论文
             print(f"[ERROR] 处理论文失败：{paper.get('title')}，原因：{e}")
