@@ -20,13 +20,16 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
   <script>
-    // EdgeOne Pages 场景下，前后端可能不在同一域名。
-    // 如需单独部署 Python 后端，可在这里设置：
-    // window.API_BASE_URL = 'https://your-backend.example.com';
-    // 默认留空时，使用与当前站点同源的 /api 前缀。
-    // window.API_BASE_URL = window.API_BASE_URL || '';
-    // window.API_BASE_URL = 'http://127.0.0.1:8008';
-    window.API_BASE_URL = 'http://localhost:8008';
+    // 本地开发与线上部署下的 API Base URL 区分：
+    // - 本地打开 index.html 时：连接本机 8008 端口的后端
+    // - 部署到 GitHub Pages / 其他域名时：默认走同源 /api 前缀，由 Nginx 等反向代理转发
+    (function () {
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        window.API_BASE_URL = 'http://127.0.0.1:8008';
+      } else {
+        window.API_BASE_URL = '';
+      }
+    })();
   </script>
   
   <style>
