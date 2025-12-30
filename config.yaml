@@ -1,7 +1,6 @@
 github:
-  owner: ""
-  repo: "daily-paper-reader"
-
+  owner: ''
+  repo: daily-paper-reader
 crawler:
   days_window: 2
   max_results: 50
@@ -10,5 +9,7 @@ subscriptions:
   keywords:
     - keyword: symbolic regression
       alias: 符号回归（示例）
+    - keyword: Symbolic || Regression
+      alias: S or R
   llm_queries: []
   tracked_papers: []
