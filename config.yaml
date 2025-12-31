@@ -1,7 +1,6 @@
 github:
-  owner: ""
-  repo: "daily-paper-reader"
-
+  owner: ''
+  repo: daily-paper-reader
 crawler:
   days_window: 4
   max_results: 50
