@@ -1,0 +1,1740 @@
+Title: Modelling the movements of organisms by stochastic theory in a comoving frame
+
+URL Source: https://arxiv.org/pdf/2512.24937v1
+
+Published Time: Thu, 01 Jan 2026 02:46:41 GMT
+
+Number of Pages: 19
+
+Markdown Content:
+# Modelling the movements of organisms by stochastic theory in a comoving frame 
+
+Norberto Lucero-Azuara ∗
+
+Centre for Complex Systems, School of Mathematical Sciences, Queen Mary University of London, Mile End Road, London E1 4NS, United Kingdom 
+
+Rainer Klages †
+
+Centre for Complex Systems, School of Mathematical Sciences, Queen Mary University of London, Mile End Road, London E1 4NS, United Kingdom and London Mathematical Laboratory, 8 Margravine Gardens, London W6 8RH, United Kingdom 
+
+(Dated: January 1, 2026) Imagine you walk in a plane. You move by making a step of a certain length per time interval in a chosen direction. Repeating this process by randomly sampling step length and turning angle defines a two-dimensional random walk in what we call comoving frame coordinates. This is precisely how Ross and Pearson proposed to model the movements of organisms more than a century ago. Decades later their concept was generalised by including persistence leading to a correlated random walk, which became a popular model in Movement Ecology. In contrast, Langevin equations describing cell migration and used in active matter theory are typically formulated by position and velocity in a fixed Cartesian frame. In this article, we explore the transformation of stochastic Langevin dynamics from the Cartesian into the comoving frame. We show that the Ornstein-Uhlenbeck process for the Cartesian velocity of a walker can be transformed exactly into a stochastic process that is defined 
+
+self-consistently in the comoving frame, thereby profoundly generalising correlated random walk models. This approach yields a general conceptual framework how to transform stochastic processes from the Cartesian into the comoving frame. Our theory paves the way to derive, invent and explore novel stochastic processes in the comoving frame for modelling the movements of organisms. It can also be applied to design novel stochastic dynamics for autonomously moving robots and drones. 
+
+I. INTRODUCTION 
+
+Organisms living at very different spatio-temporal scales, from moving in the microworld to foraging across the surface of the earth, display highly complex, random-looking migration patterns [1]. By now there exists a wealth of experimental recordings of these patterns for a huge variety of species, from insects [2–4] to fishes [5– 7], birds [8–10], mammals [11–13] and even humans [14– 16]. Novel biologging techniques developed over the past decade are delivering bigger and more precise data sets [17–19]. These developments pose the fundamental chal-lenge to understand the experimentally recorded organ-ismic movement patterns by constructing mathematical models from data [20], Around 1905 Ross and Pearson introduced random walks for modelling the migration of organisms, described in terms of step length and turning angle with respect to the previous step for movements in a plane [21–23]. In the simplest case, one may choose a constant step length while the turning angle is sampled independently and identically distributed from a uniform probability distri-bution, reflecting the randomness of organismic move-ment [23, 24]. This simple model became popular as the drunkard’s walk [23, 25], since its dynamics does not con-tain any memory, which mathematically corresponds to a Markov process [26, 27]. It is at the heart of describ-  
+
+> ∗n.lucero-azuara@qmul.ac.uk
+> †r.klages@qmul.ac.uk
+
+ing diffusive spreading in nature, technology and soci-ety [28]. For decades simple random walks have been used to model organismic movements [29] until in the 1980’s they were generalised by sampling the turning an-gle from a unimodal distribution, which imposes a corre-lation between two subsequent steps modelling one-step persistence in organismic motion [2]. In addition, one may choose the step length as an independent and iden-tically distributed random variable. This model became known as a correlated random walk (CRW) [30]. To-gether with state space, [31, 32], hidden Markov [31, 33] and other stochastic models [30, 34] CRWs form the the-oretical backbone of Movement Ecology (ME), a field founded in 2008 [35, 36] mainly driven by experimen-tal biologists [17, 18], which endeavours to understand the movements of organisms, especially on larger scales, in view of their interactions with the environment. One may ask, however, whether including one-step persistence is sufficient to fully understand the movements of organ-isms, which often feature long-term memory way beyond a single step. Another fundamental approach to model movement patterns draws on the observation that they may look similar to the Brownian motion of a tracer particle in a fluid, described by the famous Langevin equation (LE) [37]. This equation is based on Newton’s second law by decomposing the force acting onto a Brownian particle into Stokes friction and random collisions with the sur-rounding molecules, modelled by Gaussian white noise. Formulated in terms of Cartesian position and velocity of a moving particle, it is sometimes called Newton’s law of stochastic physics. Mathematically, the LE represents a 
+
+> arXiv:2512.24937v1 [physics.bio-ph] 31 Dec 2025
+
+2Markovian Ornstein-Uhlenbeck (OU) process [38] for the velocities of the Brownian particle [39]. Like simple ran-dom walks, OU processes have been, and still are, widely used to model organismic movement [31, 40]. In parallel, however, Langevin dynamics was generalised to repro-duce the non-trivial dynamics of migrating cells [41–45] and active particles [46–49]. Xy
+
+α
+
+# svx v y V      
+
+> FIG. 1. Time-discrete trajectory (blue) of an organism (the pictures show an eagle) in a fixed Cartesian frame (black hor-izontal and vertical lines). Also shown is the velocity of the eagle at some point along the trajectory in Cartesian coordi-nates vx, v y. In contrast, at the final point of the trajectory we represent the movement of the eagle in comoving frame coordinates (red) in terms of speed sand turning angle α,where the latter is defined as the angle between subsequent velocity directions (dashed, respectively bold red lines).
+
+Crucially, CRWs and the (generalised) LEs referred to above are formulated in very different coordinate frames. What we call comoving frame coordinates traces back to Ross and Pearson’s original formulation of two-dimensional random walks, for which they used step length and turning angle, as illustrated in Fig. 1. Note that in this figure the step length is replaced by the speed of an organism, where the speed is defined as step length per time interval. In that sense, with comoving frame we denote a frame attached to the center of mass of an or-ganism cotranslating and -rotating with its movements, whose abscissa is aligned with the velocity of an organ-ism, and the rotations of this velocity vector yield the associated turning angle. Comoving frame coordinates are biologically very well motivated, as it seems natural to think of higher-dimensional movements of organisms in terms of step length and turning angle [21, 23, 24]. Correspondingly, step length distributions are intimately related to step selection functions and associated con-cepts widely applied in ecology and conservation to ex-perimentally characterize the movements of organisms [50–52]. LEs, in contrast, are typically defined in terms of Cartesian position and velocity of a moving particle [25–27, 37]. This description makes perfect sense for rep-resenting the passive motion of a tracer particle driven by collisions from the surrounding molecules in a fluid that as a whole is at rest in a fixed Cartesian frame. It also simplifies the theoretical analysis of these equations, es-pecially if they are generalised by including memory ker-nels [41–45]. However, one may fundamentally question whether the Cartesian approach is correct for modelling self-propelled, active movement that is generated intrin-sically by an organism itself, instead of having a passive particle solely driven extrinsically by interactions with the environment [1]. One may argue that active fluc-tuations emerging internally within an organism should rather be modelled by a stochastic process defined self-consistently in a frame comoving with this organism, i.e., without explicitly involving any other coordinates than speed and turning angle, and not by noise or friction terms somewhat formulated externally with respect to a fixed Cartesian frame. This problem is indeed taken into account, to some extent, in some active particle models [47, 48, 53, 54], where upon closer scrutiny one popu-lar type of them [48, 55] turns out to be identical to the CRW of ME [1]. However, as we will demonstrate in this article, to fully solve this problem one has to go one significant step further. There are thus many rea-sons to investigate merging the approaches of CRWs in a comoving frame and LEs in a fixed Cartesian frame for constructing a more general organismic movement model that combines advantages from both theories. For constructing a stochastic model of bumblebee flights from experimental data, in 2013 Lenz et al. ad-dressed this problem by fusing ad hoc generalised LEs with CRWs in terms of two coupled stochastic differ-ential equations for speed and turning angle, both of Langevin type but with per se arbitrary friction and noise terms [3]. All these terms were extracted from exper-imental data. Interestingly, the turning angle distribu-tion was found to be unimodal, as in a CRW, all noise terms were correlated, and the relevant friction term was speed-dependent, as for a specific active particle model [46, 47]. Very recently, the same approach of formulating generalised Langevin dynamics in a comoving frame was exploited for experimentally steering superparamagnetic colloidal microrobots with tailored statistics generating non-Brownian anomalous diffusion, like fractional Brow-nian motion, by fine-tuning magnetic fields [56]. The un-derlying general framework thus promises to cross-link [1] the different big fields of ME [20, 35, 36], Active Particles [46–49] and Anomalous Diffusion [39, 57–60] for mod-elling and understanding the movements of organisms. This motivates to explore how to analytically derive the equations stipulated in [3] from first principles. Our article solves this problem for the paradigmatic ex-ample of the OU process defined in the Cartesian frame. In Sec. II we first show that Cartesian and comoving coordinates are cross-linked by polar coordinates. We thus have to carefully distinguish between three differ-ent frames for our transformation of stochastic processes, which are the Cartesian, the polar and the comoving frame. As a tutorial warm-up exercise, in Sec. III we il-3lustrate the transformation between these three different frames for the example of a simple Markovian random walk defined in the Cartesian frame by deriving corre-sponding stochastic models in the other two frames. An-alytical results for all three models are compared with computer simulations. In Sec. IV we apply the same conceptual framework to analytically construct different models in the polar and in the comoving frame for the OU process defined in the Cartesian frame. Again all re-sults are verified by computer simulations. We conclude with a summary of our main results, a wider embedding and an outlook to further research in Sec. V.  
+
+> II. STOCHASTIC PROCESSES IN TWO DIMENSIONS
+
+In this section we establish the basic analytical frame-work for transforming two-dimensional stochastic pro-cesses from the Cartesian into the comoving frame by introducing three distinct frames of reference: the Carte-sian , the polar and the comoving frame. Figure 1 shows a cartoon of an organism moving along a time-discrete ran-dom trajectory in a plane. In the fixed Cartesian frame, its velocity vector v is described by the two components (vx, v y ), which specify the direction and magnitude of motion relative to a stationary reference system. By con-trast, the comoving frame characterizes the same motion in terms of the speed s and the turning angle α, empha-sizing changes in orientation relative to the direction of motion. Figure 2 depicts the geometric relationships between these three reference frames by illustrating their different representations. A clear understanding of the transfor-mations between Cartesian, polar, and comoving descrip-tions is essential for our subsequent systematic analysis of stochastic dynamics in two dimensions, and for inter-preting the underlying physical and biological processes across these different modeling contexts. Extending the concept of stochastic processes evolving randomly over time from one to two dimensions introduces greater com-plexity and richness, due to considering a new degree of freedom. Mathematically, within our context a time-discrete two-dimensional stochastic process is typically represented by a vector xn for the particle’s position co-ordinates at discrete time n ∈ N0 in the Cartesian frame, characterized by probabilistic properties such as distri-butions, mean, variance, and correlations in both compo-nents xn and yn. We now introduce these three reference frames in detail and define the different transformations between them.  
+
+> A. Frames of reference and transformations
+
+1. Cartesian Frame : This fundamental reference frame uses position coordinates ( xn, y n) and veloc-ity components ( vx,n , v y,n ) for describing a parti-x
+
+# y
+
+# s0
+
+# s1
+
+# s2
+
+x0
+
+y0
+
+x1
+
+y1
+
+x2
+
+y2
+
+x3
+
+y3
+
+## α0
+
+## α1
+
+## β0
+
+## β1
+
+## β2                 
+
+> 1
+> FIG. 2. Conceptual illustration of the interplay between three different reference frames for a process over four discrete time steps n= 0 ,1,2,3: Cartesian frame described by positions
+> xnand yn(black), polar frame described by the orientation angle βn(blue) and the speed sn(red), and comoving frame described by the turning angle αnand speed sn(red).
+
+cle’s motion. Here and in the following we con-sider this frame to be at rest. For stochastic pro-cesses it is typically assumed that motion along the 
+
+x-axis does not influence motion along the y-axis, and vice-versa, allowing for separate treatment of dynamics in each dimension. This simplifies the analysis for systems in terms of decoupled motion in different directions. 2. Polar Frame : This frame is based on a polar co-ordinate transformation of the particle’s velocities, which is particularly useful for systems where radial and angular motion are key. Cartesian coordinates (vx,n , v y,n ) are transformed into polar coordinates (sn, β n), where sn is the absolute value of the vec-tor velocity and βn is the polar angle of this vector. The transformation is trivially given by 
+
+sn =
+
+q
+
+v2 
+
+> x,n
+
++ v2 
+
+> y,n
+
+(1) 
+
+βn = arctan 
+
+ vy,n 
+
+vx,n 
+
+
+
+. (2) Conversely, to convert back to Cartesian coordi-nates we have 
+
+vx,n = sn cos βn (3) 
+
+vy,n = sn sin βn. (4) 3. Comoving Frame : This dynamic, particle-centered frame co-moves and -rotates with the par-ticle, characterized by the particle’s speed sn (as in 4Eq.(2)) and turning angle αn. It is defined with re-spect to the change of the time-discrete orientation angle of the vector velocities as 
+
+αn = βn − βn−1 . (5) Here, αn yields the turning angle between consecu-tive time steps n and n−1. The inverse transforma-tions from the comoving frame back to Cartesian velocity components are 
+
+βn+1 = βn + αn (6) 
+
+vx,n = sn cos βn (7) 
+
+vy,n = sn sin βn. (8) These equations reconstruct vx,n and vy,n from sn
+
+and αn. The comoving frame is ideal for self-consistently describing intrinsic stochastic fluctua-tions driving a self-propelled particle, such as in ac-tive matter systems or organismic movement mod-els, as we will show in the following. The interplay between these three different frames of reference in terms of the respective transformations be-tween them is summarised in Fig. 3.  
+
+> III. THREE MODELS FOR A SIMPLE RANDOM WALK IN TWO DIMENSIONS
+
+In order to outline the basic principle of transforming a stochastic process between these three different frames of reference, in the following we first consider the exam-ple of a simple two-dimensional random walk. We start by defining the random walk in Cartesian coordinates. We then subsequently transform this process into polar and then into comoving coordinates, hence arriving at three different representations, or models, of this pro-cess in three different frames. The analytical results are compared with computer simulations. This analysis will pave the way to transform the OU process, which we do in Sec. IV.  
+
+> A. Model 1: Random Walk in the Cartesian frame
+
+We first consider a two-dimensional time-discrete ran-dom walk defined by 
+
+xn+1 = xn + ∆ xn (9) with increments ∆ xn = ∆ tvn, where the discrete veloci-ties vn = ( vx,n , v y,n ) are drawn from a Gaussian distribu-tion P (vx, v y ) with zero mean and variance σ2. This cor-responds to an isotropic random walk in the plane, with independent and identically distributed (i.i.d.) steps. The Cartesian formulation thus describes the random walk in terms of Gaussian increments in each coordinate direction.  
+
+> B. Model 2: Random Walk in the polar frame
+
+For transforming to polar coordinates, we use the speed sn and orientation angle βn defined by Eq.(2). In order to formulate a two-dimensional random walk in these coordinates, we need to transform the Carte-sian Gaussian velocity distribution into polar coordi-nates. This change of variables is accomplished via using conservation of probability and the Jacobian determinant yielding 
+
+P (s, β ) = s P (vx, v y ), (10) which in the isotropic Gaussian case of a normal distri-bution, vx, v y ∼ N (0 , σ 2), becomes 
+
+P (s, β ) = s
+
+2πσ 2 exp 
+
+
+
+− s2
+
+2σ2
+
+
+
+, s ≥ 0 , β ∈ (0 , 2π]. (11) This factorizes into a Rayleigh distribution for the speed, 
+
+P (s) = sσ2 exp 
+
+
+
+− s2
+
+2σ2
+
+
+
+(12) and a uniform distribution for the polar angle, 
+
+P (β) = 12π . (13) The autocorrelations of the polar variables vanish at nonzero lag, as shown in more detail in Appendix A, 
+
+⟨sisj ⟩ − ⟨ si⟩⟨ sj ⟩ = 0 , (14) 
+
+⟨βiβj ⟩ = 0 , i̸ = j, (15) Thus, the polar representation naturally encodes the ran-dom walk in terms of i.i.d. random variables ( sn, β n) sam-pled from a Rayleigh-distributed speed and a uniformly distributed orientation angle.  
+
+> C. Model 3: Random Walk in the comoving frame
+
+The random walk can also be described in the comov-ing frame, where the relevant variables are the speed sn
+
+and the turning angle αn. Since the orientation angles 
+
+βn are uniformly i.i.d. variables, the increments αn de-fined by the linear Eq.(5) are also i.i.d. and uniformly distributed on the circle, see Appendix A for more de-tails. These properties support a natural representation of the random walk in the comoving frame, defined by the pair ( sn, α n) by sampling the speed i.i.d. as before from a Rayleigh distribution, 
+
+s ∼ P (s) = sσ2 exp 
+
+
+
+− s2
+
+2σ2
+
+
+
+, (16) and the turning angle α i.i.d. from a uniform distribution on the circle, as originally suggested in Ref. [24], 
+
+α ∼ P (α) = 12π , α ∈ (−π, π ]. (17) 5Model 1:                                   
+
+> Cartesian frame process
+> 𝑥 𝑛 ,𝑦 𝑛 ;(𝑣 𝑥 𝑛 ,𝑣 𝑦 𝑛 )
+> Transformation of variables
+> 𝑠 𝑛 =𝑣 𝑥 𝑛
+> 2+𝑣 𝑦 𝑛
+> 2
+> 𝛽 𝑛 =tan −1𝑣 𝑦 𝑛
+> 𝑣 𝑥 𝑛
+> Model 2:
+> Polar frame
+> (𝑠 𝑛 ,𝛽 𝑛 )
+> Transformation of variables
+> 𝑠 𝑛 =𝑣 𝑥 𝑛
+> 2+𝑣 𝑦 𝑛
+> 2
+> 𝛼 𝑛 =𝛽 𝑛 +1−𝛽 𝑛
+> Model 3:
+> Comoving frame process
+> (𝑠 𝑛 ,𝛼 𝑛 )
+> Transformation of variables
+> 𝑣 𝑥 𝑛 =𝑠 𝑛 cos 𝛽 𝑛
+> 𝑣 𝑦 𝑛 =𝑠 𝑛 sin 𝛽 𝑛
+> 𝛽 𝑛 +1=𝛽 𝑛 +𝛼 𝑛
+
+FIG. 3. Full transformation rules between the three different frames of reference and the respective inverse transfromation. 
+
+Here and in the following we map α onto the circle by applying a modulo 2 π operation and restricting it to the interval ( −π, π ]. This choice corresponds to the minimal angular displacement and captures the tendency of an organism to change direction through the shortest possi-ble rotation [61]. It also avoids a subtle issue of chirality in case we only admitted positive turning angles. The issue of wrapping onto the circle becomes more subtle for general stochastic processes, as we will discuss for the example of the OU process in Sec. IV. Thus, in the co-moving frame, the random walk is governed again by two independent noise sources: Rayleigh noise in the speed and uniform white noise in the turning angle. A compact summary of the probability distributions and autocor-relation properties of all relevant variables in the three models (Cartesian, polar and comoving) is provided in Table I. In summary, for a stochastic process defined in the Cartesian frame one needs to transform the corre-sponding probability distributions between the different frames, and in general to check for the correlation func-tions of the associated variables in the different frames (even though here for the Markovian random walk there is little to check). These analytical calculations are sup-ported by numerical simulations. Figures 4,5 show that the probability densities of the Cartesian velocity com-ponents vx and vy are perfectly Gaussian for all three stochastic models, while the lower panels confirm that their autocorrelations vanish beyond zero lag, consistent with δ-correlated increments. Figure 6 compares the sim-ulated probability densities of the speed with the ana-lytical Rayleigh distribution Eq. (16) and demonstrates the absence of temporal correlations for all three models. Similarly, Fig.7 shows the uniform distribution of the ori-entation angle β Eq. (13) and its lack of autocorrelation for all three models. Finally, Fig. 8 illustrates the dis-tribution of turning angles α, which follows the uniform law in Eq. (17), and confirms its interpretation as a white noise process in angular space for all three models. 
+
+IV. THREE MODELS FOR ORNSTEIN-UHLENBECK IN TWO DIMENSIONS 
+
+The conceptual framework of how to transform be-tween the three different frames, illustrated in the pre-vious section for the simple Markovian random walk, is now rolled out for the OU process yielding the velocities of random movements in a plane. Before elaborating on OU dynamics [38] in two dimensions, let us briefly recall its one-dimensional formulation and key statistical prop-erties. The OU process is defined by the underdamped Langevin equation 
+
+dv (t) = − γm v(t) dt +
+
+p
+
+2 ˜D dW t, (18) where dW t is the increment of a Wiener process, γ/m 
+
+is the relaxation rate, and the diffusion coefficient ˜D is related to the conventional diffusion coefficient D for the position via D → ˜Dm 2 
+
+> γ2
+
+[62]. The solution of Eq. (18) is a Gaussian process with mean 
+
+⟨v(t)⟩ = v(0) e− γm t (19) 6
+
+TABLE I. Statistical properties of different two-dimensional random walk variables in three different coordinate frames: Carte-sian (Model 1), Polar (Model 2), and Comoving (Model 3). Model & Variables Probability distributions Autocorrelations 
+
+Model 1: Cartesian random walk 
+
+Velocity components ( vx, v y ) P (vx, v y ) = 12πσ 2 exp 
+
+
+
+− v2
+
+> x+v2
+> y
+> 2σ2
+
+
+
+⟨vx,i vx,j ⟩ = ⟨vy,i vy,j ⟩ = 0 for i̸ = j
+
+Model 2: Polar random walk 
+
+Speed s = pv2 
+
+> x
+
++ v2 
+
+> y
+
+P (s) = sσ2 exp 
+
+
+
+− s2
+
+> 2σ2
+
+
+
+, s ≥ 0 ⟨sisj ⟩ − ⟨ si⟩⟨ sj ⟩ = 0 for i̸ = j
+
+Orientation angle β = arctan( vy , v x) P (β) = 12π , β ∈ (0 , 2π] ⟨βiβj ⟩ = 0 for i̸ = j
+
+Model 3: Comoving random walk 
+
+Speed s P (s) = sσ2 exp 
+
+
+
+− s2
+
+> 2σ2
+
+
+
+, s ≥ 0 ⟨sisj ⟩ − ⟨ si⟩⟨ sj ⟩ = 0 for i̸ = j
+
+Turning angle α = βi − βi−1 P (α) = 12π , α ∈ (−π, π ] ⟨αiαj ⟩ = 0 for i̸ = j
+
+FIG. 4. Top: Simulation results for the probability density of the velocity component vx for the simple random walk for-mulated in three different frames, yielding three different ran-dom walk models, compared with the Gaussian distribution. Bottom: The autocorrelation function of the random walk velocities are all uncorrelated . 
+
+and variance Var[ v(t)] = ˜Dm γ
+
+
+
+1 − e−2 γm t
+
+. (20) 
+
+FIG. 5. Same as Fig. 4 for the velocity component vy
+
+In the long-time limit, the process reaches a stationary state with Gaussian distribution 
+
+Pst (v) = 
+
+r γ
+
+2π ˜Dm exp 
+
+
+
+− γv 2
+
+2 ˜Dm 
+
+
+
+, (21) which has zero mean and variance Dm/γ . The velocity autocorrelation function of the stationary process is 
+
+⟨v(t)v(t′)⟩ = ˜Dm γ e− γm |t−t′|, (22) 7  
+
+> FIG. 6. Top: Simulation results for the probability density of the speed sfor the simple random walk in the three different frames compared with Eq.(16). Bottom: The autocorrelation function of the speed is again uncorrelated.
+
+showing the characteristic exponential decay with corre-lation time τ = m/γ . The one dimensional OU process is therefore Gaussian (all finite-dimensional distributions are Gaussian), stationary (the distribution converges to the steady Gaussian Eq.(21)) and Markovian (the process has the Markov property, enabling Itˆ o transformations to other coordinate systems [27]). These three properties make OU dynamics the prototypical model of a stochastic process with exponential memory. The two-dimensional OU process in Cartesian coordinates is then constructed as two independent copies of Eq. (18), one for each ve-locity component.  
+
+> A. Model 1: Cartesian Two-Dimensional OU Process
+
+We first consider a two-dimensional OU-driven walk in the Cartesian frame, constructed from two independent one-dimensional OU processes for the velocities along the 
+
+x and y axes. The velocity components v = ( vx, v y ) thus evolve according to the stochastic differential equation 
+
+dv = − γm v dt +
+
+p
+
+2 ˜D ξ v(t) dt, (23) where ξv = ( ξvx , ξ vy ) are independent Gaussian white noise terms.    
+
+> FIG. 7. Top: Probability density of the orientation angle
+> βnfor the simple random walk in the three different frames compared with Eq.(13). Below: The autocorrelation function is again uncorrelated.
+
+The OU process exhibits exponentially correlated ve-locities with correlation function 
+
+⟨vj (t)vj (t′)⟩ − ⟨ v0j ⟩2 = ˜Dm γ e− γm |t−t′| (24) with j ∈ (x, y ). The stochastic differential equation (23) is solved numerically in equilibrium using the Eu-ler–Maruyama method [63] with parameters D = γ =
+
+m = 1 and noise terms ξv of zero mean and unit stan-dard deviation. After integration, the corresponding po-lar frame variables are obtained via the polar transfor-mation 
+
+s =
+
+q
+
+v2 
+
+> x
+
++ v2 
+
+> y
+
+, β = arctan( vy , v x), (25) where s is the instantaneous speed and β the orientation angle. We recall that the orientation angle β, extracted via the arctangent function, is defined modulo 2 π, with val-ues taken in the interval [0 , 2π). Consequently, the turn-ing angle α = ∆ β, as a difference between these orienta-tions, initially takes values on the full real line ( −∞ , ∞). Interestingly, this unwrapped turning angle (prior to any modulo operation) exhibits non-trivial temporal correla-tions. Wrapping α onto the circle, as by definition needed for comoving frame dynamics, eliminates these correla-tions, thus effectively Markovianising the turning angle 8  
+
+> FIG. 8. Top: Probability density of the turning angle αnfor the simple random walk in the three different frames com-pared with Eq.(17). Bottom: The autocorrelation function is again uncorrelated.
+
+dynamics. This represents a loss of information in the comoving frame about the history of previous rotations with respect to the Cartesian frame.  
+
+> B. Model 2: Polar OU Process Driven by Itˆ oEquations
+
+Defining stochastic equations in the polar frame intro-duces an Itˆ o–Stratonovich ambiguity, as the transforma-tion from Cartesian velocities to polar coordinates gener-ates multiplicative noise for the speed s and orientation 
+
+β. Using Itˆ o calculus [27], Eq. (23) can be transformed into two coupled stochastic differential equations for the speed s and orientation β (see Appendix B), as simi-larly derived in Ref. [27] for an electric field, and for the Stratonovich approach in Ref. [47]: 
+
+dβ dt = 1
+
+s
+
+p
+
+2 ˜D ξ β (t) (26) 
+
+ds dt = − γm s + ˜Ds
+
+!
+
++
+
+p
+
+2 ˜D ξ s(t), (27) where the noise terms are defined as 
+
+ξβ (t) = −ξx(t) sin β + ξy (t) cos β (28) 
+
+ξs(t) = ξx(t) cos β + ξy (t) sin β (29) with ξx and ξy being the independent Gaussian white noises in the Cartesian frame. It can be shown that ξβ
+
+and ξs are also Gaussian white noises [27]. The corre-sponding Fokker–Planck equation [64] for the joint prob-ability density function P (s, β, t ) in the Itˆ o interpretation is 
+
+∂P (s, β, t )
+
+∂t = − ∂∂s − γm s + ˜Ds
+
+!
+
+P (s, β, t )+ ˜D ∂2P (s, β, t )
+
+∂s 2 + ˜Ds2
+
+∂2P (s, β, t )
+
+∂β 2 , (30) which admits the stationary solution 
+
+P (s, β ) = N s e − γs 22 ˜Dm , (31) where N represents the uniform distribution of β and the speed s follows a Rayleigh distribution. For simu-lations, Eqs. (26) and (27) are integrated using the Eu-ler–Maruyama method [63], ensuring that the standard deviations of ξs and ξβ match those of the Cartesian noise in Model 1. A key consideration arises from Eq. (27): Nu-merically, the Gaussian noise in ξs can occasionally pro-duce negative values for the speed. To maintain positive speeds, any negative speed values encounter in the sim-ulation, are replaced by a small threshold value of 10 −2.Note that analytically negative speeds Eq. (27) appear to be eliminated by the Itˆ o 1 /s flux term, although we have no proof of the positivity of the speed in this equation. The autocorrelation function of the speed can be cal-culated (see Appendix C) as 
+
+⟨s(t)s(t′)⟩ − ⟨ s(t)⟩2 = 2 ˜Dm 
+
+4γ e−2 γm |t−t′|, (32) which is analogous to the velocity correlations in the Cartesian frame Eq. (24) but decays at twice the rate, 2γ/m , reflecting the distinct dynamics in polar coordi-nates. Deriving a closed-form expression for the autocorrela-tion of β is more involved due to its inverse dependence on 
+
+s, which introduces a nontrivial coupling between speed and orientation. Consequently, instead we consider the autocorrelation of cos β, which can be approximated as discussed in Appendix D to obtain 
+
+⟨cos β(t) cos β(t + τ )⟩ ≈ 12 exp 
+
+h
+
+− ˜D τ 
+
+D
+
+s−2Ei 
+
+. (33)  
+
+> C. Model 3: OU Process in the Comoving Frame
+
+To achieve a self-consistent description of the two-dimensional OU process in the comoving frame, it is nec-essary to formulate an equation for the turning angle α.This can be accomplished by using Eq. (5) and comput-ing the corresponding distribution of α from the right-hand side of Eq. (26), restricting the turning angle to 9the interval [ −π, π ] with the modulo 2 π operation. The resulting turning angle probability distribution is given accordingly to (see Appendix F) 
+
+P (α) = 
+
+p
+
+2 ˜D∆t
+
+2π
+
+> ∞
+
+X
+
+> k=−∞
+
+σσR
+
+k K1
+
+p
+
+2 ˜D∆tσk σR
+
+!
+
+eikα ,
+
+(34) where ∆ t is the discretisation time for the originally time-continuous Eq. (5), and σ, σ R are the standard deviations of the Gaussian white noise ξβ (from Eq. (26)) and the exponentially correlated speed s(t) (from Eq. (31)), re-spectively. Here, K1(z) denotes the modified Bessel func-tion of the second kind. While P (α) resembles a wrapped Gaussian or von Mises distribution as shown in Fig. 9, its precise functional form defines, to our knowledge, a new distribution for the turning angle.    
+
+> FIG. 9. Theoretical probability distribution for the turning angle α, Eq. (34), compared with a wrapped Gaussian and a von Mises distribution. One can see clear deviations in the tails.
+
+In a steady state, the speed s is distributed accord-ing to a Rayleigh distribution with exponentially decay-ing autocorrelations as in Eqs. (31),(32). This leads to a self-consistent formulation of a Cartesian OU process represented in the comoving frame as 
+
+αn = ξα(n∆t), sn = ˜ξs(n∆t), (35) where ξα is white noise with the functional form given by 
+
+P (α), and ˜ξs is exponentially correlated Rayleigh noise. Alternatively, the speed can be generated using Eq. (27) with Gaussian white noise. What we mean with a self-consistent description of the OU process in the comoving frame is that the above two equations are formulated solely in terms of speed and turning angle, without ex-plicitly involving any other coordinates. This is not the case in the polar representation, which still somewhat relies on the Cartesian frame. Note that, exactly in this sense, here we go beyond previous formulations of active particle models, such as in Refs. [47, 48, 53, 54], where the active part is expressed in terms of polar coordinates but not defined self-consistently by using the turning angle as a comoving frame coordinate, as above. In principle, for a walker, or an organism, knowledge of a sequence of speed and turning angle is fully sufficient to self-generate movement, which is the idea underlying Pearson’s origi-nal random walk and the CRW of ME. However, to our knowledge, generalised processes of the form of Eq. (35) have not yet been considered for modelling organismic movements. For simulations, the variables in the comoving frame can be generated directly from their respective distribu-tions, i.e., the Markovian turning angle α is sampled i.i.d. from P (α) Eq.(34). However, to transform back to the polar or Cartesian frames by using Eq.(6) for the orien-tation angle β, the correct time discretisation taking the diffusive stochastic scaling into account has to be con-sidered [27]. For this we introduce an additional helper variable, the angular velocity ω = dβ/dt , thus writing 
+
+αn ∼ ω√∆t, where ω is sampled from the probability distribution for the angular velocity associated with the turning angle distribution, see Eq. (F13) in Appendix F. Simultaneously, the speed s is sampled from exponen-tially correlated Rayleigh noise. This procedure main-tains the correct temporal correlations and steady-state statistics of the Cartesian OU process. Correlations for 
+
+s can be introduced numerically using the Cholesky de-composition method [65], generating two Gaussian vari-ables with exponential correlations as in Eq. (24). Ac-cording to [66], if X and Y are independent Gaussian variables, then R = √X2 + Y 2 follows a Rayleigh distri-bution with standard deviation σR. In this manner, ex-ponentially correlated Rayleigh noise is obtained. Along these lines, once the comoving variables ( α, s ) are gen-erated, the transformations in Eq. (5), modulo using ω,are applied to recover the Cartesian velocities. This description completes our definition of the three models of the OU process in the three different coordi-nate frames. We now compare results from simulating these three models with each other, and with analyti-cal results, to demonstrate that all these different for-mulations reproduce the same statistical properties in the different frames. The simulation results presented in Figs. 10, 11, 12, and 13 show the probability distribu-tions and associated autocorrelation functions for each key variable: speed s, turning angle α, orientation angle 
+
+β, angular velocity ω, and velocities vx, vy , as summa-rized in Table II. The figures demonstrate strong agree-ment between all three models. The probability dis-tributions for each variable exhibit very similar shapes and peak locations, indicating that the underlying sta-tistical properties of the simulated trajectories are well preserved. Likewise, the autocorrelation functions decay at comparable rates, demonstrating that temporal cor-relations and memory effects are consistently captured across the different model implementations. For instance, Fig.10 presents the speed distributions and autocorrela-tions in the comoving frame, which closely match the theoretical Rayleigh distribution and the exponential de-cay predicted by Eq.(32). Figure 11 shows the turning angle distributions compared with Eq. (34) and their approximately δ-like autocorrelations. The orientation angle β distributions and correlations are displayed in 10 Fig.12. We remark again that obtaining an analytical expression for the autocorrelation of β looks impossible due to its dependence on the speed in Eq.(26). Instead, we therefore consider our analytical approximation for the autocorrelation of cos β. A small mismatch is ob-served in these results, which can be attributed to two main factors: (i) when sampling the random variables in the comoving frame from Eq. (34), the infinite dis-crete Fourier series must be truncated at a finite value N
+
+due to the computational cost of simulating large terms. This truncation directly affects the accuracy of the sam-pled variables. (ii) The choice of the simulation step size ∆t influences the recovery of continuous trajectories, i.e., smaller steps improve the accuracy but increase compu-tational expense. Finally, the Cartesian velocity compo-nents vx and vy , illustrated in Fig.13, confirm Gaussian behavior with temporal correlations consistent with the-oretical predictions, further validating the equivalence of the constructed three models.     
+
+> FIG. 10. Top: Probability distributions for the speed sin the three different models of an OU process in two dimensions, compared with Eq.(31) (lines). Bottom: Corresponding speed autocorrelations compared with Eq.(32) for the three different models. Here and in the following trepresents the total time length of the process.
+
+Overall, our comparative analysis confirms that all three models consistently numerically reproduce the sta-tistical properties of the two-dimensional Cartesian OU process across all frames. As far as we can tell, our an-alytical transformations between Cartesian, polar, and comoving frames are exact, which is confirmed by the overall excellent agreement of both probability distribu-tions and autocorrelation functions.         
+
+> FIG. 11. Top: Probability distributions for the turning an-gle αin the three different models of an OU process in two dimensions, compared with Eq.(34) (lines), the original distri-bution is defined in the interval [ −π, π ), but a focus is made in the interval [ −1,1] for visual purposes. Bottom: Correspond-ing autocorrelations for the three different models, compared with a δfunction.
+> V. SUMMARY AND CONCLUSIONS
+
+In summary, what we called the comoving frame is nothing else than the coordinate frame suggested by Ross and Pearson to formulate a two-dimensional random walk for modelling organismic movements [21–23]. From these early origins comoving coordinates propagated into ME in the form of the widely used stochastic CRW model [2, 30]. Turning angle and step length distribution func-tions are in turn much extracted from experimental data for moving organisms [50–52]. This theoretical frame-work is at variance with stochastic models in active mat-ter theory, which are all formulated in the Cartesian coordinate frame, partially by using polar coordinates [47, 48, 53, 54]. However, as we pointed out in this arti-cle, the polar frame should not be confused with the co-moving frame. Defining stochastic dynamics in the latter frame involves a non-trivial additional step beyond po-lar coordinates, which is deriving a stochastic equation for the turning angle dynamics, in addition to the speed dynamics. The important advantage of the comoving frame is that it allows to formulate a set of equations which more closely mimicks actual biological movements by describing the fluctuations generating them in terms of equations that are self-consistent in this frame. This approach matches to the biophysical reasoning that self-propelled biological movements are generated internally by an organism itself, and not by any external noise in a fixed coordinate frame. Such a fixed Cartesian frame 11 
+
+TABLE II. Statistical properties of different two-dimensional OU process variables in three different coordinate frames: Carte-sian (Model 1), Polar (Model 2), and Comoving (Model 3). Model & Variables Probability distributions Autocorrelations 
+
+Model 1: Cartesian OU 
+
+Velocity components ( vx, v y )
+
+dv = − γm vdt +
+
+p
+
+2 ˜D ξ v (t)dt P (vi) = 1√2πσ 2
+
+> i
+
+exp 
+
+
+
+− v2
+
+> i
+> 2σ2
+> i
+
+
+
+⟨vj (t)vj (t′)⟩ − ⟨ v0j ⟩2 = ˜Dm γ e− γm |t−t′|
+
+Model 2: Polar OU 
+
+Speed s
+
+˙s = − γm s + ˜Ds +
+
+p
+
+2 ˜D ξ s(t) P (s) = s e − γs 22 ˜Dm , s ≥ 0 ⟨s(t)s(t′)⟩ − ⟨ s⟩2 = 2 ˜Dm  
+
+> 4γ
+
+e−2 γm |t−t′|
+
+Orientation angle β
+
+˙β = 1
+
+> s
+
+p
+
+2 ˜D ξ β (t) P (β) = 12π , β ∈ [0 , 2π] ⟨cos β(t) cos β(t + τ )⟩ ≈ 12 exp 
+
+h
+
+− ˜D τ 
+
+D
+
+s−2
+
+Ei 
+
+Model 3: Comoving OU 
+
+Turning angle αα = ξα(t) P (α) = 
+
+√2 ˜D∆t
+
+> 2π
+
+P∞ 
+
+> k=−∞
+
+|k|K1
+
+
+
+|√2 ˜D∆tσk σR |
+
+
+
+eikα ⟨α(t)α(t′)⟩ ≈ δ(t − t′)Speed ss = ˜ξs(t) P (s) same as Polar OU ⟨s(t)s(t′)⟩ same as Polar OU 
+
+should only be used to model the impact of external en-vironmental conditions on a moving organism. If a given stochastic process can be transformed exactly between the Cartesian and the comoving frame, of course it does not matter in which frame one expresses the given dy-namics; however, as we will argue further below, exact transformations might not always be possible. In our article, we have first defined the relevant three different frames, with Cartesian and polar being trivial, as explained in textbooks, but by identifying the comov-ing frame on this basis. The essential idea of trans-forming stochastic processes between these three different frames was first outlined for the simple random walk as an example, and on this basis worked out in detail for the OU process. While spherical and polar transformations of stochastic dynamics and associated representations of OU probability distributions are well known [47, 53, 67], to our knowledge the autocorrelation functions for OU speed and orientation angle have not been obtained be-fore, which constitute first new results. A more impor-tant finding is our, as far as we can tell, novel turning angle distribution calculated exactly analytically for the OU process, which does not seem to match to other fa-mous circular distributions like wrapped Gaussian or van Mises distributions. Our most important result, however, is the self-consistent formulation of the Cartesian OU process in the comoving frame. We argue that our derivation is ex-act, as is in line with our numerical results. Interestingly, our comoving OU model generates a unimodal turning angle distribution, as is characteristic for the CRW of ME. However, on top of this it features an exponentially decaying autocorrelation function for the speed. To our knowledge, such a generalised stochastic model defined in the comoving frame has not yet been studied in ME, nor tested for organismic movements, even though the impor-tance of correlation functions to understand organismic movements has been emphasized before [68]. Importantly, the comoving OU equations that we have derived form a special case of the generalised Langevin dynamics in the comoving frame stipulated ad hoc in Ref. [3], reading ˙α = h(α, s ) + ξα;s(t) (36) ˙s = g(α, s ) + ξs;α(t) , (37) where the forces on the right hand sides are split into coupled drift terms and general noises. Considering an overdamped version of Eq. (36) with a drift term that is linear in α reproduces the form derived for OU of Eq. (35) for the turning angle [3]. The associated underdamped equation for the speed clearly yields a special case of Eq. (37). Our results for the comoving OU process thus demonstrate that the theoretical framework heuristically provided by Eqs.(36),(37) can be established, at least for the special case of the OU process, from first principles. To our knowledge, this is the first time that a comoving OU process has been derived. Hence, our second main results is to have established, along the lines of the OU process, a general theoretical framework that clearly de-fines, and disentangles, the different coordinate frames for generally transforming stochastic processes from the 12       
+
+> FIG. 12. Top: Probability distributions for the orientation angle βin the three models, compared to a uniform distribu-tion. Middle: Corresponding orientation autocorrelations for the three models. Bottom: Corresponding autocorrelations for the cosine of the orientation, including the analytical ap-proximation Eq. (D4) (line).
+
+Cartesian into the comoving frame. Our approach can thus be used to systematically construct more general stochastic movement models than CRWs in the comov-ing frame. Especially, along these lines it would be interesting to merge the approach put forward by active matter the-ory in terms of active particle models with CRW models of ME [1]. Generalised active particle models combining different types of stochastic dynamics have already been considered recently [69]. In forthcoming work we will show, by exploiting the conceptual framework developed in this article, how to transform three generic active par-ticle models into the comoving frame. This will pave the way to develop more general active particle models, and to make these ideas attractive to applications in ME. However, our present conjecture is that exact trans-formations between the three different frames are only possible if the Cartesian stochastic dynamics is Marko-vian, as for simple random walks and the considered OU process. There is indeed a non-trivial Markovianisation    
+
+> FIG. 13. Top: Probability distributions for the velocity vx
+> in the three models compared with the corresponding theo-retical expression for a Gaussian distribution (line). Bottom: Correspondind velocity autocorrelations compared with the theoretical expression (line) in Eq.(22).
+
+taking place viz. a loss of memory in the turning angle dynamics when being wrapped onto the circle. It is in-deed well known already that there exist three different semi-Markovian L´ evy walk models, two defined in the Cartesian frame and one in the comoving frame, which cannot be transformed into each other [70]. This result provides first evidence that it may in general not be possi-ble to transform non-Markovian processes defined in the Cartesian frame exactly into the comoving frame. In-deed, for fractional Brownian motion a comoving repre-sentation is, to our knowledge, not known [56]. However, there is a need to formulate representations of more ad-vanced stochastic processes in the comoving frame for im-plementing self-consistent stochastic navigation in robots and drones [71]. Interestingly, if exact transformations of stochastic processes with memory between these different frames are not possible, one might conclude that active fluctuations generating self-propelled organismic movements should 
+
+per se not be defined in the Cartesian or polar frames but exclusively self-consistently in the comoving frame. This would, in turn, necessitate to develop a novel theory of stochastic processes in the comoving frame, and to ex-plore how such processes then look like in the Cartesian frame. We finally remark that the relevance of distin-guishing between these different frames of reference is al-ready well-known to biologists studying organismic move-ments. They call a world-centered frame, corresponding to the Cartesian one, allocentric while the body-centered, comoving one is known as egocentric [72]. In the former, animals navigate according to fixed external landmarks 13 while in the latter, they integrate their path coordinates internally in the brain [72, 73]. These two frames are, in turn, represented in the brain by different types of neurons, grid and place cells, respectively [74]. There are thus plenty of reason to further explore the theory of stochastic process in the comoving frame. 
+
+> ACKNOWLEDGMENTS
+
+NLA wish to acknowledge to ”Fundacion Politecnico” and the School of Mathematical Sciences from Queen Mary University of London for the financial support of this research. NLA and RK thank Alessia Gentili, Gior-gio Volpe, Adrian Baule and Wolfram Just for very help-ful discussions. 
+
+> Appendix A: Autocorrelations in Speed and Orientation Random Walk
+
+We consider a two–dimensional random walk defined by 
+
+xn+1 = xn + ∆ t vn. (A1) Since the velocities vn are i.i.d. for different time in-dices, and since ( sn, β n) are deterministic functions of 
+
+vn, it follows that (sn, β n) ⊥⊥ (sn+k, β n+k), k̸ = 0 . (A2)  
+
+> 1. Autocorrelation of the speed
+
+The autocovariance of the speed is defined as 
+
+Cs(n, k ) = ⟨sksk+n⟩ − ⟨ sk⟩2, (A3) where the angular brackets denote an ensemble average. For n̸ = 0, temporal independence (A2) implies 
+
+⟨sksk+n⟩ = ⟨sk⟩⟨ sk+n⟩.
+
+By stationarity, ⟨sk⟩ = ⟨sk+n⟩ = ⟨s⟩, and therefore 
+
+Cs(n, k ) = 0 , n̸ = 0 . (A4)  
+
+> 2. Autocorrelation of the orientation angle
+
+The autocovariance of the orientation angle is defined as 
+
+Cβ (n, k ) = ⟨βkβk+n⟩ − ⟨ βk⟩2. (A5) For n̸ = 0, Eq. (A2) yields 
+
+⟨βkβk+n⟩ = ⟨βk⟩⟨ βk+n⟩.
+
+Since β is uniformly distributed in [0 , 2π), 
+
+⟨β⟩ = 12π
+
+Z 2π
+
+> 0
+
+β dβ = π. (A6) Consequently, 
+
+Cβ (n, k ) = 0 , n̸ = 0 . (A7)  
+
+> 3. Autocorrelation of the turning angle
+
+We define the turning angle as the difference between two successive orientation angles, 
+
+αn = βn+1 − βn (A8) with αn ∈ (−π, π ]. Because βn+1 and βn are independent and uniformly distributed, the turning angle αn is itself uniformly distributed on ( −π, π ]. Moreover, for n̸ = 0, the pairs ( βk+1 , β k) and ( βn+k+1 , β n+k) are independent. Therefore, 
+
+⟨αkαk+n⟩ = ⟨αk⟩⟨ αk+n⟩, n̸ = 0 . (A9) The autocovariance of the turning angle, 
+
+Cα(n, k ) = ⟨αkαk+n⟩ − ⟨ αk⟩2, (A10) thus vanishes for all nonzero lags, 
+
+Cα(n, k ) = 0 , n̸ = 0 . (A11) 
+
+> Appendix B: Itˆ o transformation
+
+We start with the two-dimensional stochastic differen-tial equation for the velocity v = ( vx, v y ): 
+
+dv = − γm vdt +
+
+p
+
+2 ˜Dd W(t), (B1) where dW(t) = ( dW x, dW y ) is a vector of independent Wiener processes. We define the polar coordinates: 
+
+s =
+
+q
+
+v2 
+
+> x
+
++ v2 
+
+> y
+
+,β = arctan 
+
+ vy
+
+vx
+
+
+
+.
+
+We apply Itˆ o’s lemma to find the stochastic differential equations for s and β. Let s = f (vx, v y ) = ( v2 
+
+> x
+
++ v2 
+
+> y
+
+)1/2.The partial derivatives are: 
+
+∂s ∂v x
+
+= vx
+
+s , ∂s ∂v y
+
+= vy
+
+s ,∂2s∂v 2
+
+> x
+
+= 1
+
+s − v2
+
+> x
+
+s3 , ∂2s∂v 2
+
+> y
+
+= 1
+
+s − v2
+
+> y
+
+s3 .14 The drift and diffusion coefficients for vx and vy are: 
+
+μx = − γm vx, μy = − γm vy , σx =
+
+p
+
+2 ˜D, σy =
+
+p
+
+2 ˜D. 
+
+By Itˆ o’s lemma: 
+
+ds =
+
+
+
+μx
+
+∂s ∂v x
+
++ μy
+
+∂s ∂v y
+
++ 12 σ2
+
+> x
+
+∂2s∂v 2
+
+> x
+
++ 12 σ2
+
+> y
+
+∂2s∂v 2
+
+> y
+
+
+
+dt 
+
++ σx
+
+∂s ∂v x
+
+dW x + σy
+
+∂s ∂v y
+
+dW y .
+
+Substituting the derivatives: 
+
+ds =
+
+" 
+
+− γm vx
+
+ vx
+
+s +
+
+
+
+− γm vy
+
+ vy
+
+s
+
++ 12 (2 ˜D)
+
+ 1
+
+s − v2
+
+> x
+
+s3
+
+
+
++ 12 (2 ˜D) 1
+
+s − v2
+
+> y
+
+s3
+
+! # 
+
+dt 
+
++
+
+p
+
+2 ˜D vx
+
+s dW x +
+
+p
+
+2 ˜D vy
+
+s dW y .
+
+Simplifying the drift term: 
+
+"
+
+− γmv2 
+
+> x
+
++ v2
+
+> y
+
+s + ˜D
+
+ 1
+
+s − v2
+
+> x
+
+s3
+
+
+
++ ˜D 1
+
+s − v2
+
+> y
+
+s3
+
+!# 
+
+dt 
+
+=
+
+"
+
+− γm s + ˜D 2
+
+s − v2 
+
+> x
+
++ v2
+
+> y
+
+s3
+
+!# 
+
+dt 
+
+=
+
+
+
+− γm s + ˜D
+
+ 2
+
+s − s2
+
+s3
+
+ 
+
+dt 
+
+=
+
+
+
+− γm s + ˜D
+
+ 2
+
+s − 1
+
+s
+
+ 
+
+dt 
+
+=
+
+"
+
+− γm s + ˜Ds
+
+#
+
+dt. 
+
+The diffusion term is: 
+
+p
+
+2 ˜D vx
+
+s dW x +
+
+p
+
+2 ˜D vy
+
+s dW y .
+
+This can be written as 
+
+p
+
+2 ˜DdW S , where dWs = 
+
+> vx
+> s
+
+dW x + vy 
+
+> s
+
+dW y is a Wiener process. Thus, the stochastic differential equation for S is: 
+
+ds = − γm s + ˜Ds
+
+!
+
+dt +
+
+p
+
+2 ˜Dd Ws. (B2) Let β = f (vx, v y ) = arctan 
+
+ vy
+
+> vx
+
+
+
+. The partial deriva-tives are: 
+
+∂β ∂v x
+
+= − vy
+
+v2 
+
+> x
+
++ v2
+
+> y
+
+= − vy
+
+s2 ,∂β ∂v y
+
+= vx
+
+v2 
+
+> x
+
++ v2
+
+> y
+
+= vx
+
+s2 ,∂2β∂v 2
+
+> x
+
+= 2vxvy
+
+s4 ,∂2β∂v 2
+
+> y
+
+= − 2vxvy
+
+s4 ,∂2β∂v x∂v y
+
+= v2 
+
+> y
+
+− v2
+
+> x
+
+s4 .
+
+By Itˆ o’s lemma: 
+
+dβ =
+
+"
+
+μx
+
+∂β ∂v x
+
++ μy
+
+∂β ∂v y
+
++ 12 σ2
+
+> x
+
+∂2β∂v 2
+
+> x
+
++ 12 σ2
+
+> y
+
+∂2β∂v 2
+
+> y
+
++ 12 σxσy
+
+∂2β∂v x∂v y
+
+#
+
+dt 
+
++ σx
+
+∂β ∂v x
+
+dW x + σy
+
+∂β ∂v y
+
+dW y .
+
+Since σx = σy =
+
+p
+
+2 ˜D and the noises are independent, the cross term is zero. Substituting: 
+
+dβ =
+
+" 
+
+− γm vx
+
+  
+
+− vy
+
+s2
+
+
+
++
+
+
+
+− γm vy
+
+  vx
+
+s2
+
+
+
++ 12 (2 ˜D) 2vxvy
+
+s4 + 12 (2 ˜D)
+
+
+
+− 2vxvy
+
+s4
+
+ #
+
+dt 
+
++
+
+p
+
+2 ˜D
+
+
+
+− vy
+
+s2
+
+
+
+dW x +
+
+p
+
+2 ˜D
+
+ vx
+
+s2
+
+
+
+dW y .
+
+The drift terms cancel: 
+
+
+
+− γm vx
+
+  
+
+− vy
+
+s2
+
+
+
++
+
+
+
+− γm vy
+
+  vx
+
+s2
+
+
+
+= γmvxvy
+
+s2 − γmvxvy
+
+s2 = 0 ,
+
+and 12 (2 ˜D) 2vxvy
+
+s4 + 12 (2 ˜D)
+
+
+
+− 2vxvy
+
+s4
+
+
+
+= ˜D 2vxvy
+
+s4 − ˜D 2vxvy
+
+s4 = 0 .
+
+Thus, the drift is zero. The diffusion term is: 
+
+p
+
+2 ˜D
+
+
+
+− vy
+
+s2 dW x + vx
+
+s2 dW y
+
+
+
+.
+
+This can be written as 
+
+√2 ˜Ds dW β , where dW β =
+
+− vy 
+
+> s
+
+dW x + vx 
+
+> s
+
+dW y is a Wiener process. Thus, the stochastic differential equation for β is: 
+
+dβ =
+
+p
+
+2 ˜Ds dW β . (B3) 15 In summary, the transformed stochastic differential equations in polar coordinates are: 
+
+ds = − γm s + ˜Ds
+
+!
+
+dt +
+
+p
+
+2 ˜Dd Ws, (B4) 
+
+dβ =
+
+p
+
+2 ˜Ds dW β , (B5) where dW S and dW β are independent Wiener processes. 
+
+Appendix C: Autocorrelation Function for the Speed in th OU 
+
+To obtain the mean value of the speed, we examine the steady-state behavior of Eq.(27). In this limit, the left-hand side becomes zero: 0 = − γm s0 + ˜Ds0
+
+, (C1) where s0 represents the mean speed in the steady-state. Solving for s0 we find: 
+
+s20 = ˜Dm γ (C2) which implies that s0 =
+
+q ˜Dm γ .Secondly, to calculate the autocorrelations for s, we introduce a linear expansion around s0 for s(t): 
+
+s(t) = s0 + δs (t) (C3) where δs (t) represents the fluctuations around the steady-state value s0. Substituting this into Eq.(27): 
+
+d (s0 + δs (t)) 
+
+dt = − γm (s0 + δs (t))+ ˜Ds0 + δs (t) +
+
+p
+
+2 ˜Dξ s(t)(C4) From this, we observe that the term ˜Ds0+δs (t) can be rewritten as: ˜Ds0 + δs (t) = ˜Ds0
+
+11 + δs (t)
+
+> s0
+
+(C5) Here, we can expand the factor 11+ δs (t)
+
+> s0
+
+in a Taylor series for small values of δs (t) 
+
+> s0
+
+:˜Ds0
+
+11 + δs (t)
+
+> s0
+
+≈ ˜Ds0
+
+− ˜Ds20
+
+δs (t) (C6) Thus, Eq.(C4) becomes: 
+
+d (s0 + δs (t)) 
+
+dt = − γm (s0 + δs (t))+ ˜Ds0
+
+− ˜Ds20
+
+δs (t)+ 
+
+p
+
+2 ˜Dξ s(t).
+
+(C7) Applying the linearity of the differential operator on the left side and substituting s0 =
+
+q ˜Dm γ , several terms can-cel out: 
+
+dδs (t)
+
+dt = − γm δs (t) − ˜Ds20
+
+δs (t) + 
+
+p
+
+2 ˜Dξ s(t) (C8) Simplifying, we get: 
+
+dδs (t)
+
+dt = −2 γm δs (t) + 
+
+p
+
+2 ˜Dξ s(t) (C9) We notice that Eq.(C9) has the same form as an OU pro-cess. Hence, its autocorrelation can be calculated simi-larly as: 
+
+⟨δs (t)δs (t′)⟩ = ˜Dm 
+
+2γ e−2 γm |t−t′|. (C10) Now, for our original variable s(t), the autocorrelation is: 
+
+⟨s(t)s(t′)⟩ = ⟨s0⟩2 + ⟨δs (t)δs (t′)⟩ (C11) Finally, we can compute the autocorrelation function: 
+
+⟨s(t)s(t′)⟩ − ⟨ s0⟩2 = ˜Dm 
+
+2γ e−2 γm |t−t′| (C12) 
+
+Appendix D: Autocorrelation of cos β in OU 
+
+Consider the orientation angle β(t) evolving according to the polar OU process: 
+
+dβ dt =
+
+p
+
+2 ˜Ds ξβ (t), (D1) where ξβ (t) is Gaussian white noise with zero mean and unit variance. For a discrete time increment ∆ t, the an-gular increment can be approximated as ∆β = β(t + ∆ t) − β(t) ∼ N 
+
+
+
+0, σ 2
+
+> β
+
+
+
+, (D2) with variance 
+
+σ2 
+
+> β
+
+= 2 ˜D∆t
+
+⟨s2⟩ . (D3) With the assumption of ∆ β(t) as Gaussian distributed, the autocorrelation of cos β is then 
+
+⟨cos β(t) cos β(t + τ )⟩ = 12
+
+D
+
+ei(β(t)−β(t+τ )) + ei(β(t)+ β(t+τ )) E
+
+≈ 12 exp 
+
+h
+
+− 12 Var( β(t + τ ) − β(t)) 
+
+i
+
+,
+
+(D4) Combining with (D3) gives 
+
+⟨cos β(t) cos β(t + τ )⟩ ≈ 12 exp 
+
+h
+
+− ˜D τ 
+
+D
+
+s−2Ei 
+
+, (D5) where ⟨s−2⟩ can be approximated by numerical fitting to the simulations of the models. This expression shows that the autocorrelation of cos β decays exponentially, with a rate determined by both the OU relaxation time and the variance of the angular increments σ2 
+
+> β
+
+.16 
+
+Appendix E: Autocorrelation of ω(t) and α in OU 
+
+The autocorrelation of ω(t) is defined as: 
+
+⟨ω(t)ω(t′)⟩ =
+
+* p 
+
+2 ˜Ds(t) ξβ (t) ·
+
+p
+
+2 ˜Ds(t′) ξβ (t′)
+
++
+
+. (E1) Using the property of white noise ⟨ξβ (t)ξβ (t′)⟩ = δ(t−t′), we simplify the expression: 
+
+⟨ω(t)ω(t′)⟩ = 2 ˜D
+
+⟨s(t)s(t′)⟩ δ(t − t′). (E2) which shows that the angular velocity is simply a delta correlated variable. Accordingly, for the turning angle, which is directly related to the angular velocity via α =
+
+ω√dt , we obtain that the autocorrelations are 
+
+⟨α(t)α(t′)⟩ ≈ δ(t − t′) (E3) 
+
+Appendix F: Calculation of the Probability Distribution for the Turning Angle in the OU 
+
+According to the Itˆ o equation (26), the instantaneous angular velocity ˙β is given by the term 
+
+p
+
+2 ˜D ξβ (t) 
+
+> s(t)
+
+. To cal-culate the probability distribution of the turning angle α,we note that α/ ∆t = ˙β. Therefore, the scale parameter of the resulting probability density function (PDF) will be modified by the time step ∆ t. The steps to find such a PDF are as follows: First, we perform a change of variables for the term p
+
+2 ˜D ξβ (t)
+
+> s(t)
+
+Z = a XY (F1) 
+
+W = Y (F2) where X represents a Gaussian white noise with stan-dard deviation σ, Y represents an exponentially corre-lated Rayleigh distribution with scale parameter σR, and 
+
+a is a constant. The joint distribution P (z, w ) can be found using the Jacobian of the transformation: 
+
+P (z, w ) = P (x)P (y)J (F3) The Jacobian J is calculated as: 
+
+J = det 
+
+ ∂x ∂z ∂x ∂w ∂y ∂z ∂y ∂w 
+
+
+
+= wa
+
+Now, we can write the joint distribution as: 
+
+P (z, w ) = 1
+
+√2πσ 2 exp −
+
+  zw a
+
+2
+
+2σ2
+
+!
+
+wσ2
+
+> R
+
+exp 
+
+
+
+− w2
+
+2σ2
+
+> R
+
+ wa
+
+(F4) which can be simplified to: 
+
+P (z, w ) = 1
+
+√2πσ 2
+
+w2
+
+aσ 2
+
+> R
+
+exp 
+
+
+
+− w2
+
+2
+
+ z2
+
+a2σ2 + 1
+
+σ2
+
+> R
+
+ 
+
+(F5) Since we are interested in the marginal distribution for 
+
+z, we integrate the joint distribution with respect to w
+
+from 0 to ∞:
+
+P (z) = 
+
+Z ∞
+
+> 0
+
+1
+
+√2πσ 2
+
+w2
+
+aσ 2
+
+> R
+
+exp 
+
+
+
+− w2
+
+2
+
+ z2
+
+a2σ2 + 1
+
+σ2
+
+> R
+
+ 
+
+dw 
+
+(F6) Upon integration, we find that: 
+
+P (z) = 12aσσ 2
+
+> R
+
+ 1
+
+> σ2
+> R
+
++ z2
+
+> a2σ2
+
+3/2 (F7) Simplifying this expression yields: 
+
+P (z) = a2σ2
+
+2σ2
+
+> R
+
+ a2σ2
+
+> σ2
+> R
+
++ z2
+
+3/2 (F8) This is the PDF for the variable on the real line in the comoving frame. However, for describing particle turning angles, a representation within the range [ −π, π ] is more natural. To achieve this, we wrap our PDF to the circle by applying the Poisson Summation Formula: 
+
+P (θ) = 12π
+
+> ∞
+
+X
+
+> k=−∞
+
+ˆP (k)eikθ (F9) where ˆP (k) is the Fourier transform (FT) of PZ (z) from Eq.(F8). We calculate the FT: ˆP (k) = 
+
+Z ∞−∞ 
+
+a2σ2
+
+2σ2
+
+> R
+
+ a2σ2
+
+> σ2
+> R
+
++ θ2
+
+3/2 e−ikθ dθ (F10) This integral evaluates to: ˆP (k) = a σσR
+
+k K1
+
+ aσk σR
+
+
+
+(F11) where K1(z) is the modified Bessel function of the second kind of order 1. Now, substituting this into the Poisson formula: 
+
+P (θ) = a
+
+2π
+
+> ∞
+
+X
+
+> k=−∞
+
+σσR
+
+k K1
+
+ aσk σR
+
+
+
+eikθ (F12) This represents the PDF for the ratio of a Gaussian dis-tribution and a Rayleigh distribution in the comoving frame, within the range [ −π, π ]. Substituting a =
+
+p
+
+2 ˜D to find the angular velocity PDF: 
+
+P (ω) = 
+
+p
+
+2 ˜D
+
+2π
+
+> ∞
+
+X
+
+> k=−∞
+
+σσR
+
+k K1
+
+p
+
+2 ˜Dσk σR
+
+!
+
+eikω 
+
+(F13) 17 Here, the variable ω is in the interval [ −π, π ] with units of radians per second (rad/s), as this is an angular velocity. In the case of the PDF of the turning angle α, we need to substitute a =
+
+p
+
+2 ˜D∆t, obtaining: 
+
+P (α, ∆t) = 
+
+p
+
+2 ˜D∆t
+
+2π
+
+> ∞
+
+X
+
+> k=−∞
+
+σσR
+
+k K1
+
+p
+
+2 ˜D∆tσk σR
+
+!
+
+eikα 
+
+(F14) Here, we observe a dependence on the time step ∆ t
+
+chosen for the simulations, as this refers to the turning angle, which will have a different distribution depending on how frequently the dynamics are sampled. For this case, the interval is between [ −π, π ] with units of radians. 
+
+[1] R. Klages, N. Lucero-Azuara, V. Kumar, A. Gentili, P. Torres, C. Eizaguirre, G. Volpe, and V. Palyulin, Mod-elling the movements of organisms: From cell migration to bumblebee flights to foraging sea turtles (2026), book chapter in: L.Giuggioli and P.K.Maini (Eds.), The Math-ematics of Movement: An Interdisciplinary Approach to Mutual Challenges in Animal Ecology and Cell Biology (Springer, Berlin). [2] P. M. Kareiva and N. Shigesada, Analyzing insect move-ment as a correlated random walk, Oecologia 56 , 234 (1983). [3] F. Lenz, A. V. Chechkin, and R. Klages, Constructing a stochastic model of bumblebee flights from experimental data, PLoS ONE 8, e59036/1 (2013). [4] R. Wehner, Desert Navigator: The Journey of an Ant 
+
+(Harvard University Press, Cambridge, Massachusetts, 2020). [5] D. W. Sims, E. J. Southall, N. E. Humphries, G. C. Hays, C. J. A. Bradshaw, J. W. Pitchford, A. James, M. Z. Ahmed, A. S. Brierley, M. A. Hindell, D. Morritt, M. K. Musyl, D. Righton, E. L. C. Shepard, V. J. Wearmouth, R. P. Wilson, M. J. Witt, and J. D. Metcalfe, Scaling laws of marine predator search behaviour, Nature 451 ,1098 (2008). [6] N. Humphries, N. Queiroz, J. Dyer, N. Pade, M. Musy, K. Schaefer, D. Fuller, J. Brunnschweiler, T. Doyle, J. Houghton, G. Hays, C. Jones, L. Noble, V. Wear-mouth, E. Southall, and D. Sims, Environmental context explains l´ evy and brownian movement patterns of marine predators, Nature 465 , 1066 (2010). [7] C. D. Braun, A. D. Penna, M. C. Arostegui, P. Afonso, M. L. Berumen, B. A. Block, C. A. Brown, J. Fontes, M. Furtado, A. J. Gallagher, P. Gaube, W. J. Golet, J. Kneebone, B. C. L. Macena, G. Mucientes, E. S. Orbe-sen, N. Queiroz, B. D. Shea, J. Schratwieser, D. W. Sims, G. B. Skomal, D. Snodgrass, and S. R. Thorrold, Linking vertical movements of large pelagic predators with distri-bution patterns of biomass in the open ocean, PNAS 120 ,e2306357120 (2023). [8] G. Viswanathan, V. Afanasyev, S. Buldyrev, E. Murphy, P. Prince, and H. Stanley, L´ evy flight search patterns of wandering albatrosses, Nature 381 , 413 (1996). [9] A. Edwards, R. Phillips, N. Watkins, M. Freeman, E. Murphy, V. Afanasyev, S. Buldyrev, M. da Luz, E. Ra-poso, H. Stanley, and G. Viswanathan, Revisiting L´ evy flight search patterns of wandering albatrosses, bumble-bees and deer, Nature 449 , 1044 (2007). [10] O. Vilk, M. Charter, S. Toledo, E. Barkai, and R. Nathan, Strong anomalous diffusion for free-ranging birds, PRX Life 3, 033020 (2025). [11] G. Ramos-Fern´ andez, J. L. Mateos, O. Miramontes, G. Cocho, H. Larralde, and B. Ayala-Orozco, L´ evy walk patterns in the foraging movements of spider monkeys (ateles geoffroyi), BES 55 , 223 (2004). [12] N. Ranc, F. Cagnacci, and P. R. Moorcroft, Memory drives the formation of animal home ranges: Evidence from a reintroduction, EL 25 , 716 (2022). [13] P. G. Meyer, A. G. Cherstvy, H. Seckler, R. Hering, N. Blaum, F. Jeltsch, and R. Metzler, Directedeness, cor-relations, and daily cycles in springbok motion: From data via stochastic models to movement prediction, Phys. Rev. Res. 5, 043129 (2023). [14] D. Brockmann, L. Hufnagel, and T. Geisel, The scaling laws of human travel, Nature 439 , 462 (2006). [15] M. C. Gonz´ alez, C. A. Hidalgo, and A.-L. Barab´ asi, Un-derstanding individual human mobility patterns, Nature 
+
+453 , 779 (2008). [16] D. A. Raichlen, B. M. Wood, A. D. Gordon, A. Z. P. Mabulla, F. W. Marlowe, and H. Pontzer, Evidence of L´ evy walk foraging patterns in human hunter–gatherers, PNAS 111 , 728 (2014). [17] R. Kays, M. C. Crofoot, W. Jetz, and M. Wikelski, Ter-restrial animal tracking as an eye on life and planet, Sci-ence 348 , aaa2478 (2015). [18] R. Nathan et al., Big-data approaches lead to an in-creased understanding of the ecology of animal move-ment, Science 375 , eabg1780 (2022). [19] Y. Y. Watanabe and Y. P. Papastamatiou, Biologging and biotelemetry: Tools for understanding the lives and environments of marine animals, Annual Review of Ani-mal Biosciences 11 , 247 (2023). [20] L. Giuggioli and P. Maini, The Mathematics of Move-ment: An Interdisciplinary Approach to Mutual Chal-lenges in Animal Ecology and Cell Biology (Springer Na-ture Switzerland, 2026). [21] V. Cranna, Karl Pearson and Sir Ronald Ross (2015), library, Archive and Open Research Services blog. [22] R. Ross, The logical basis of the sanitary policy of mosquito reduction, Science 22 , 689 (1905). [23] K. Pearson, Mathematical contributions to the theory of evolution - a mathematical theory of random migration, Biometric ser. 3, 54 (1906). [24] K. Pearson, The problem of the random walk, Nature 72 ,294, 342 (1905). [25] F. Reif, Fundamentals of statistical and thermal physics 
+
+(McGraw-Hill, Auckland, 1965). [26] N. van Kampen, Stochastic processes in physics and chemistry (North Holland, Amsterdam, 1992). [27] C. Gardiner, Stochastic Methods: A Handbook for the Natural and Social Sciences , Springer Series in Synerget-18 
+
+ics (Springer, Berlin, 2009). [28] A. Bunde, J. Caro, J. K¨ arger, and G. Vogl, eds., Diffusive Spreading in Nature, Technology and Society (Springer, Berlin, 2018). [29] J. Skellam, Random dispersal in theoretical populations, Biometrika 38 , 196–218 (1951). [30] E. A. Codling, M. J. Plank, and S. Benhamou, Random walk models in biology, J. R. Soc. Interface 5, 813 (2008). [31] T. A. Patterson, A. Parton, R. Langrock, P. G. Black-well, L. Thomas, and R. King, Statistical modelling of individual animal movement: an overview of key meth-ods and a discussion of practical challenges, AStA 101 ,399 (2017). [32] M. Auger-M´ eth´ e, K. Newman, D. Cole, F. Empacher, R. Gryba, A. A. King, V. Leos-Barajas, J. Mills Flem-ming, A. Nielsen, G. Petris, and L. Thomas, A guide to state space modeling of ecological time series, Ecological Monographs 91 , e01470 (2021). [33] R. Glennie, T. Adam, V. Leos-Barajas, T. Michelot, T. Photopoulou, and B. T. McClintock, Hidden Markov models: Pitfalls and opportunities in ecology, Methods Ecol. Evol. 14 , 43 (2023). [34] V. M´ endez, D. Campos, and F. Bartumeus, Stochastic Foundations in Movement Ecology , Springer series in syn-ergetics (Springer, Berlin, 2014). [35] R. Nathan, W. M. Getz, E. Revilla, M. Holyoak, R. Kad-mon, D. Saltz, and P. E. Smouse, A movement ecology paradigm for unifying organismal movement research, PNAS 105 , 19052 (2008). [36] R. Joo, S. Picardi, M. Boone, T. Clay, S. Patrick, V. Romero-Romero, and M. Basille, Recent trends in movement ecology of animals and human mobility, Mov. Ecol. 10 , 26 (2022). [37] P. Langevin, Sur la th´ eorie du mouvement brownien, C.R. Acad. Sci. (Paris) 146 , 530 (1908), see also the English translation in Am. J. Phys. 65 , 1079 (1997). [38] G. E. Uhlenbeck and L. S. Ornstein, On the theory of the brownian motion, Phys. Rev. 36 , 823 (1930). [39] W. Coffey, Y. P. Kalmykov, and J. T. Waldron, The Langevin Equation (World Scientific, Singapore, 2004). [40] C. Fleming, Y. Subasi, and J. Calabrese, Maximum-entropy description of animal movement, Phys. Rev. E 
+
+91 , 032107 (2015). [41] J. M. Nava-Sede˜ no, H. Hatzikirou, R. Klages, and A. Deutsch, Cellular automaton models for time-correlated random walks: Derivation and analysis, Sci. Rep. 7, 16952 (2017). [42] B. G. Mitterwallner, C. Schreiber, J. O. Daldrop, J. O. R¨ adler, and R. R. Netz, Non-markovian data-driven modeling of single-cell motility, Phys. Rev. E 101 , 032408 (2020). [43] P. Dieterich, O. Lindemann, M. L. Moskopp, S. Tauzin, A. Huttenlocher, R. Klages, A. Chechkin, and A. Schwab, Anomalous diffusion and asymmetric tempering mem-ory in neutrophil chemotaxis, PLOS Comput. Biol. 18 ,1 (2022). [44] A. Klimek, D. Mondal, S. Block, P. Sharma, and R. R. Netz, Data-driven classification of individual cells by their non-markovian motion, Biophys. J. 123 , 1173 (2024). [45] R. Klages, Cell migration: Beyond brownian motion, Bio-phys. J. 123 , 1167 (2024). [46] F. Schweitzer, Brownian agents and active particles 
+
+(Springer, Berlin, 2003). [47] P. Romanczuk, M. B¨ ar, W. Ebeling, B. Lindner, and L. Schimansky-Geier, Active brownian particles, Eur. Phys. J. Spec. Top. 202 , 1 (2012). [48] C. Bechinger, R. Di Leonardo, H. L¨ owen, C. Reichhardt, G. Volpe, and G. Volpe, Active particles in complex and crowded environments, Rev. Mod. Phys. 88 , 045006 (2016). [49] F. Schweitzer, An agent-based framework of active mat-ter with applications in biological and social systems, Eur. J. Phys. 40 , 014003 (2019). [50] H. Thurfjell, S. Ciuti, and M. S. Boyce, Applications of step-selection functions in ecology and conservation, Movement Ecology 2, 4 (2014). [51] J. V. Santana-Filho, E. P. Raposo, A. M. S. Macˆ edo, G. L. Vasconcelos, G. M. .Viswanathan, F. Bartumeus, and M. G. E. D. Luz, A langevin dynamics approach to the distribution of animal move lengths, J. Stat. Mech.: Theor. Exp. 2020 , 023406 (2020). [52] R. Gunner et al., High resolution data reveal fundamental steps and turning points in animal movements (2024), preprint, KAUST repository. [53] P. Romanczuk and L. Schimansky-Geier, Brownian mo-tion with active fluctuations, Phys. Rev. Lett. 106 ,230601 (2011). [54] R. Großmann, L. Schimansky-Geier, and P. Romanczuk, Active brownian particles with velocity-alignment and active fluctuations, New J. Phys. 14 , 073033 (2012). [55] J. R. Howse, R. A. L. Jones, A. J. Ryan, T. Gough, R. Vafabakhsh, and R. Golestanian, Self-motile colloidal particles: From directed propulsion to random walk, Phys. Rev. Lett. 99 , 048102 (2007). [56] A. Gentili, R. Klages, and G. Volpe, Anomalous dynam-ics of superparamagnetic colloidal microrobots with tai-lored statistics, Small 21 , e06538 (2025). [57] R. Metzler and J. Klafter, The random walk’s guide to anomalous diffusion: A fractional dynamics approach, Phys. Rep. 339 , 1 (2000). [58] R. Metzler, J.-H. Jeon, A. G. Cherstvy, and E. Barkai, Anomalous diffusion models and their properties: non-stationarity, non-ergodicity, and ageing at the centenary of single particle tracking, Phys. Chem. Chem. Phys. 16 ,24128 (2014). [59] R. Klages, G. Radons, and I. M. Sokolov, eds., Anoma-lous transport: Foundations and Applications (Wiley-VCH, Berlin, 2008). [60] V. Zaburdaev, S. Denisov, and J. Klafter, L´ evy walks, Rev. Mod. Phys. 87 , 483 (2015). [61] J. R. Gomez-Solano and F. J. Sevilla, Active particles with fractional rotational brownian motion, Journal of Statistical Mechanics: Theory and Experiment 2020 ,063213 (2020). [62] B. Dybiec, Multimodality in systems driven by ornstein– uhlenbeck noise, Chaos: An Interdisciplinary Journal of Nonlinear Science 34 (2024). [63] E. P. Peter E. Kloeden, Numerical Solution of Stochastic Differential Equations (Springer, 1992). [64] H. Risken, The Fokker-Planck Equation , 2nd ed. (Springer, Berlin, 1996). [65] N. Developers, Numpy (2008-2024), accessed: 2023-09-22. [66] J. Hogema, waybackmachine (2005), accessed: 2023-09-22. [67] F. H¨ ofling and A. V. Straube, Langevin equations and a geometric integration scheme for the overdamped limit 19 
+
+of rotational brownian motion of axisymmetric particles, Phys. Rev. Res. 7, 043034 (2025). [68] F. Lenz, T. C. Ings, L. Chittka, A. V. Chechkin, and R. Klages, Spatiotemporal dynamics of bumblebees foraging under predation risk, Phys. Rev. Lett. 108 ,098103/1 (2012). [69] A. Datta, C. Beta, and R. Großmann, Random walks of intermittently self-propelled particles, Phys. Rev. Res. 6,043281 (2024). [70] V. Zaburdaev, I. Fouxon, S. Denisov, and E. Barkai, Su-perdiffusive dispersals impart the geometry of underlying random walks, Phys. Rev. Lett. 117 , 270601 (2016). [71] T. V. Dimidov C., Oriolo G., Random walks in swarm robotics: An experiment with kilobots, in Swarm Intel-ligence , Lecture Notes in Computer Science, Vol. 9882, edited by M. e. a. Dorigo (Springer, Cham, 2016) pp. 185–196. [72] R. L. Klatzky, Allocentric and egocentric spatial rep-resentations: Definitions, distinctions, and interconnec-tions, book chapter in: C.Freksa, C. Habel, K.F. Wen-der (Eds.), Spatial Cognition: An Interdisciplinary Ap-proach to Representing and Processing Spatial Knowl-edge (Springer, Berlin, 1998), p.1–17. [73] S. Moraresku and K. Vlcek, The use of egocentric and allocentric reference frames in static and dynamic condi-tions in humans, Physiol Res. 69 , 787 (2020). [74] V. Edvardsen, A. Bicanski, and N. Burgess, Navigating with grid and place cells in cluttered environments, Hip-pocampus 30 , 220 (2020).

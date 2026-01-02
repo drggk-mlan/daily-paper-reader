@@ -1075,7 +1075,8 @@
               const payload = await resp2.json();
               const secret = await decryptSecret(savedPwd, payload);
               window.decoded_secret_private = secret;
-              setMode('full');
+              // 这里不在 setupOverlay 作用域内，直接标记全局访问模式为 full
+              window.DPR_ACCESS_MODE = 'full';
               overlay.classList.add('secret-gate-hidden');
               return;
             } catch (e) {

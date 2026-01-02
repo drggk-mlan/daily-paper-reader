@@ -1,0 +1,1919 @@
+Title: Self-Supervised Amortized Neural Operators for Optimal Control: Scaling Laws and Applications
+
+URL Source: https://arxiv.org/pdf/2512.24897v1
+
+Published Time: Thu, 01 Jan 2026 02:50:32 GMT
+
+Number of Pages: 31
+
+Markdown Content:
+# SELF -S UPERVISED AMORTIZED NEURAL OPERATORS FOR 
+
+# OPTIMAL CONTROL : S CALING LAWS AND APPLICATIONS 
+
+Wuzhe Xu ∗
+
+, Jiequn Han †
+
+, Rongjie Lai ‡
+
+# ABSTRACT 
+
+Optimal control provides a principled framework for transforming dynamical system models into intelligent decision-making, yet classical computational approaches are often too expensive for real-time deployment in dynamic or uncertain environments. In this work, we propose a method based on self-supervised neural operators for open-loop optimal control problems. It offers a new paradigm by directly approximating the mapping from system conditions to optimal control strategies, enabling instantaneous inference across diverse scenarios once trained. We further extend this framework to more complex settings, including dynamic or partially observed environments, by integrating the learned solution operator with Model Predictive Control (MPC). This yields a solution-operator learning method for closed-loop control, in which the learned operator supplies rapid predictions that replace the potentially time-consuming optimization step in conventional MPC. This accelera-tion comes with a quantifiable price to pay . Theoretically, we derive scaling laws that relate gener-alization error and sample/model complexity to the intrinsic dimension of the problem and the reg-ularity of the optimal control function. Numerically, case studies show efficient, accurate real-time performance in low–intrinsic-dimension regimes, while accuracy degrades as problem complexity increases. Together, these results provide a balanced perspective: neural operators are a powerful novel tool for high-performance control when hidden low-dimensional structure can be exploited, yet they remain fundamentally constrained by the intrinsic dimensional complexity in more chal-lenging settings. 
+
+# 1 Introduction 
+
+Optimal control offers a unifying mathematical framework for transforming knowledge of dynamical systems into principled decision-making. It underlies some of the most consequential problems in science and engineering, with applications ranging from robotics [47, 61] and aerospace [7] to finance [11, 18] and drug delivery [13, 63]. Despite its central role, solving optimal control problems remains computationally demanding. Classical methods, such as open-loop approaches based on trajectory optimization or Pontryagin’s Maximum Principle [7, 10], closed-loop feedback schemes derived from the Hamilton–Jacobi–Bellman (HJB) equation [5, 6], and direct methods [21, 29] that convert the problem into parametric optimization problems, as well as more recent deep learning approaches [22, 50, 4, 49], are typically tailored to individual instances and must be recomputed when system parameters or environments change. This heavy computational burden poses a major obstacle for real-time control in dynamic and uncertain settings. Neural operators [43, 45] offer a new opportunity to address this challenge by learning mappings between function spaces, enabling zero-shot inference on new instances without per-instance retraining. In optimal control problems, they have been used to build dynamics surrogates [67], enforce optimality via adjoint or HJB formulations [70, 39], and synthesize stabilizing controllers through backstepping gain kernels [8]. Some of these approaches rely on supervised training with ground-truth optimal policies, which requires expensive data generation from existing solvers, while others avoid this cost by introducing auxiliary surrogate dynamics or reformulated optimality systems. In contrast, our approach avoids both ground-truth datasets and surrogate reformulations: we learn the mapping from environment functions directly to the optimal open-loop control in the original problem formulation, using self-supervised training 
+
+> ∗
+
+W. Xu (xu2224@purdue.edu) is with the department of mathematics, Purdue University. 
+
+> †
+
+J. Han (jhan@flatironinstitute.org) is with the Center for Computational Mathematics, Flatiron Institute. 
+
+> ‡
+
+R. Lai (lairj@purdue.edu) is with the department of mathematics, Purdue University. 
+
+> arXiv:2512.24897v1 [math.OC] 31 Dec 2025
+
+to minimize the cost functional at the model’s predictions [35, 71]. This direct formulation can also be viewed as a form of amortized optimization [2], where a model learns to predict solutions across families of related optimization problems. Once trained, neural operators deliver efficient inference of open-loop optimal control across different problem in-stances for high-performance real-time deployment. However, the prediction accuracy, characterized by generaliza-tion error, still depends on the problem’s intrinsic dimension and regularity, and this dependence is fundamental. A broad line of work shows that many high-dimensional applications admit hidden low-intrinsic-dimensional structure [54, 19, 64] and neural operators can exploit such structure [14, 32, 37] and therefore perform well in these regimes. When such low-intrinsic-dimensional structure is limited or absent, however, neural operator learning encounters the same barriers as classical numerical methods. In our setting, the price to pay for learning a neural operator is its dependence on the intrinsic dimensionality of the control problem, reflecting a new form of Bellman’s curse of dimen-sionality [5]. To quantify this fundamental cost of learning, we provide both theoretical and practical insights. On the theoretical side, we establish scaling laws that quantify the sample and model complexity required to approximate the optimal control operators under varying intrinsic dimensions. On the practical side, we explore numerical case studies that highlight both the remarkable efficiency neural operators can deliver in structured regimes, and the limitations that persist in more complex environments. Taken together, our results offer a balanced perspective: neural operators represent a powerful and versatile tool for optimal control, capable of transforming how control is computed and de-ployed, but their benefits come with structural requirements that fundamentally shape their scope of applicability. By clarifying both the potential and the limits, we aim to shift the discussion from promise alone to a grounded under-standing of what neural operators can and cannot achieve for optimal control, and more generally in other applications of operator learning. 
+
+1.1 Problem Setup 
+
+We start with an open-loop optimal control problem 
+
+u∗(t; B, x0) ∈ arg min  
+
+> u(t)
+
+JB (x(t), u(t)) = 
+
+Z T
+
+> 0
+
+LB (t, x(t), u(t))d t + M (x(T )) (1) subject to the system dynamics  ˙x(t) = f (t, x(t), u(t)) , t ∈ [0 , T ]
+
+x(0) = x0, (2) where x0 ∈ Ω := RD is the initial state, u(t) ∈ S = Rq is the control function lies in the admissible set S, and f
+
+describes the dynamics. LB (t, x(t), u(t)) and M (x(t)) denotes the running cost and terminal cost, respectively. To model variations across problem instances, we introduce an environment function B ∈ C([0 , T ] × Ω) that character-izes the external conditions or task-specific factors of the control problem. For notational simplicity, we let B enter only through the running cost LB ; allowing B to also affect the terminal cost or dynamics introduces no conceptual difficulty and can be handled analogously. As the main body of the paper focuses on the above open-loop optimal control problem, unless otherwise stated, we use the term “optimal control” to refer specifically to this open-loop formulation, which encompasses a broad class of real-world problems, ranging from robotics and autonomous driving to energy systems, biomedical applications, and finance. For instance, in navigation tasks, the environment function B encodes obstacle configurations, and the running cost often combines an energy term with an environment-dependent penalty, 
+
+LB (t, x(t), u(t)) = ℓ(x(t), u(t)) + B(t, x(t)) .
+
+where ℓ(x, u) typically represents an energy function, such as kinetic energy. In this paper, we illustrate such formula-tions through three representative examples (see Section 6). Similar formulations appear in optimal drug dosing [63], where B encodes patient-specific factors such as metabolism rates, sensitivity thresholds, or allowable toxicity levels; in energy systems [58], where B reflects time-varying demand or renewable availability; and in finance [18, 24], where 
+
+B captures market conditions. Consider the solution operator G that maps a problem instance tuple (B, x0) to the corresponding optimal control function: 
+
+G : C([0 , T ] × Ω) × Ω −→ C([0 , T ], S)(B, x0) 7 → u∗(t; B, x0) (3) The major goal of this paper is to parametrize G by a neural operator Gθ . A general bottleneck for neural operator approach is the scarcity of reliable training data. Here we assume that the cost functional JB and dynamics function f
+
+2are known, and we develop a self-supervised, amortized training method. Specifically, given a neural operator Gθ , its output (the predicted control function) can be propagated through the dynamics using a Neural ODE solver to generate the corresponding trajectory. By evaluating this predicted trajectory within the cost functional and minimizing the re-sulting objective, the model can then be trained in self-supervised manner, which will be detailed in Section 2. We then develop a theoretical understanding of the neural scaling laws associated with the proposed operator-learning method, quantifying the sample and model complexity required to approximate optimal control operators across varying in-trinsic dimensions. We note that the proposed learning framework is highly flexible and readily extends to various settings. A particularly important extension is to combine learned operator with Model Predictive Control (MPC) to enable closed-loop control predictions, which will be discussed in Section 5. While many deep reinforcement learning formulations treat the environment condition B as part of the state variable and aim to learn a single policy that generalizes across different B [26, 73, 40], our setting regards B as an external, fixed condition that defines a particular control problem instance. This distinction is more natural from a control per-spective: B characterizes immutable environmental factors that remain unchanged under control, rather than dynamic states to be influenced. Moreover, this treatment enables a clearer theoretical analysis: by conditioning on B, we can investigate the sample complexity and generalization behavior of the learned operator Gθ across problem instances, providing quantitative insights into its ability to adapt to new environments. 
+
+Major Contributions. This work makes the following contributions to the study of neural operator learning for optimal control: • Neural operator formulation of optimal control. We formulate optimal control problems in the amortized operator learning setting, where the mapping from system conditions to optimal strategies is learned directly. The framework leverages system dynamics and the cost functional as self-supervision, enabling learning of optimal controls across problem instances without requiring ground-truth data. • Theoretical scaling laws. We establish sample complexity and approximation guarantees that quantify how the feasibility of neural operator learning depends on the intrinsic dimension and regularity of the control-to-solution map. • Computational trade-offs and structural limits. We characterize the “price to pay” for neural operator learn-ing, identifying regimes where hidden low-dimensional structures enable efficiency and where dimensional complexity dominates. These results highlight both the promise and the limitations of neural operators, clar-ifying when they offer transformative gains and when classical barriers remain. • Extension to closed loop optimal control. We integrate the learned solution operator into a model predictive control framework, yielding an efficient closed-loop controller that adapts to online changes in the environ-ment. • Numerical demonstrations. We provide case studies that showcase the advantages of neural operators for real-time, high-performance control, while also illustrating their limitations in high-dimensional or weakly structured problems. 
+
+1.2 Structure of the Paper 
+
+Section 2 introduces the proposed framework and its amortized training procedure, together with a theoretical guar-antee of optimality. In Section 3, we present the main scaling-law result, which highlights the dependence of neural operator learning on the intrinsic dimension and formalizes our central argument regarding the curse of dimensionality, and Section 4 provides the detailed proof. Section 5 extends the methodology to Model Predictive Control (MPC), enabling the treatment of optimal control problems that require real-time responsiveness. Finally, Section 6 demon-strates the effectiveness of the proposed method through a series of experiments and offers numerical validation of the predicted scaling behavior. 
+
+# 2 Methodology 
+
+In this section, we first present the amortized training framework for obtaining the neural operator, followed by a theoretical guarantee of its optimality. After that, we discuss our training methodology. All notations are provided Table 1 in the appendix. 32.1 Amortized Training 
+
+Let Ω denote the state space. Let ρ ∈ P(Ω) be a probability measure on Ω for the initial state, and μ ∈P(C([0 , T ] × Ω)) be a probability measure on the space of continuous functions C([0 , T ] × Ω) for the environmental function. In many applications (e.g., [54, 19, 64]), the intrinsic dimension of the data is much smaller than the ambient dimension. Adapting this perspective to our setting means that the supports of ρ and μ are effectively low-dimensional relative to Ω and C([0 , T ] × Ω) , respectively. For example, if the environment function B is an obstacle function that can be well approximated by a Gaussian mixture, then B need not be treated as an infinite-dimensional function; instead it can be parameterized by a finite set of mixture parameters (means, covariance matrices, and component weights), yielding a low intrinsic dimension. Consequently, throughout this paper we assume that ρ is supported on a 
+
+d-dimensional Riemannian submanifold X ⊂ Ω, and that μ is supported on a k-dimensional Riemannian submanifold 
+
+M ⊂ C([0 , T ] × Ω) (see Assumption 1 for the precise statement). We then consider the following amortized training: 
+
+G∗ = arg min  
+
+> G
+
+R(G) = arg min  
+
+> G
+
+EB∼μEx0∼ρJB (x(t), G(B, x0)) 
+
+s.t. 
+
+ ˙x(t) = f (t, x(t); G(B, x0)( t)) , t ∈ [0 , T ]
+
+x(0) = x0
+
+(4) This optimization problem is the central focus of our work. Our first result, Theorem 1, shows that the minimizer of the empirical version (7) coincides almost everywhere (with respect to μ × ρ) with the true solution operator. 
+
+Theorem 1. If G∗ is obtained by solving the amortized training problem (4) , then G∗ is a solution operator up to measure zero sets with respect to measure ν = ρ × μ. That is, for ν−almost every pair (B, x0),
+
+G∗(B, x0)( t) = u∗(t) ∈ arg min  
+
+> u(t)
+
+JB (x(t), u(t)) ,
+
+with x(t) satisfying (2) .
+
+The proof of theorem 1 directly follows the idea of Theorem 4.3 in [28]. 
+
+Proof. Let S = {(B, x0)|G ∗(B, x0) > arg min u JB (x(t), u) and x(t) satisfying (2) } and denote its complement 
+
+Sc = (C([0 , T ] × Ω) × Ω) \ S. Consider another operator ˆG such that ˆG| Sc = G∗|Sc and ˆG(B, x0) ∈
+
+arg min u JB (x(t), u) with x(t) satisfying (2), ∀(B, x0) ∈ S. Now suppose ν(S) > 0, which implies 
+
+EB∼μEx0∼ρJB (x(t), G∗(B, x0)) = 
+
+Z
+
+> S
+
+JB (x(t), G∗(B, x0))d ν(B, x0) + 
+
+Z
+
+> Sc
+
+JB (x(t), G∗(B, x0))d ν(B, x0),>
+
+Z
+
+> S
+
+JB (x(t), ˆG(B, x0))d ν(B, x0) + 
+
+Z
+
+> Sc
+
+JB (x(t), ˆG(B, x0))d ν(B, x0),
+
+= EB∼μEx0∼ρJB (x(t), ˆG(B, x0)) ,
+
+This result implies that ˆG achieves strictly smaller population risk than G∗, contradicting the optimality of G∗ for the amortized training problem (4). Thus ν(S) = 0 .
+
+2.2 Training Algorithm 
+
+We generate a training set by drawing i.i.d. tasks (Bi, xi
+
+> 0
+
+) ∼ μ × ρ for i = 1 , . . . , n , yielding Γ = {(Bi, xi
+
+> 0
+
+)}ni=1 . Our goal is to approximate the target solution operator G∗ using a neural network Gθ drawn from a hypothesis class G . For the purposes of analysis, we focus on deep ReLU networks. We emphasize, however, that the proposed framework is compatible with a wide range of network architectures in practical implementations. We specify deep ReLU networks as follows. For a given input z ∈ Rn0 , an l-layer, ReLU neural network is defined as follows 
+
+glθ (z) = Wl · ReLU  Wl−1 · · · ReLU  W1z + b1
+
+ · · · + bl−1
+
+ + bl. (5) For each hidden layer i = 1 , 2, . . . , l − 1, the weight matrix and bias vector are denoted by Wi ∈ Rni×ni−1 and 
+
+bi ∈ Rni , respectively, where ni represents the width of layer i. The overall width of the network is defined as 
+
+p = max  
+
+> i∈{ 1,2,...,l −1}
+
+ni, (6) and all trainable parameters are collected in θ = {W1, b1, W 2, b2, . . . , W l, bl}.4Because the cost functional and dynamics depend on trainable parameters θ only through the neural operator Gθ , we will use two equivalent forms throughout: the parameter form for optimization and the operator form for theoretical analysis. Specifically, we define following empirical loss function on training set Γ:
+
+L(θ; Γ) = RΓ(Gθ ) = 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+JBi
+
+ xiθ (t), Gθ (Bi, xi
+
+> 0
+
+) (7) subject to ( ˙xiθ (t) = f  t, xiθ (t); Gθ (Bi, xi
+
+> 0
+
+)( t) , t ∈ [0 , T ],
+
+xiθ (0) = xi
+
+> 0
+
+. (8) Here the dynamics are modeled using a neural ODE [16] and xiθ (t) denotes the trajectory obtained by solving the dynamics 8 with the control generated by the network Gθ . In the parameter form, the optimal network parameters are obtained by minimizing the empirical loss: 
+
+θ∗ = arg min  
+
+> θ
+
+L(θ; Γ) , (9) Equivalently, in operator form, the empirical risk minimizer within the deep ReLU network class G for the training set 
+
+Γ is given by 
+
+GΓ; θ∗ = arg min   
+
+> Gθ∈G
+
+RΓ(Gθ ). (10) The overall training procedure is summarized in Algorithm 1. 
+
+Algorithm 1 Self-Supervised Amortized Training 
+
+Require: Training dataset Γ = {(Bi, xi
+
+> 0
+
+)}ni=1 ∈ M × X , number of epochs N , batch size Bs. 
+
+> 1:
+
+Initialize network parameters θ 
+
+> 2:
+
+for epoch = 1 to N do  
+
+> 3:
+
+Shuffle Γ 
+
+> 4:
+
+for each mini-batch {(Bj , xj
+
+> 0
+
+)}Bs 
+
+> j=1
+
+from Γ do  
+
+> 5:
+
+Simulate trajectories by solving the neural ODE with controls generated by Gθ
+
+˙xjθ (t) = f t, xjθ (t); Gθ (Bj , xj
+
+> 0
+
+)( t), xjθ (0) = xj
+
+> 0
+
+, j = 1 , · · · , B s. 
+
+> 6:
+
+Compute the empirical loss L(θ) on the mini-batch and obtain ∇θ L(θ) by backpropagating through the ODE solver in PyTorch [55], and then update θ using Adam.  
+
+> 7:
+
+end for  
+
+> 8:
+
+end for  
+
+> 9:
+
+return Trained model GΓ; ˜θ∗
+
+We remark that in the above algorithm, we assume a fixed dataset Γ and train for N epochs. When the computational cost of sampling (B, x0) from M × X is low, one can instead generate fresh samples in each batch. This is effectively equivalent to using a dataset of size nN , with each sample seen only once. Such a procedure may improve performance by reducing generalization error, but it only increases the total sample size by a constant factor and does not affect the exponential complexity presented below. To avoid unnecessary complications in analysis, we present the algorithm using a fixed dataset. Additionally, if the state x lives in high dimension and the neural ODE requires a small time step for stability and accuracy, one can instead employ the adjoint method for Neural ODEs [16] to compute gradients while substantially reducing memory usage (at the expense of additional computation from solving an associated adjoint ODE backward in time). 
+
+# 3 Scaling Law of Generalization Error 
+
+This section dedicates to analyzing the generalization error of the solution operator GΓ; θ∗ obtained from (10) given a training dataset Γ = {(Bi, xi
+
+> 0
+
+)}ni=1 . More precisely, we study the error bound for the generalization error 
+
+EΓ[R(GΓ; θ∗ ) − R (G∗)] , where the excess risk of the empirical minimizer: 
+
+R(G∗) − R (GΓ; θ∗ ) = EB∼μEx0∼ρ(JB (x(t), G∗(B, x0)) − JB (x(t), GΓ; θ∗ (B, x0))) (11) quantifies the performance gap on unseen tasks with x0 ∼ ρ and B ∼ μ. Note that, in practice, the trained operator 
+
+GΓ; ˜θ∗ obtained from Algorithm 1 generally differs from the empirical risk minimizer GΓ; θ∗ due to optimization error. 5In the following generalization error analysis, we focus on the latter, GΓ; θ∗ , a global minimizer from the empirical training loss. It is worth noting that the gap between the practically obtained operator GΓ; ˜θ and the empirical loss min-imizer GΓ; θ∗ may, in principle, be controlled under additional assumptions on the optimizer and the training dynamics. However, characterizing this error rigorously is substantially more challenging and remains an open problem, lying beyond the scope of the present work. In general, the solution operator (3) of the optimal control problem is a map acting between infinite-dimensional function spaces. From a learning perspective, directly approximating such an operator is challenging unless addi-tional structure is present. Recent theoretical analyses of deep neural networks and neural operators demonstrate that sample and model complexity typically scale with the intrinsic dimension of the input space, rather than its ambient dimension. Motivated by this observation, we assume that the distributions of the inputs are supported on low-dimensional manifolds: the initial-state distribution ρ is supported on a d-dimensional Riemannian submanifold 
+
+X ⊂ Ω, and the distribution μ of the environment field B is supported on a k-dimensional Riemannian submanifold 
+
+M ⊂ C([0 , T ] × Ω) . This assumption is natural in many applications. The region of interest for initial conditions often lies in a lower-dimensional subset of the ambient state space (for example, physically realizable configurations or states constrained by conservation laws), and the environment B is typically governed by only a few parameters—such as temperature profiles, material coefficients, boundary conditions, or forcing amplitudes—despite being represented as a high-dimensional function. Consequently, although the operator G is formally defined on infinite-dimensional do-mains, the effective domain encountered in practice is finite-dimensional, making operator learning both meaningful and tractable. This leads to the following low-dimension manifold assumption. 
+
+Assumption 1 (Low-dimensional bounded manifold) . We consider that the initial-state distribution ρ is supported on a d-dimension Riemannian manifold X ⊂ Ω = RD and environment distribution μ is supported on a k-dimension Riemannian manifold M ⊂ C([0 , T ] × Ω) . Both X and M have reach τ > 0. Moreover, there exists a constant 
+
+E > 0 such that, for any (B, x0) ∈ M × X , we have 
+
+|(x0)j | ≤ E for all j = 1 , . . . , D, and |B(x)| ≤ E for all x ∈ Ω.
+
+Our goal is to characterize how the generalization error 11 and network complexity depend on the intrinsic dimen-sions of the manifolds X and M, thereby revealing the impact of the curse of dimensionality. We begin by stating assumptions. 
+
+Assumption 2 (Lipschitz continuity) . We assume L and M defined in (1) and f defined in (2) are Lipschitz continuous. More precisely, we have: 
+
+|L(t, x, u, B ) − L(t′, x′, u′, B ′)| ≤ LLt |t − t′| + LL 
+
+> x
+
+∥x − x′∥∞ + LL 
+
+> u
+
+∥u − u′∥∞, (12) 
+
+|M (x) − M (x′)| ≤ LM ∥x − x′∥∞, (13) 
+
+|f (t, x; u) − f (t′, x′; u′)| ≤ Lf 
+
+> t
+
+|t − t′| + Lfx∥x − x′∥∞ + Lfu∥u − u′∥∞. (14) These Lipschitz continuity assumptions are standard and are satisfied in many practical settings, for example, in the numerical experiments we present later on obstacle avoidance, maze navigation, and the unicycle model. As a result, there exist a LJ > 0, depending only on the Lipschitz constants LL 
+
+> x
+
+, LL 
+
+> u
+
+, LM , Lfx, Lfu and T in (1), such that 
+
+sup 
+
+> B, x0
+
+|JB (x(t), u) − JB (x′(t), u′)| ≤ LJ ∥u − u′∥∞
+
+We further assume a regularity condition on the control, stated below. 
+
+Assumption 3 (Regularity of control) . For all x0 ∈ X and B ∈ M , we assume the optimal control function 
+
+u∗(t; B, x0) ∈ H s,α (R+ × X × M ), with positive integer s and α > 0.
+
+Assumption 4 (Uniform boundedness of the cost functional) . We assume that for all (B, x0) ∈ M × X and all parameters θ, let x(t) be the trajectory driven Gθ according to the dynamics described in (2) , |JB (x(t), Gθ (B, x0)) | ≤ 
+
+RJ holds uniformly. 
+
+In addition, we specify below the class of neural networks that defines the hypothesis space over which the empirical loss is optimized. 
+
+Definition 1 (Bounded ReLU Network Class) . We denote F (R, κ, l, p, K ) as a class of ReLU networks expressed as 
+
+(5) with depth l, width bounded by p, bounded weight parameters and bounded output, that is for g ∈ F (R, κ, l, p, K ),
+
+f (z) satisfies (z = ( t, B, x0)) 
+
+∥g∥∞ ≤ R, ∥Wi∥∞,∞ ≤ κ, ∥bi∥∞ ≤ κ for i = 1 , . . . , l, 
+
+> l
+
+X
+
+> i=1
+
+∥Wi∥0 + ∥bi∥0 ≤ K. 
+
+6Definition 2 (Bounded Vector-Valued ReLU Network Class) . For q ∈ N, we denote by G (q, R, κ, l, p, K ) the class of 
+
+q-dimensional ReLU networks whose components belong to F (R, κ, l, p, K ). That is, for G ∈ G (q, R, κ, l, p, K ),
+
+G(z) =  g1(z), . . . , g q (z)⊤, z = ( t, B, x0),
+
+where each gi ∈ F (R, κ, l, p, K ) for i = 1 , . . . , q .
+
+Under these assumptions, we can now establish the following generalization error bound. 
+
+Theorem 2 (Generalization Error) . Given a training set Γ = {(Bi, xi
+
+> 0
+
+)}ni=1 ∈ M × X , there exists a neural operator GΓ; θ∗ in ReLU network class G (q, R, κ, l, p, K ) with l = eO( s+αd+k+2( s+α) log n), p = eO(n d+k 
+
+> 2( α+s)+ d+k
+
+),
+
+K = eO
+
+ 
+
+> s+α
+> 2( s+α)+ d+k
+
+n 
+
+> d+k
+> 2( s+α)+ d+k
+
+log n
+
+
+
+and κ = O(max {1, E, √d + k, τ 2}), such that 
+
+EΓ[R(GΓ; θ∗ ) − R (G∗)] ≤ C1
+
+r
+
+n− 2( s+α) 
+
+> d+k+2( s+α)
+
++ D + kn log 32 n + C2
+
+r log nn + C3n− s+αd+k+2( s+α) ,
+
+where C1 is a constant depends on q, R J , E, LJ , log D, d, k, τ, α and s; C2 is a constant depends on α and s; and C3
+
+is a constant depends on LM , Lf , LL, C f , R and T .
+
+This theorem characterizes how the sample and model complexities scale with the intrinsic dimensions d and k,together with the regularity parameters α and s of the control function, when deep ReLU networks are used as the hypothesis class. A key insight is that although the ambient spaces in which the state and environment reside may be extremely high dimensional or even infinite dimensional, the relevant quantities to be inferred often lie on low dimensional manifolds. In particular, the initial state x0 may vary only over a d dimensional submanifold X ⊂ RD ,and the environment parameter B, though formally an element of a function space of infinite ambient dimension, may in practice be parameterized by a k dimensional manifold M ⊂ C([0 , T ] × Ω) . This theorem makes this geometric structure precise: the sample and model complexities depend only on the intrinsic dimensions d and k, and not on the ambient dimensions of the state space or function space. This provides formal evidence that neural networks can overcome the curse of ambient dimensionality. At the same time, the result highlights an equally important phenomenon. The rate n s+αd+k+2( s+α) shows that the sample complexity deteriorates exponentially with the total intrinsic dimension d + k. This reflects an unavoidable curse of intrinsic dimensionality: as the manifolds X and M become higher dimensional, learning the optimal control operator necessarily becomes more difficult. This dependence is a fundamental cost of achieving computational efficiency in operator learning for optimal control. The complete proof is provided in Section 4. 
+
+# 4 Proof of Main Theorem 
+
+This section provides detailed proof of the main theorem. We begin with a sketch of the proof. Note that the excess risk of the empirical minimizer GΓ; θ∗ trained on a dataset Γ can be decomposed as: 
+
+0 ≤ R (GΓ; θ∗ ) − R (G∗) = R(GΓ; θ∗ ) − R Γ(GΓ; θ∗ ) + RΓ(GΓ; θ∗ ) − R Γ(Gˆθ ) + RΓ(Gˆθ ) − R (Gˆθ ) + R(Gˆθ ) − R (G∗)
+
+≤ R(GΓ; θ∗ ) − R Γ(GΓ; θ∗ ) + RΓ(Gˆθ ) − R (Gˆθ ) + R(Gˆθ ) − R (G∗) (15) where Gˆθ is an approximator that we will construct on the hypothesis class and the inequality (15) follows the fact that 
+
+RΓ(GΓ; θ∗ ) = min   
+
+> Gθ∈G
+
+RΓ(G) ≤ R Γ(Gˆθ ).
+
+Therefore, the generalization error can be decomposed into three parts: 
+
+EΓ(R(GΓ; θ∗ ) − R (G∗)) ≤ EΓ(R(GΓ; θ∗ ) − R Γ(GΓ; θ∗ )) 
+
+| {z }
+
+> I
+
++ EΓ(RΓ(Gˆθ ) − R (Gˆθ )) 
+
+| {z }
+
+> II
+
++ ( R(Gˆθ ) − R (G∗)) 
+
+| {z }
+
+> III
+
+(16) where I, II correspond to the statistic errors and III characterizes approximation error. In the rest of this section, we derive bounds for each component and then combine them to complete the proof. 74.1 Approximation Error Term III First, we analyze the approximation error term III in the decomposition (16), which reflects the inherent approximation capability of the hypothesis class. As a first step, we establish the following ODE stability result. 
+
+Lemma 1. Consider two ODEs with the same initial condition: 
+
+dx
+
+dt = f (t, x; u(t, x)) , x(0) = x0,dy
+
+dt = f (t, y; v(t, y)) , y(0) = x0,
+
+where we assume that ∥v(t, x) − u(t, x)∥∞ ≤ ϵ uniformly and that f is Lipschitz continuous in x and u with constant 
+
+Lfx and Lfu, respectively. Then 
+
+∥x(t) − y(t)∥∞ ≤ Cf (eLfxt − 1) ϵ. 
+
+where Cf = Lfu/Lfx.Proof. Let δ(t) := x(t) − y(t). Then, 
+
+dδ dt = dx
+
+dt − dy
+
+dt = f (t, x; u(t, x)) − f (t, y; v(t, y)) .
+
+We add and subtract f (t, y; u(t, x)) :
+
+dδ dt = f (t, x; u(t, x)) − f (t, y; u(t, x)) + f (t, y; u(t, x)) − f (t, y; v(t, y)) 
+
+Taking norms, By the Lipschitz continuity of f , we get: 
+
+dδ dt ∞
+
+≤ bL fx∥δ(t)∥∞ + Lfuϵ. 
+
+This gives a differential inequality: 
+
+ddt ∥δ(t)∥∞ ≤ bL fx∥δ(t)∥∞ + Lfuϵ. 
+
+Applying Gr¨ onwall’s inequality: 
+
+∥x(t) − y(t)∥∞ ≤ Lfuϵ
+
+Z t
+
+> 0
+
+ebL fx(t−s)ds = Lfu
+
+ebL fxt − 1
+
+bL fx
+
+ϵ. 
+
+The stability estimate in Lemma 1 allows us to quantify how errors in approximating the control function translate into trajectory deviations and, consequently, into errors in the cost functional, leading to the following approximation error analysis. 
+
+Lemma 2 (Approximation error) . For any ϵ ∈ (0 , 1) , there exists a ReLU network class G (R, κ, l, p, K ) with L =
+
+eO(log 1 
+
+> ϵ
+
+), p = eO(ϵ− dα+s ) and K = eO
+
+
+
+ϵ− ds+α log 1 
+
+> ϵ
+
++ ( D + k) log 1
+
+> ϵ
+
+
+
+, such that for any G∗, there exists a choice of weight parameters yielding a neural operator Gˆθ such that 
+
+R(Gˆθ ) − R (G∗) ≤ eCIII ϵ, (17) 
+
+where eCIII is a constant depends on LM , Lf , LL, C f and T .Proof. Theorem 1 in [15] provides an approximation error estimate for scalar functions using ReLU networks. Our target, however, is a q-dimensional function, 
+
+G∗(B, x0)( t) =  g∗ 
+
+> 1
+
+(B, x0, t ), . . . , g ∗ 
+
+> q
+
+(B, x0, t )⊤ ∈ Rq .
+
+Since each component g∗ 
+
+> i
+
+can be approximated by a ReLU network in F (R, κ, l, p, K ), we may use q such net-works to construct a vector-valued network in G (q, R, κ, l, p, K ). Therefore, for any ϵ ∈ (0 , 1) , there exists 
+
+Gˆθ ∈ G (q, R, κ, l, p, K ) such that each component satisfies 
+
+∥g∗ 
+
+> i
+
+(B, x0, t ) − gˆθ,i (B, x0, t )∥∞ ≤ ϵ, i = 1 , . . . , q. 
+
+8Consequently, 
+
+∥G ˆθ (B, x0)( t) − G ∗(B, x0)( t)∥∞,∞ = max  
+
+> 1≤i≤q
+
+∥gˆθ,i (B, x0, t ) − g∗ 
+
+> i
+
+(B, x0, t )∥∞ ≤ ϵ. (18) And such network has at most K ≤ c2(ϵ−(d+k)/n log 1 
+
+> ϵ
+
++D log 1 
+
+> ϵ
+
++D log D) neurons and weight parameters. Assume that 
+
+{xˆθ (t) | t ∈ [0 , T ]} satisfy 
+
+ ˙xˆθ (t) = f (t, xˆθ (t); Gˆθ (B, x0)( t)) , t ∈ [0 , T ]
+
+xˆθ (0) = x0
+
+(19) and 
+
+{x∗(t) | t ∈ [0 , T ]} satisfy 0
+
+ ˙x∗(t) = f (t, x∗(t); G∗(B, x0)( t)) , t ∈ [0 , T ]
+
+x∗(0) = x0
+
+(20) Then, for any x0 ∼ X , B ∼ M we have 
+
+|JB (x∗(t), G∗(B, x0)) −JB (xˆθ (t), Gˆθ (B, x0)) | (21) 
+
+≤
+
+Z T
+
+> 0
+
+|L(t, xˆθ (t), Gˆθ (B, x0), B ) − L(t, x∗(t), G∗(B, x0), B )|dt + |M (x(T )) − M (y(T )) |≤
+
+Z T
+
+> 0
+
+LL 
+
+> x
+
+∥xˆθ (t) − x∗(t)∥∞dt +
+
+Z T
+
+> 0
+
+LL 
+
+> u
+
+ϵdt +
+
+Z T
+
+> 0
+
+LB ∥xˆθ (t) − x∗(t)∥∞dt + LM ∥xˆθ (T ) − x∗(T )∥∞
+
+≤
+
+Z T
+
+> 0
+
+LL 
+
+> x
+
+Cf (eLfxt − 1) ϵdt +
+
+Z T
+
+> 0
+
+LL 
+
+> u
+
+ϵdt +
+
+Z T
+
+> 0
+
+LB Cf (eLfxt − 1) ϵdt + LM Cf (eLfxT − 1) ϵ
+
+≤ eCIII ϵ, (22) where eCIII is a constant depends on LM , Lf , LL, C f and T . From Jensen’s inequality, we have 
+
+R(Gˆθ ) − R (G∗) = |R (Gˆθ ) − R (G∗)| ≤ Ex0∼ρEB∼μ JB (x(t), G∗(B, x0)) − JB (x(t), Gˆθ (B, x0)) ≤ eCIII ϵ. (23) 
+
+4.2 Statistic Error Term IWe first bound term I in (16), which measures the deviation between the population risk and the empirical risk eval-uated at the empirical minimizer GΓ; θ∗ . We introduce the following notation. Given a training data pair (B, x0), the network Gθ produces a trajectory via neural ODE T (B, x0, Gθ ) = {x(t) | t ∈ [0 , T ]} satisfying 
+
+ ˙x(t) = f (t, x(t); Gθ (B, x0)( t)) , t ∈ [0 , T ]
+
+x(0) = x0
+
+(24) We further define the composed functional F ◦T (B, x0, Gθ ) := JB (x(t), Gθ (B, x0)) . The covering number estimation of the function class (F ◦ T )θ can then be estimated by the following Lemma 3, which is a direct consequence of Lemma 5 in [15] together with Assumption 2. 
+
+Lemma 3 (Covering number estimation) . For Gθ ∈ G (q, R, κ, l, p, K ), given δ > 0, we have the following convering number estimation: 
+
+N (δ, (F ◦ T )θ , ∥ · ∥ L∞,∞) ≤ N ( δ
+
+LJ , Gθ , ∥ · ∥ L∞(t,B, x0),∞) ≤
+
+ 2l2(pE + 2) κl pl+1 
+
+δ/ LJ
+
+qK 
+
+. (25) Combining this estimate with Assumption 4, we obtain Lemma 4, which establishes a bound for the statistical error term I in the decomposition (16). 
+
+Lemma 4 (Estimation of error term I in (16)) . For Gθ ∈ G (q, R, κ, l, p, K ), under the assumption 4, that is 
+
+|JB (x(t), Gθ (B, x0)) | ≤ RJ uniformly, given a training set Γ = {(Bi, xi
+
+> 0
+
+)}ni=1 ∈ X × M , we have 
+
+EΓ(R(GΓ; θ∗ ) − R Γ(GΓ; θ∗ )) ≤ RJ
+
+√n
+
+r
+
+qK log( 2l2(pE + 2) κl pl+1 LJ √nR ). (26) 
+
+Further, for any ϵ > 0, let l = eO(log 1 
+
+> ϵ
+
+), p = eO(ϵ− d+kα+s ), K = eO
+
+
+
+ϵ− d+ks+α log 1 
+
+> ϵ
+
++ D log 1
+
+> ϵ
+
+
+
+and κ =
+
+O(max {1, E, √d + k, τ 2}), we then have 
+
+EΓ(R(GΓ; θ∗ ) − R Γ(GΓ; θ∗ )) ≤ eCI
+
+√n
+
+r
+
+(ϵ− d+ks+α + D) log 3 1
+
+ϵ , (27) 
+
+Where eCI is a constant depends on RJ , E, LJ , log D, d, k, τ and s.
+
+9Proof. The error term I in (16) can be bounded by 
+
+EΓ(R(GΓ; θ∗ ) − R Γ(GΓ; θ∗ )) ≤ EΓ sup  
+
+> Gθ∈G
+
+(R(Gθ ) − R Γ(Gθ )) .
+
+Based on Lemma 26.2 in [59], we have 
+
+EΓ sup  
+
+> Gθ∈G
+
+(R(Gθ ) − R Γ(Gθ )) ≤ 2EΓ[Rad( F ◦ T ◦ Γ)] .
+
+Given a training set Γ = {(Bi, xi
+
+> 0
+
+)}ni=1 ∈ X × M , we define the Rademacher complexity of F ◦ T with respect to the training data set Γ as 
+
+Rad( F ◦ T ◦ Γ) := 1
+
+n Eξ∼{± 1}n
+
+"
+
+sup  
+
+> Gθ∈G
+> n
+
+X
+
+> i=1
+
+ξiJBi (xi(t), Gθ (xi
+
+> 0
+
+, B i)) 
+
+#
+
+. (28) By Dudley entropy integral [20], we have 
+
+EΓ[Rad( F ◦ T ◦ Γ)] ≤ inf  
+
+> σ> 0
+
+2σ + 12 
+
+√n
+
+Z RJ
+
+> σ
+
+plog N (δ, F ◦ T , ∥ · ∥ L∞ ) dδ 
+
+!
+
+. (29) By lemma 3, we have 
+
+EΓ[Rad( F ◦ T ◦ Γ)] ≤ inf  
+
+> σ> 0
+
+2σ + 12 
+
+√n
+
+Z RJ
+
+> σ
+
+plog N (δ, F ◦ T , ∥ · ∥ L∞ ) dδ 
+
+!
+
+(30) 
+
+≤ inf  
+
+> σ> 0
+
+2σ + 12 
+
+√n
+
+Z RJ
+
+> σ
+
+s
+
+qK log 
+
+ 2l2(pE + 2) κl pL+1 LJ
+
+δ
+
+
+
+dδ 
+
+!
+
+(31) 
+
+≤ inf  
+
+> σ> 0
+
+2σ + 12 
+
+√n RJ
+
+s
+
+qK log 
+
+ 2l2(pE + 2) κl pl+1 LJ
+
+σ
+
+!
+
+(32) 
+
+≤ RJ
+
+√n 12 
+
+r
+
+qK log( 2l2(pE + 2) κl pl+1 LJ √nR ) + 2 
+
+!
+
+. (33) Note (33) is obtained by using σ = RJ 
+
+> √n
+
+in (32). Since l = eO(log 1 
+
+> ϵ
+
+), p = eO(ϵ− dα+s ) and K =
+
+eO
+
+
+
+ϵ− ds+α log 1 
+
+> ϵ
+
++ D log 1
+
+> ϵ
+
+
+
+, we have 
+
+log l = eO(log log 1
+
+ϵ ), log( pE + 2) = eO(log 1
+
+ϵ ), l log κ = eO(log 1
+
+ϵ log κ), (l + 1) log p = eO(log 2 1
+
+ϵ ),
+
+which implies 
+
+log( 2l2(pE + 2) κl pl+1 LJ √nRJ ) = 2 log l + log( pE + 2) + l log κ + ( l + 1) log p + log √n + log LJ
+
+RJ ,
+
+= eO(log n + log 2 1
+
+ϵ ), (34) and 
+
+K log( 2l2(pE + 2) κl pl+1 LJ √nRJ ) = eO
+
+
+
+log 1 
+
+> ϵ
+
+(ϵ− ds+α + D)(log n + log 2 1
+
+ϵ )
+
+
+
+. (35) By plugging (34) and (35) into (33), we have 
+
+RJ
+
+√n 12 
+
+r
+
+qK log( 2l2(pE + 2) κl pl+1 LJ √nR ) + 2 
+
+!
+
+≤ eCI
+
+√n
+
+r
+
+(ϵ− ds+α + D) log 3 1
+
+ϵ
+
+where eCI depends on q, R J , E, LJ , log D, d, k, τ and s.10 4.3 Statistic Error Term II We now turn to the analysis of the statistical error term II in the decomposition (16). Using concentration inequalities, we obtain the following bound. 
+
+Lemma 5 (Statistic error term II in (16)) .
+
+EΓ(R(GΓ; θ∗ ) − R Γ(GΓ; θ∗ )) ≤ (1 − ϵ)
+
+r 2 log(1 /ϵ )
+
+n + 2 ϵR J .
+
+Proof. Note that 
+
+EΓ(R(GΓ; θ∗ ) − R Γ(GΓ; θ∗ )) ≤ EΓ sup  
+
+> Gθ∈G
+
+(R(Gθ ) − R Γ(Gθ )) .
+
+Based on Hoeffding’s inequality, since |JB (x0, Gθ (B, x0)) | ≤ RJ uniformly, we have, for any t > 0
+
+P(RΓ(Gˆθ ) − R (Gˆθ ) ≥ t) ≤ e− t2n  
+
+> 2( RJ)2
+
+. (36) Let ϵ = e− t2n  
+
+> 2( RJ)2
+
+, we have that with probability 1 − ϵ,
+
+RΓ(Gˆθ ) − R (Gˆθ ) ≤ RJ
+
+r 2 log(1 /ϵ )
+
+n . (37) Therefore, we have 
+
+EΓ[RΓ(Gˆθ ) − R (Gˆθ )] ≤ (1 − ϵ)
+
+r 2 log(1 /ϵ )
+
+n + ϵ(2 RJ ). (38) 
+
+4.4 Proof of Theorem 2 
+
+Proof. To prove the theorem, we first decompose the generalization error into three terms. Given a training set 
+
+Γ = {(Bi, xi
+
+> 0
+
+)}ni=1 ∈ M × X , note that the empirical risk of the optimal operator in G using sample Γ satisfies 
+
+RΓ(GΓ; θ∗ ) = min Gθ ∈G RΓ(G) ≤ R Γ(Gˆθ ), we then decompose the generalization error as: 
+
+0 ≤ R (GΓ; θ∗ ) − R (G∗) ≤ R(GΓ; θ∗ ) − R Γ(GΓ; θ∗ ) + RΓ(Gˆθ ) − R (Gˆθ ) + R(Gˆθ ) − R (G∗) (39) Therefore, we have 
+
+EΓ(R(G∗) − R (GΓ; θ∗ )) ≤ EΓ(R(GΓ; θ∗ ) − R Γ(GΓ; θ∗ )) 
+
+| {z }
+
+> I:statisticerror
+
++ EΓ(RΓ(Gˆθ ) − R (Gˆθ )) 
+
+| {z }
+
+> II:statisticerror
+
++ ( R(Gˆθ ) − R (G∗)) 
+
+| {z }
+
+> III:approximationerror
+
+(40) For any ϵ ∈ (0 , 1) , from Lemma 4, there exists a neural operator GΓ; θ∗ in ReLU network class G (q, R, κ, l, p, K ) with 
+
+l = eO(log 1 
+
+> ϵ
+
+), p = eO(ϵ− d+kα+s ), K = eO
+
+
+
+ϵ− d+ks+α log 1 
+
+> ϵ
+
++ ( D + k) log 1
+
+> ϵ
+
+
+
+and κ = O(max {1, E, √d + k, τ 2}), such that 
+
+EΓ(R(GΓ; θ∗ ) − R Γ(GΓ; θ∗ )) ≤ eCI
+
+√n
+
+r
+
+(ϵ− d+ks+α + D) log 3 1
+
+ϵ . (41) For the same choice of ϵ, Lemma 5 yields 
+
+EΓ(R(GΓ; θ∗ ) − R Γ(GΓ; θ∗ )) ≤ (1 − ϵ)
+
+r 2 log(1 /ϵ )
+
+n + 2 ϵR. (42) Moreover, Lemma 2 provides 
+
+R(Gˆθ ) − R (G∗) ≤ eCIII ϵ. (43) By plugging (41), (42) and (43) into (40), we obtain 
+
+EΓ[R(GΓ; θ∗ ) − R (G∗)] ≤ eCI
+
+√n
+
+r
+
+(ϵ− d+ks+α + D + k) log 3 1
+
+ϵ + (1 − ϵ)
+
+r 2 log(1 /ϵ )
+
+n + ( eCIII + 2 R)ϵ. (44) 11 By picking ϵ2 = 1
+
+n ϵ− d+ks+α , i.e. ϵ = n− s+αd+k+2( s+α) , then the size of the ReLU network becomes L =
+
+eO( s+αd+k+2( s+α) log n), p = eO(n d+k 
+
+> 2( α+s)+ d+k
+
+) and K = eO
+
+ 
+
+> s+α
+> 2( s+α)+ d+k
+
+n 
+
+> d+k
+> 2( s+α)+ d+k
+
+log n
+
+
+
+, and we have 
+
+eCI
+
+√n
+
+s
+
+ϵ− d+ks+α + D + k
+
+
+
+log 3 1
+
+ϵ = eCI
+
+r
+
+( 1
+
+n ϵ− d+ks+α + D + kn ) log 3 1
+
+ϵ
+
+= eCI
+
+s
+
+n− 2( s+α) 
+
+> d+k+2( s+α)
+
++ D + kn
+
+  s + αd + k + 2( s + α)
+
+3
+
+log 3 n
+
+= eCI
+
+ s + αd + k + 2( s + α)
+
+ 32
+
+r
+
+n− 2( s+α) 
+
+> d+k+2( s+α)
+
++ D + kn log 32 n. 
+
+Thus 
+
+EΓ[R(GΓ; θ∗ ) − R (G∗)] ≤ C1
+
+r
+
+n− 2( s+α) 
+
+> d+k+2( s+α)
+
++ D + kn log 32 n + C2
+
+r log nn + C3n− s+αd+k+2( s+α) ,
+
+where C1 = eCI
+
+ s+αd+k+2( s+α)
+
+ 32 , C2 =
+
+q 2( s+α) 
+
+> d+k+2( s+α)
+
+and C3 = eCIII + 2 R.
+
+# 5 Extension to Closed-Loop Control 
+
+Our solution operator approach maps a given initial state and environment function B(x) to an open-loop optimal con-trol function, which is effective when the environment is static or its dynamics are fully known in advance. However, in many real-world applications, the environment function B(x) is not fully known in advance. For instance, consider a robot delivery task in which the robot starts at a designated location and must deliver a package to a target position, while the environment contains unknown obstacles representing people that may appear unexpectedly along its path. The robot has limited vision and can only detect these obstacles once they enter its sensing range; before that mo-ment, it has no knowledge of their existence. As the robot approaches such obstacles, their sudden appearance within its field of view requires an immediate and safe reaction to avoid collisions. Such tasks are therefore fundamentally 
+
+closed-loop optimal control problem in nature: the control policy must continuously adapt to feedback from the actual, evolving environment and the current state. To handle such scenarios, we extend our approach to a closed-loop setting by integrating the learned solution operator with a Model Predictive Control (MPC) framework [12, 56]. MPC transforms open loop optimal control into closed loop behavior by repeatedly solving a short horizon optimal control problem and applying only the initial segment of the computed control. Although each solve is open loop, the continual re-optimization at every time step induces an implicit feedback mechanism. A limitation of conventional MPC, however, is that even short horizon optimal control problems can be computationally costly to solve in real time. This is precisely where the proposed solution operator framework offers a significant advantage: the learned operator replaces the expensive optimization at each MPC step, enabling rapid closed loop control with substantially reduced computational burden. First, we reformulate the optimal control problem as a free-terminal-time problem, while keeping the underlying dynamics unchanged. 
+
+u∗(t), T ∗ ∈ arg min  
+
+> u,T
+
+JB (x(t), u) = w1
+
+Z T
+
+> 0
+
+LB (t, x(t), u(t))d t + w2M (x(T )) + w3T
+
+ ˙x(t) = f (t, x(t), u(t)) , t ∈ [0 , T ]
+
+x(0) = x0. (45) Here LB and M are the same running and terminal cost terms as in (1), while the terminal time T > 0 is an additional decision variable. The reason of introducing this additional decision variable T are two-fold. First, in contrast to classical MPC, which repeatedly solves a finite-horizon problem over a fixed time interval, our goal is to endow the algorithm with a global view of the task by learning the full optimal trajectory to the target. Allowing T to be optimized encourages solutions that reflect the overall optimal time and path length for reaching the target, rather than being tied to a fixed finite horizon. Second, a fixed terminal time becomes inappropriate as the state approaches the target during inference, since it forces the predicted control to spread the motion over the entire time horizon, which 12 can lead to unnecessarily slow trajectories. By treating T as a decision variable and penalizing its magnitude in the cost, we naturally promote fast arrival when possible. In this setting, the solution-operator learning task is a straightforward extension of the original formulation: rather than learning only the optimal control function, the neural operator is now trained to approximate the mapping G :(B, x0, xT ) 7 → (u∗(t), T ∗), which maps the obstacle field, initial condition and terminal condition to both the optimal control and the corresponding terminal time. After that, we embed the learned operator GΓ; ˜θ into a MPC framework using the learned solution operator to predict each short horizon optimal control problem: at each step, we use GΓ; ˜θ
+
+to map the current state and currently visible obstacles to a control function on this interval, and then obtain the corresponding trajectory by integrating the system dynamics. The procedure is detailed Algorithm 2. To demonstrate the effectiveness of this approach, Section 6.4 presents numerical results for a unicycle robot navigating a maze-like environment with unknown objects that may appear unexpectedly along the robot’s path. 
+
+Algorithm 2 MPC with Learned Solution Operator under Partial Observability 
+
+Require: Learned operator GΓ; ˜θ∗ , initial state x0, target xT , timestep ∆t, vision radius R, tolerance δ 
+
+> 1:
+
+Set k = 0 and x(0) = x0 
+
+> 2:
+
+while ∥x(k∆t) − xT ∥ > δ do  
+
+> 3:
+
+Update the current obstacle function, denoted as Bk(x) 
+
+> 4:
+
+Obtain control function 
+
+(uk(t), T k) = GΓ; ˜θ∗
+
+ Bk, x(k∆t), xT
+
+ 
+
+> 5:
+
+Evolve the dynamics according to (58) using control uk(t) and obtain 
+
+x(t), t ∈ [k∆t, (k + 1)∆ t]. 
+
+> 6:
+
+k ← k + 1  
+
+> 7:
+
+end while  
+
+> 8:
+
+Set K = k 
+
+> 9:
+
+return trajectory {x(k∆t)}Kk=0 
+
+We note that this construction that combines neural operator with MPC only produces an approximation to the closed-loop control control, and the fundamental convergence issues inherent in MPC still persist and are out of the scope of this paper. 
+
+# 6 Numerical Experiments 
+
+In this section, we present three numerical examples to demonstrate the effectiveness of the proposed method. At the same time, these examples serve to numerically validate our scaling law theory: the method cannot perform universally well across problems of varying complexity. As the complexity of the control task increases, it becomes increasingly challenging to learn an effective operator. We begin with stationary and moving Gaussian-bump barriers in both 2D and 3D settings, which illustrate the method’s effectiveness under different environmental variations. Next, we consider a more challenging maze navigation task, where the objective is to solve the maze while avoiding collisions with walls. Then, we extend our approach to the unicycle problem, which features nonlinear dynamics. For this case, we compare the performance of our method with a classical numerical solver based on nonlinear programming (NLP), showing that our approach achieves comparable cost minimization while providing nearly instantaneous inference for batch predictions. Finally, we examine the scaling laws of the stationary Gaussian-bump barrier and the maze navigation problem, through which we further verify the “price to pay” argument. 
+
+Networks Architecture. There are various approaches to approximating the solution operator G∗. For the purpose of theoretical error analysis, we model G∗ using deep ReLU networks. Since the function B is an infinite-dimensional function in C(Ω) , it is intractable to handle it directly. In practice, one approximates B by mapping it into a finite-dimensional ambient representation, for example through discretization or an encoder. For simplicity, in this paper we focus on the case that the barrier distribution μ is supported on a k-dimensional manifold M ⊂ C(Ω) , where k is the intrinsic dimension and usually much smaller than the ambient dimension. This simplified setting highlights the key message of our paper, as shown in Theorem 2. For the sake of clarity and analytical simplicity, we focus on stationary functions represented by Gaussian mixtures. The set of such barrier functions lies on a k-dimensional manifold, where 
+
+k corresponds to the number of free parameters in the Gaussian mixture. Specifically, let Nb denote the number of 13 mixture Gaussian bumps. Then the barrier function can be parameterized as 
+
+B(x) = 
+
+> Nb
+
+X
+
+> j=1
+
+hj N (x; cj , σ 2 
+
+> j
+
+I),
+
+where cj ∈ RD denotes the center of each bumps, N denotes the density function of a standard Gaussian distribution, 
+
+hj and σ2 
+
+> j
+
+denotes the magnitude and variance. We represent the parameters of each component by the vector ˆBj := [cj , h j , σ 2 
+
+> j
+
+]. Consequently, the dimension of M is k = ( D + 2) Nb.Since the order of the mixture components is arbitrary, the network must be permutation-invariant with respect to the Nb bumps. To enforce this invariance, each component ˆBk is first embedded into a feature vector using a shared smaller ReLU network g2. The resulting features are then aggregated via mean pooling (this step could alternatively be replaced by more sophisticated mechanisms such as self-attention without positional encoding). Finally, the ag-gregated barrier representation is concatenated with the global variables (x0, t ) and passed through another ReLU network g1 to obtain the prediction of the operator at time t. In particular, the resulting approximation network for 
+
+G∗(B, x0)( t) takes the form 
+
+Gθ (B, x0)( t) = glθ (B, x0, t ) = gl1 
+
+> 1
+
+(x0, t, 1
+
+NbNbX
+
+> k=1
+
+gl2 
+
+> 2
+
+( ˆBk)) . (46) where l = l1 + l2. For the Gaussian mixture and unicycle examples, we typically employ the deep ReLU network architecture defined in (46). For the maze navigation example, to better encode maze configurations, we enhance the model with Fourier random features and an additional multi-head self-attention mechanism. These architectures will be described in detail in the Appendix B. 
+
+Data Generation. The training and testing datasets of the Gaussian bumps and the unicycle problem are uniformly sampled from specific distributions, which will be described in detail in their respective sections. The generation of the maze configurations follows the randomized Depth-First Search (DFS), which is detailed in Algorithm 3 in Appendix B. 
+
+Hyperparameters. The hyperparameters of the network architecture, including the number of layers and the number of neurons per layer, are summarized in Table 2. For the coupling dynamics, we use a neural ODE [16] implemented in PyTorch [55], discretized with the forward Euler scheme with terminal threshold stationary at δ = 1 e − 4. During training, we adopt the Adam optimizer [31], with the learning rate lr and learning rate scheduler specified in Table 2. 
+
+6.1 Gaussian Bump Barrier 
+
+In this subsection, we numerically study optimal control problems with barrier functions parameterized by Gaussian mixtures. The state domain is Ω = [0 , 1] D , and we focus on the cases D = 2 and D = 3 . Both stationary and moving barriers are considered. The admissible control set is S = RD , and the running cost consists of two components: a kinetic energy term and a penalty term. The optimal control problem can then be formulated as: 
+
+u∗(t; B, x0) ∈ arg min  
+
+> u
+
+JB (x(t), u) = 
+
+Z T
+
+> 0
+
+ 12 |u(t, x(t)) |2 + B(x(t)) 
+
+
+
+dt + wt|x(T )|2 (47) subject to the following dynamics  ˙x(t) = u(t, x(t)) , t ∈ [0 , T ]
+
+x(0) = x0. (48) To generate the training set Γ = {Bi, xi
+
+> 0
+
+}ni=1 , we uniformly sample initial states from X , where the selection of X
+
+will be specified in each numerical experiment. For stationary barrier function parameterized by gaussian mixture, we have 
+
+B(x) = 
+
+> Nb
+
+X
+
+> j=1
+
+hj N (x; cj , σ j ), (49) where cj ∈ RD is the center of j-th gaussian bump, σi is the isotropic standard deviation and hi is the height of each gaussian bump. Sample the parameters of each Gaussian bump from uniform distributions: cj ∼ U ([ c1, c 2]D ),
+
+σj ∼ U [0 .05 , 0.1] and hj ∼ U [0 .1, 1] . For moving barrier , we consider a simplified setting in which each Gaussian bump undergoes pure linear translation without deformation. In this case, the barrier profile at time t is given by 
+
+B(t, x) = 
+
+> Nb
+
+X
+
+> j=1
+
+hj N (x; cj (t), σ j ), (50) 14 where the center of each bumps move linearly in t, cj = c0 
+
+> j
+
++ vj t, with initial state c0 
+
+> j
+
+∼ U ([ c1, c 2]D ) and velocities 
+
+v0 
+
+> j
+
+∼ U ([ v1, v 2]D ).
+
+6.1.1 2D Stationary Gaussian Bumps Parameter study with Nb = 1 . First, we let X =  [0 .5, 1] × [0 .9, 1]  ∪  [0 .9, 1] × [0 .5, 1] . We numerically investigate the case with a single Gaussian bump ( Nb = 1 ). We generate n = 500 training data pairs as described above and train models separately with wt ∈ { 0.5, 1, 1.5, 2, 2.5}. The trained models are then evaluated under the following scenarios. Across all cases, the optimal trajectory varies in the expected way with changes in the problem parameters. 1. Varying bump strength. Fix the initial state, the bump center, and the standard deviation, and set wt = 1 . We vary the bump height h = 0 .1, 0.2, . . . , 1 to study the effect of bump strength. The results are shown in the left panel of Figure 1. 2. Varying initial states. With the bump center, standard deviation, and bump strengths stationary, we set wt = 1 .We test the effect of different initial positions. The results are presented in the middle panel of Figure 1. 3. Varying terminal weight. Fix the initial state, bump center position, standard deviation and bump strength. We then study the effect of the terminal cost weight by testing with models trained under different wt =0.5, 1, 1.5, 2, 2.5. The results are presented in the right panel of Figure 1. 
+
+Figure 1: Stationary Gaussian-bump examples. Results are shown for varying bump heights/strengths (left), varying initial positions (middle), and varying terminal weights (right). 
+
+Parameter study on Nb. In this part, we present numerical demonstrations with different numbers of Gaussian bumps, considering the cases Nb = 2 , 3. Representative instances for these two settings are shown in Figure 2 and Figure 3, respectively. As an illustrative example, we further examine how the model behaves when two bumps gradually tran-sition from being fully overlapping to being well separated. This setup highlights how the model adapts its predictions under changing barrier configurations; for example, whether it chooses to avoid both bumps simultaneously when they overlap, or to navigate between them once they separate, and whether it can identify the shortest trajectory that minimizes kinetic energy. 
+
+Figure 2: 2D examples of trajectories in environments with stationary Gaussian-bump obstacles. The left panel shows 10 instances with two randomly placed bumps, and the right panel shows 10 instances with three. Red curves denote predicted trajectories from random starting points (blue crosses) to the terminal states at T = 3 (purple square). The radius of each bump corresponds to 1.5 times its standard deviation, while brightness indicates the bump height h:darker shading represents larger h.15 Figure 3: 2D examples illustrating how the model adjusts its control strategy when Gaussian-bump obstacles are aggregated versus separated. Each bump is visualized with radius equal to 1.5 times its standard deviation and unit height. Predicted trajectories are shown in red, starting from the blue cross and ending at the terminal state (purple square) at T = 3 .
+
+6.1.2 2D Moving Gaussian Bumps 
+
+In this part, we set X = [0 .9, 1] 2. For each j = 1 , . . . , N b, the bump centers are initialized as cj ∼ U ([0 .3, 0.6] 2), the standard deviations are sampled as σj ∼ U [0 .05 , 0.1] , and the bumps move with velocities vj ∼ U ([ −0.15 , 0.15] 2).In Figure 4, we compare the neural operator prediction, which leverages the bumps’ full future trajectories, with the 
+
+instantaneous frozen-bump predictions . At each snapshot time t, the instantaneous frozen-bump prediction refers to the trajectory predicted under the assumption that the bumps are frozen at their current positions and solving the optimal control problem (47) coupled with (48) over the remaining time horizon. The key message is that when the neural operator is provided with the full dynamics of the bumps, it is able to anticipate future configurations and make correct decisions. Even in situations where no passage exists at the current time, the model can foresee that an opening will appear in the near future and adjust its trajectory accordingly. For example, in both the left (two moving bumps) and right (three moving bumps) panels in Figure 4, at time t = 0 .4 and t = 0 .9 the bumps are clustered, so the instantaneous frozen-bump prediction, which is blind to future motion, takes conservative detours that are locally safe yet globally suboptimal. By t = 1 .4 and later, as the opening appear, instantaneous frozen-bump prediction selects a feasible whose terminal state subsequently converges to the terminal state provided by neural operator. 
+
+Figure 4: 2D examples of moving Gaussian-bump environments with two bumps (left) and three bumps (right). Snap-shots showing instantaneous frozen-bump prediction at different t. In each subfigure, the start is marked by a blue cross; the past trajectory up predicted by the Neural Operator to time t is shown in red; and the current state at time 
+
+t, with its instantaneous heading, is indicated by an orange arrow. The global-optimal terminal state predicted by the Neural Operator is shown as a purple square. The instantaneous frozen-bump prediction is obtained by freezing the bumps at their locations at time t and solving (47) that coupled with (48) over the remaining horizon [t, 3] ; the result is plotted as a light-green dashed curve and terminates at the predicted end position that marked by a green square. 16 6.1.3 3D Gaussian Bumps 
+
+In this part, we consider 3D setting with both stationary and moving bumps on the domain X = [0 .9, 1] 3. In stationary case, for each j = 1 , . . . , N b, the bump centers are initialized as cj ∼ U ([0 .3, 0.6] 3), and the standard deviations are sampled as σj ∼ U [0 .05 , 0.1] . Examples with Nb = 2 , 3 are presented in Figure 5. For moving case, the bump centers are initialized as cj ∼ U ([0 .3, 0.6] 3), the standard deviations are sampled as σj ∼ U [0 .05 , 0.1] , and the bumps move with velocities vj ∼ U ([ −0.15 , 0.15] 3). Numerical examples with Nb = 2 and Nb = 3 are shown in Figure 6 and Figure 7 respectively. 
+
+Figure 5: 3D examples of trajectories in environments with stationary Gaussian bump obstacles. The left panel shows an instance with two randomly placed bumps, while the right panel shows an instance with three. The top row presents trajectories from different viewing angles, and the bottom row shows their projections onto the XY, YZ, and XZ planes. Each bump is visualized with radius equal to 1.5 times its standard deviation (both 3D views and 2D projections) and unit height. Red curves represent the predicted trajectories from the random starting point (blue cross) to the final state at T = 3 (purple square). 
+
+6.2 Maze Navigation 
+
+In this subsection, we numerically evaluate the performance of our method on 2D maze navigation problems. We adopt a weighted variant of the control objective in equations (1), where distinct terms in the loss are assigned separate weights to balance their relative contributions. The resulting optimal control is given by: 
+
+u∗ ∈ arg min  
+
+> u
+
+JB (x(t), u) = wr
+
+Z T
+
+> 0
+
+12 |u|2dt + wB
+
+Z T
+
+> 0
+
+B(x(t)) dt + wT |x(T )|2, (51) subject to  ˙x(t) = u(t, x(t)) , t ∈ [0 , T ]
+
+x(0) = x0. (52) we fix the initial condition as x0 = (1 , 1) and enforce the terminal position to be the origin by assigning a large value to the terminal cost weight wT . The barrier function is defined by the maze construction procedure described in Algorithm 3 (Appendix B). In the following numerical experiments, we fix the loop coefficient at 0.4 and set the maze width equal to its height (e.g., a size 5 × 5 maze has width 5 and height 5). To encourage the trajectory to avoid obstacles, we assign a large weight wB to the barrier loss term. The maze barrier is constructed using a set of axis-aligned rectangular barriers; see Appendix B for details. Each rectangle is specified by a tuple [a, b, c, d ], where 
+
+a and b denote the left and right x-coordinates, and c and d denote the bottom and top y-coordinates of the rectangle, respectively. The barrier loss is then be computed by 
+
+B(x) = 
+
+> Nb
+
+X
+
+> j=1
+
+Bj (x; aj , b j , c j , d j ) (53) where the Nb denote number of rectangles and each Bj represents the barrier loss of the j-th rectangular obstacle: 
+
+Bj (x; aj , b j , c j , d j )) = σ(λ(x − aj )) ∗ σ(λ(bj − x)) ∗ σ(λ(y − cj )) ∗ σ(λ(dj − y)) , (54) 17 Figure 6: 3D examples of trajectories in environments with two moving Gaussian-bump obstacles. Each column corresponds to a time snapshot at t. The top row shows the trajectory (red) evolving over time, with the start marked by a blue cross and the current state at time t by a purple square. The second to fourth rows show the corresponding projections onto the XY, YZ, and XZ planes. Each bump is visualized with radius equal to 1.5 times its standard deviation (applied to both 3D views and 2D projections) and unit height. These views illustrate how the trajectory adapts dynamically as the bumps move over time. where σ denotes the sigmoid function (not to be confused with the standard deviation in the Gaussian mixture example) and λ is the sharpness parameter. In this experiment, we consider three levels of problem complexity: mazes generated by Algorithm 3 with w = h = 5 
+
+(denoted 5×5, easiest), w = h = 7 (denoted 7×7, moderate), and w = h = 9 (denoted 9×9, hardest). For each level, we use the same training set size and evaluate on an identically sized test set. We present ten post-training inference instances: 8a for 5 × 5, 8b for 7 × 7, and 8c for 9 × 9. As maze complexity increases, trajectory quality degrades: in 
+
+5 × 5, all trajectories are successful and remain within free space; in 7 × 7, several paths graze edges or corners; and in 9 × 9, many fail, with trajectories crossing walls. This trend is reflected in the boxplots of obstacle loss across maze sizes in Figure 8d, which increase with complexity. 
+
+6.3 Unicycle 
+
+In this subsection, we extend our study to the unicycle problem in a 2D physical space with nonlinear dynamics. We adopt the enhanced unicycle model described in Section 13.2.4 of [38]. The corresponding optimal control problem is formulated as follows: 
+
+u∗ ∈ arg min  
+
+> u
+
+JB (x(t), u) = wr
+
+Z T
+
+> 0
+
+12 |u|2dt + wB
+
+Z T
+
+> 0
+
+B(x(t))d t + wt|x(T ) − xT |2 (55) where the state is given by x(t) = ( x(t), y (t), ϕ (t), v (t)) . Here ϕ denotes the heading angle of the vehicle with respect to the x-axis, and v denotes its velocity. The control function is u(t) = ( u(t), a (t)) , where u(t) denotes the angular velocity (i.e. steering rate) and a(t) denotes the acceleration. The target terminal state is denoted by 18 Figure 7: 3D examples of trajectories in environments with three moving Gaussian-bump obstacles. Each column corresponds to a time snapshot at t. The top row shows the trajectory (red) evolving over time, with the start marked by a blue cross and the current state at time t by a purple square. The second to fourth rows show the corresponding projections onto the XY, YZ, and XZ planes. Each bump is visualized with radius equal to 1.5 times its standard deviation (applied to both 3D views and 2D projections) and unit height. 
+
+xT = ( xT , y T , ϕ T , v T ), and wr , wB , and wT are positive weighting parameters. The dynamics is given by: 
+
+
+
+˙x(t) = v(t) cos ϕ(t),
+
+˙y(t) = v(t) sin ϕ(t),
+
+˙ϕ(t) = u(t),
+
+˙v(t) = a(t),
+
+(x(0) , y (0) , ϕ (0) , v (0)) = ( x0, y 0, ϕ 0, v 0).
+
+(56) In this setting, we assume that obstacles are parametrized by gaussian bumps defined in (49), which is 
+
+B(x(t)) = 
+
+> Nb
+
+X
+
+> j=1
+
+N (x; cj , σ j , h j ).
+
+In the following examples, we set wr = 1 , wB = 50 , and wt = 200 , and fix the initial condition as 
+
+(x0, y 0, ϕ 0, v 0) = (0 , 0, π 
+
+> 2
+
+, 0) ,
+
+which corresponds to a vehicle starting at the origin, facing upward, and initially at rest. In our experiments, we randomly sample the terminal position and heading angle while fixing the terminal velocity to zero. Specifically, we take (xT , y T ) ∼ U ([0 .9, 1] 2), ϕT ∼ U [−π, π ], and set vT = 0 .In Figure 9, we compare our neural operator method with a baseline nonlinear-programming (NLP) solver [29, 30].In the NLP formulation, the nonlinear dynamics and complex constraints are discretized and solved directly, without relying on the necessary conditions of optimality. While widely used, NLP offers no convergence guarantees and is 19 (a) 5×5 (b) 7×7  
+
+> (c) 9×9 (d) Obstacle loss
+
+Figure 8: Trajectory prediction in maze environments of increasing complexity and the corresponding obstacle loss. Panels (a)–(c) show 10 representative trajectories (red) from the start (cyan square) to the end (pink square) in mazes of size 5 × 5, 7 × 7, and 9 × 9, respectively. Panel (d) presents boxplots of the obstacle loss across different maze sizes, illustrating how trajectory feasibility degrades as maze complexity increases. sensitive to the initial guess. In this experiment, we set initial guess to all instances as uguess = 0 and aguess = 0 .As demonstrated, in some cases our neural operator approach provides control similar to the NLP baseline, though not always. We also analyze the statistics of the cost gap between the two methods (Figure 9, right panel) and find that our approach achieves even lower cost in about 15 of the 100 test tasks, while most results are centered around zero—indicating that the neural operator produces controls that are close to, but slightly suboptimal compared to NLP. Nevertheless, a key advantage of our method is its efficiency: inference with the neural operator is nearly instantaneous. We conducted 100 test tasks using both NLP and NO on an Apple M3 Pro chip. The average computation time of NLP was 4.42 s, whereas the average inference time of NO was only 0.00184 s 
+
+Figure 9: Examples of unicycle car control. The left panel compares neural operator (NO)–based control with non-linear programming (NLP) solutions across five instances. The top row shows trajectories from the start state (blue square with arrow) to the target state (green square with arrow) and the final state (purple square), with NO predictions in red and NLP predictions in orange. The bottom row plots the corresponding control signals predicted by the NO, with u(t) in cyan and a(t) in green. The histogram on the right shows the distribution of cost differences (NLP cost minus NO cost) across test cases, where positive values indicate that the neural operator achieves lower cost. 20 6.4 Closed-Loop Control of the Unicycle Robot via Model Predictive Control 
+
+In this subsection, we demonstrate the effectiveness of the extended solution operator combined with MPC, introduced in Section 5, yields closed-loop optimal control predictions for on a unicycle robot delivery task. The robot moves in a maze-like environment with unknown obstacles representing people that may appear unexpectedly along its path. Meanwhile the robot must navigate from a prescribed initial position to a target location using only locally available obstacle information. Specifically, the robot has full access to the static maze layout, which may serve as a known map, while the pedestrians are modeled as dynamic obstacles that are unknown a priori and can only be detected when they enter the robot’s sensing region. Precisely, we formulate this unicycle delivery task as the following free-terminal-time optimal control problem: 
+
+u∗(t), T ∗ ∈ arg min  
+
+> u,T
+
+JB (x(t), u) = w1
+
+Z T
+
+> 0
+
+|u(t)|2dt + w2
+
+Z T
+
+> 0
+
+B(x(t))d t + w3∥x(T ) − xT ∥ + w4T (57) s.t. 
+
+
+
+˙x(t) = v(t) cos ϕ(t),
+
+˙y(t) = v(t) sin ϕ(t),
+
+˙ϕ(t) = u(t),
+
+˙v(t) = a(t),
+
+(x(0) , y (0) , ϕ (0) , v (0)) = ( x0, y 0, ϕ 0, v 0) := x0.
+
+(58) Here the function B represents the aggregated obstacles: 
+
+B(x) = 
+
+> Nb1
+
+X
+
+> j=1
+
+Bj (x; aj , b j , c j , d j ) + 
+
+> Nb2
+
+X
+
+> l=1
+
+Nl(x; cl, σ l) (59) which consists of two components. The terms Bj encode the maze walls and follow the definition in (54), while the functions Nl are parameterized Gaussian bumps used to approximate static unknown obstacles (e.g., stationary pedestrians). To model the robot’s limited sensing capability, we assume that such unknown obstacles become visible only when they lie within a prescribed vision radius R > 0. Given a training dataset Γ, we then train a free-terminal-time solution operator using Algorithm 1, where the cost functional is adapted from (1) to (57) together with the dynamics (58). Once the learned operator GΓ; ˜θ is obtained, we generate trajectories using the MPC procedure in Algorithm 2, where at each step k the obstacle field is updated as 
+
+Bk(x) = 
+
+> Nb1
+
+X
+
+> j=1
+
+Bj (x; aj , b j , c j , d j ) + X
+
+> l∈Sk
+
+Nl(x; cl, σ l),
+
+where the index set of currently visible unknown obstacles is 
+
+Sk =  l ∥cl − x(k∆t)∥∞ ≤ R .
+
+We remark that the above formulation is general and can accommodate various maze configurations, since the maze walls are treated as part of the input and the learned operator can adapt accordingly. The downside is that this flexibility requires a substantially larger training dataset and more computational resources. For simplicity, in the following experiments we fix the maze configuration by using three static walls, while allowing only the unknown obstacles to vary. Figure 10 presents two representative instances of the resulting navigation procedure, illustrating that the proposed solution operator delivers remarkably well trajectories in the inference stage. Each instance visualizes the first 15 MPC updates, corresponding to time points t = k∆t with ∆t = 0 .04 and k = 1 , . . . , 15 . The robot’s current pose is shown as a blue rectangle with a heading arrow, the executed trajectory appears as a solid blue curve, and the MPC prediction based on the current obstacle field is plotted as a dashed cyan curve. The sensing radius is indicated in light blue, static maze walls are shown in gray, and active Gaussian bumps corresponding to influential obstacles are highlighted in red. Once an obstacle is no longer influential, its bump is deactivated and rendered in pink. As the robot navigates in the maze, newly visible obstacles trigger immediate replanning, illustrating the robustness and adaptability of the MPC strategy under partial observability. The construction of the dataset Γ, additional training details, and further implementation choices for the MPC rollout are deferred to Section C. 
+
+6.5 Scaling Laws 
+
+In addition to evaluating the effectiveness and efficiency of our proposed method, we also investigate its scaling be-havior. As indicated in Theorem 2, increasing the problem complexity, measured by the intrinsic dimension, degrades performance when all other hyperparameters and training settings are fixed. 21 Figure 10: MPC-based navigation inside a maze with partially observable obstacles. The first three rows and the last three rows correspond to two independent instances. In each instance, every subplot shows the robot’s predicted and executed trajectories at time t = k∆t with ∆t = 0 .04 . The robot (blue rectangle with heading arrow) moves from the initial state (orange) toward the target (green) while unknown obstacles—modeled as Gaussian bumps—become activated (red) only when entering the robot’s sensing radius (light blue). Gray rectangles denote maze walls, the solid blue curve shows the executed trajectory, and the dashed cyan curve shows the MPC prediction ignoring unseen Gaussian bumps. 22 To empirically verify this, we vary the intrinsic dimension in several problem and examine how the error scales with the number of training samples. We consider three representative examples: the linear–quadratic regulator (LQR), the 2D Gaussian-bump problem, and the 2D maze navigation problem. The setups of the latter two are described in Sections 6.1.1 and 6.2, respectively. For the LQR case, we use a scalar system with cost functional 
+
+J(x(t), u (t)) = 
+
+Z T
+
+> 0
+
+
+
+q (x(t)) 2 + r (u(t)) 2
+
+dt + λ(x(T ) − ξ)2
+
+subject to the linear dynamics 
+
+˙x(t) = u(t), x (0) = x0.
+
+The corresponding analytic open-loop optimal control is 
+
+u∗(t; q, r, λ, ξ, x 0) = ζ(x0 sinh( ζt ) + η cosh( ζt )) 
+
+with ζ =
+
+q rq and η = y∗−x0 cosh( ζT )sinh( ζT ) , here y∗ is defined as follow: 
+
+y∗ =
+
+
+
+m − B, ξ < m − B, ξ, m − B ≤ ξ ≤ m + B, m + B, ξ ≥ m + B. 
+
+with m = x0  
+
+> cosh( ζT )
+
+and B = λ   
+
+> 2√qr cosh( ζT )
+
+. To test the scaling law, we consider four operator learning tasks with increasing input dimension: 1. DOF=2: G2 : ( ξ, x 0) 7 → u∗(t; ξ, x 0), with q = 1 , r = 1 , λ = 1 , ξ ∼ U [−0.5, 1.5] and x0 ∼ U [0 .5, 1] .2. DOF=3: G3 : ( r, ξ, x 0) 7 → u∗(t; r, ξ, x 0), with r = 1 , λ = 1 , ξ ∼ U [−0.5, 1.5] and r, x 0 ∼ U [0 .5, 1] .3. DOF=4: G4 : ( q, r, ξ, x 0) 7 → u∗(t; q, r, ξ, x 0) with λ = 1 , ξ ∼ U [−0.5, 1.5] and q, r, x 0 ∼ U [0 .5, 1] .In each setting, the degrees of freedom (DOF) is the number of independent scalar inputs that parametrize the optimal control function, i.e., the intrinsic dimension of the learning task. In Figure 11, we report the relative mean squared error (RMSE) between the neural-operator predictions and the analytical reference solutions (left) and the relative error between the predicted costs and the analytical optimal costs (right). As the number of degrees of freedom (DOF) increases, both errors decay more slowly as the number of training samples N grows. This trend is consistent with our theoretical picture: due to the regime switching induced by the absolute-value terminal term, the optimal function u∗(t; q, r, λ, ξ, x 0) is only C0,1 in ξ. Accordingly, our main theorem2 predicts an asymptotic scaling of order N −1/(1+ DOF/ 2) when N is sufficiently large. In practice, however, several factors make this asymptotic regime difficult to observe in our experiments. First, the cost error can reach the 10 −4 magnitude, at which point time-discretization error from the neural-ODE solver becomes non-negligible. Reducing this numerical error requires either much smaller time steps or higher-order integration schemes, both of which substantially increase training cost. Second, the optimization landscape is nonconvex and we train with Adam, so the attained solutions may be limited by optimization error rather than approximation or statistical error. Although we do not cleanly recover the predicted scaling exponent in these finite-compute experiments, we consistently observe slower error decay as DOF increases, supporting our “price-to-pay” argument. As the complexity For the stationary Gaussian-bump problem, the intrinsic dimension corresponds to the number of bumps Nb and in Figure 12 (left), we report the relative mean squared error (RMSE) between neural operator predictions and reference solutions, where each reference solution is obtained by individually solving the minimization problems in eq. (47) and eq. (48). As Nb increases, the RMSE decays more slowly with respect to the number of training samples N . This trend is clearly reflected by the dashed log–log fitting lines: the fitted slope becomes less negative (i.e., closer to zero) as Nb grows, indicating a smaller decay exponent and thus reduced sample efficiency at higher intrinsic dimension. For the maze navigation problem, the intrinsic dimension reflects the structural complexity of the maze, typically captured by its size. In Figure 12 (right), we report the obstacle loss defined in eq. (51), aggregated across mazes of different sizes. The decay rates appear sharper than in the Gaussian-bump case, which is due to our evaluation criterion: we only check whether the predicted trajectory successfully avoids obstacles, rather than comparing it against exact reference trajectories, which are typically unavailable. 
+
+# 7 Related Works 
+
+Solution/Control learning. Early works on learning-based optimal control primarily aim to approximate the feedback controller for a single problem instance in a high-dimensional state space, using various function approximators such 23 Figure 11: Numerical scaling results for the LQR operator-learning task. Left: RMSE versus the number of training samples N (log–log scale). Right: cost error versus N (log–log scale). Dashed lines denote least-squares linear fits in log–log coordinates (matching the curve colors), and the reported slopes indicate the empirical decay rates. 
+
+Figure 12: Numerical scaling results across two problems. Performance versus the number of training samples N (log–log scale) for (left) the 2D stationary Gaussian-bump problem with varying number of bumps Nb, and (right) the 2D maze navigation problem with different maze sizes. For each setting, dashed lines show least-squares linear fits in log–log coordinates (same color as the corresponding curve), and the reported slopes indicate the empirical decay rates. For the Gaussian-bump problem, we report the relative mean squared error between the neural-operator predictions and the reference solutions, where the references are obtained by solving eqs. (47) and (48) for each test instance. For the maze navigation problem, we report the obstacle loss defined in eq. (51), aggregated over mazes of each size. as neural networks. Different learning formulations have been explored, including direct policy optimization [22, 9, 1], backward stochastic differential equations-based methods [72, 41], physics-informed neural networks [49, 52], and supervised learning from open-loop optimal control data [50, 3, 27, 51]. Several studies have further extended these approaches to multi-agent or mean-field control settings [23, 57, 69, 53]. While these models can achieve high accuracy for a fixed environment, they must be retrained whenever system parameters or cost functions change. This limitation motivates the use of neural operators, which amortize computation across problem families. 
+
+Neural Operators. Neural operators are designed to learn mappings between infinite-dimensional function spaces. Prominent examples include Fourier Neural Operators (FNO) [43, 44, 33], Deep Operator Networks (DeepONet) [45, 68], and transformer-based architectures [42, 25]. Compared with classical numerical solvers, well-trained neural operators offer substantial speedups while maintaining acceptable accuracy. A growing body of work leverages these advantages in optimal control. The existing application areas can be categorized as follows. • Learning Dynamics. Neural operators serve as flexible surrogates for system dynamics or unknown non-linearities. [17] jointly perform system identification and controller learning, while others [67, 46] learn a mapping Kθ : u(t) 7 → x(t) that satisfy the dynamics (2) approximately and then solve min u JB (u, Kθ (u)) .Extensions also handle nonsmooth objectives via primal–dual optimization [60]. 24 • Enforcing Optimality Conditions. Other studies integrate neural operators into frameworks derived from optimality systems. [70] learn mappings from initial states and environment parameters to optimal controls via first-order adjoint constraints. [39] approximate mappings from terminal cost functions to value functions in the Hamilton–Jacobi–Bellman (HJB) equation, from which optimal feedback controls are obtained by minimizing the Hamiltonian using the gradient of this value function. [66] study parameterized optimal control problems by learning value functions or policies over finite-dimensional parameter spaces using HJB-based losses or reinforcement learning. In motion-planning settings, where the HJB equation reduces to the Eikonal PDE, neural operators are trained to map environment-dependent cost functions to the corresponding value functions [48]. • Controller Synthesis. Unlike the optimal control formulation (1),(2), another line of research applies neural operators directly to controller synthesis, particularly within the backstepping framework for boundary con-trol of PDEs. Here the primary goal is stabilization , achieved by designing a feedback law expressed through an integral kernel (gain function) that satisfies an auxiliary kernel PDE. Computing this kernel is often costly, especially when system parameters vary. Neural operators have therefore been proposed to approximate the mapping from PDE coefficients to the integral kernel [8, 34, 36]. • Mean-Field Games (MFG). [28] propose an operator-learning framework mapping initial and terminal dis-tributions to population trajectories, enabling fast inference for new MFG instances with a fixed environment. Our focus, by contrast, lies on task-varying environments; extending to the distributional MFG setting is a promising direction for future work. 
+
+# 8 Conclusion and Broader Impact 
+
+We propose a self-supervised neural operator learning method that amortizes optimal control by learning a direct map from problem conditions to optimal control functions, enabling near-instant inference after training and delivering strong performance across diverse benchmarks. Alongside these gains, we also characterize the method’s limitations, the ‘price to pay’ for accuracy, both theoretically and empirically: our main scaling-law theorem quantifies how sample and model complexity grow with intrinsic dimension and ease with smoothness, and our experiments show corresponding performance degradation as problem complexity increases. Taken together, our results sharpen the scope of neural operators: they are neither a universal solver nor a narrow surrogate, but a powerful tool whose promise and limitations can now be clearly delineated. The proposed method admits natural extensions to more complex optimal control settings. While this paper focuses on unconstrained optimal control problems, the approach can accommodate state and control constraints by augmenting the training objective with appropriate penalty, barrier, or augmented-Lagrangian terms to promote feasibility along trajectories. A further extension is to stochastic optimal control problems, where environment- or control-induced randomness enters the dynamics; handling this rigorously will require dedicated treatment, which we leave for future work. 
+
+# 9 Acknowledgment 
+
+R. Lai’s reserach is supported in part by NSF DMS-2401297. 
+
+# A Notation Table 
+
+We list all notations in Table 1. 
+
+# B Supplementary Details for Maze Navigation Problem 
+
+The generation of the maze configurations follows the randomized Depth-First Search (DFS) algorithm. The Random-ized Depth-First Search (DFS) algorithm generates a maze by exploring cells in a loop until all are visited. Starting from a random cell, it marks it visited, randomly chooses an unvisited neighbor, removes the wall between them, and moves forward while pushing the current cell onto a stack. If no unvisited neighbors remain, it backtracks by popping from the stack, repeating this process until the grid is fully explored. The result is a perfect maze with a single path between any two cells. In addition, we define a loopiness coefficient pζ ∈ [0 , 1] is applied after generation: with probability pζ , extra walls are removed even between already-connected regions, introducing loops. See Algorithm 3 in Appendix B for details. Maze generation is carried out by the following Algorithm 3. Once the maze configuration 25 Table 1: Notation table Notation Description 
+
+Ω and D Ambient space Ω = RD
+
+X and d Initial state space, supported on a d-dimension manifold on initial state X ⊂ Ω
+
+x0 ∈ X Initial state 
+
+T Terminal time 
+
+M and k barrier function space, supported on k-dimensional manifold M ⊂ C(Ω) 
+
+B ∈ M barrier function 
+
+L(t, u, B ) Running cost function 
+
+M (x) Terminal cost function 
+
+u∗(t; B, x0) Optimal control for (1) with initial state x0 and barrier function B
+
+x∗(t) Trajectory obtained by optimal control u∗(t; B, x0)
+
+G∗(B, x0) Minimizer of the population loss coupled with the dynamics (4) 
+
+G (R, κ, l, p, K ) A class of ReLU networks 
+
+Γ Training set Γ = {(Bi, xi
+
+> 0
+
+)}ni=1 ∈ X × M Gθ Neural network approximation to operator G
+
+xθ (t) Trajectory obtained by neural network Gθ (t, B, x0)
+
+Gˆθ A ReLU network in class G (R, κ, l, p, K )
+
+R(G) Population loss 
+
+RΓ(G) Empirical loss over dataset Γ
+
+GΓ; θ∗ Empirical risk minimizer over dataset Γ within the class G (R, κ, l, p, K )
+
+n Number of training samples 
+
+m Number of testing samples 
+
+Nt Number of uniform time discretization steps 
+
+Nb Number of Gaussian bumps 
+
+B(x) = PNb 
+
+> j=1
+
+hj N (x; cj , σ j I) Stationary Gaussian mixture barrier 
+
+B(t, x) = PNb 
+
+> j=1
+
+hj N (x; cj (t), σ j I) Moving Gaussian mixture barrier 
+
+B(x) = PNb 
+
+> j=1
+
+Bj (x; aj , b j , c j , d j ) Maze configuration function 
+
+l1 Number of layer of the barrier function encoder 
+
+l2 Number of intermediate layer 
+
+l Number of total layers 
+
+nr Number of neurons 
+
+lr Learning rate 
+
+Bs Batch size 
+
+Ds Decay step: number of steps before the learning rate decays. 
+
+Dr Decay rate 
+
+Nepoch Number of training epochs is obtained, it can be converted into a list of axis-aligned rectangles within the domain [0 , 1] 2, which define the wall structures. Consequently, each maze is represented as a collection of rectangles, where each rectangle is uniquely spec-ified by the tuple [a, b, c, d ]. Here a, b denotes the coordinates of the lower-left corner, and c, d denotes the coordinates of the upper-right corner. Moreover, we fix start state at x0 = (1 , 1) and the target terminal state at xT = (0 , 0) .
+
+B.1 Network Architecture 
+
+To encode complex maze configurations, we adopt a more advanced architecture than the deep ReLU networks used in the Gaussian-bump and unicycle problems. Our design combines Fourier feature embeddings [62] with self-attention blocks [65]. The maze configuration, represented as a list of axis-aligned rectangles, is first passed through a ReLU MLP encoder with l1 layers and nr hidden neurons, followed by self-attention layers without positional encodings with nh heads, and then summarized using a nh-head attention-pooling layer to obtain a permutation-invariant maze embedding. Temporal information is encoded separately using Fourier features, which provide high-frequency com-ponents and thus enable the model to capture sharp turns needed to avoid walls. Typically, we consider following encoding 
+
+γ(t) = 
+
+cos( Bt)sin( Bt)
+
+
+
+,
+
+26 Table 2: Hyperparameters table Gaussian Bumps (2D / 3D) (Stationary / Moving) Maze Unicycle Time discretization Nt 30 500 30 Number of training sample n 1600 4000 2000 
+
+l1 2 4 4
+
+l2 2 4 2
+
+nr 200 300 300 
+
+nh - 2 -Fourier feature σ′ - 1.5π -Leaning rate lr 1e-4 5e-5 1e-4 Decay step Ds 500 200 400 Decay rate Dr 0.95 0.9 0.9 Batch size Bs 32 20 32 Epoch Nepoch 4000 4000 4000 
+
+Algorithm 3 Maze Generation with DFS and Loops 
+
+Require: width w, height h, start (sx, s y ), end (ex, e y ), loop factor λ
+
+Ensure: Binary grid maze of size h × w 
+
+> 1:
+
+Ensure w, h are odd (increment by 1 if even).  
+
+> 2:
+
+Initialize maze ← 0h×w, visited ← false h×w. 
+
+> 3:
+
+Snap start (sx, s y ) and end (ex, e y ) to even coordinates.  
+
+> 4:
+
+function VISIT (x, y ) 
+
+> 5:
+
+visited[ y, x ] ← true ; maze[ y, x ] ← 1 
+
+> 6:
+
+Let D = {(2 , 0) , (−2, 0) , (0 , 2) , (0 , −2) } ▷ possible moves  
+
+> 7:
+
+Randomly shuffle D 
+
+> 8:
+
+for each (∆ x, ∆y) ∈ D do  
+
+> 9:
+
+nx ← x + ∆ x, ny ← y + ∆ y 
+
+> 10:
+
+if 0 ≤ nx < w and 0 ≤ ny < h and not visited[ ny , n x] then  
+
+> 11:
+
+maze[ y + ∆ y/ 2, x + ∆ x/ 2] ← 1 ▷ carve wall  
+
+> 12:
+
+VISIT (nx, n y ) 
+
+> 13:
+
+end if  
+
+> 14:
+
+end for  
+
+> 15:
+
+end function  
+
+> 16:
+
+Call V ISIT (sx, s y ) 
+
+> 17:
+
+N ← ⌊ w 
+
+> 2
+
+⌋ · ⌊ h 
+
+> 2
+
+⌋ ▷ cell count as in code  
+
+> 18:
+
+for i = 1 to ⌊λN ⌋ do  
+
+> 19:
+
+repeat  
+
+> 20:
+
+Sample random interior coordinate (x, y ) 
+
+> 21:
+
+until maze[ y, x ] = 0 and (vertical or horizontal neighbors are both open)  
+
+> 22:
+
+maze[ y, x ] ← 1 ▷ add loop  
+
+> 23:
+
+end for  
+
+> 24:
+
+Ensure start and end positions are open.  
+
+> 25:
+
+return maze , (sx, s y ), (ex, e y )
+
+27 where each entry in B is sampled from N (0 , σ ′). Since the start and end states are fixed, they are not used as inputs. Finally, the temporal features and maze embedding are concatenated and passed through a deep ReLU MLP with l2
+
+layers and nr hidden neurons to produce the final prediction. The selection of the hyperparameters is summarized in Table 2. 
+
+# C Implementation of Unicycle with Model Predictive Control 
+
+We use w1 = 1 , w2 = 400 , w3 = 200 and w4 = 2 in (57). And we use two separate networks to predict the optimal control u∗(t) and the terminal time T ∗: ControlNet and TerminalTimeNet, respectively. ControlNet constructs a 12-dimensional obstacle token (center, width, height, and the initial and target states), embeds it into a 32-dimensional representation, and encodes time using 64-dimensional Fourier features projected into another 32-dimensional query token. These tokens are processed by a 2-layer Transformer encoder with 4 heads. The transformed query, combined with the mean-pooled obstacle features, is passed through a small MLP, and the outputs are scaled via tanh to produce bounded steering and acceleration controls. TerminalTimeNet builds a 12-dimensional feature vector for each obstacle (center, width, height, initial state, target state) and feeds it into a light MLP. The network consists of 2 fully connected layers with 32 hidden units and ReLU activations, producing a scalar terminal-time contribution for each obstacle. These contributions are averaged across all obstacles, and a softplus is applied to ensure a strictly positive predicted terminal time. During training, we fix the static-wall potential 
+
+> Nb1
+
+X
+
+> j=1
+
+Bj (x; aj , b j , c j , d j ),
+
+where we use three walls ( Nb1 = 3 ) with parameters [(0 .1, 0.25 , 0.4, 0.43) , (0 .5, 0.7, 0.67 , 0.7) , (0 .6, 0.63 , 0.2, 0.3)] .We generate 4000 training data, in each training sample, we randomly sample up to two Gaussian bumps ( Nb2 ≤ 2): 
+
+> Nb2
+
+X
+
+> l=1
+
+Nl(x; cl, σ l)
+
+where each bump center is drawn from cj ∼ U ([0 .25 , 0.8] 2), the standard deviation is fixed at σj = 0 .02 , and configurations overlapping with walls are discarded. The system dynamics are discretized uniformly with Nt = 80 .
+
+# References 
+
+[1] Samuel Ainsworth, Kendall Lowrey, John Thickstun, Zaid Harchaoui, and Siddhartha Srinivasa. Faster policy learning with continuous-time gradients. In Learning for Dynamics and Control , pages 1054–1067. PMLR, 2021. [2] Brandon Amos. Tutorial on amortized optimization. Foundations and Trends® in Machine Learning , 16(5):592– 732, 2023. [3] Behzad Azmi, Dante Kalise, and Karl Kunisch. Optimal feedback law recovery by gradient-augmented sparse polynomial regression. Journal of Machine Learning Research , 22(48):1–32, 2021. [4] Jostein Barry-Straume, Arash Sarshar, Andrey A Popov, and Adrian Sandu. Physics-informed neural networks for PDE-constrained optimization and control. Communications on Applied Mathematics and Computation ,pages 1–24, 2025. [5] Richard Bellman. Dynamic Programming . Princeton University Press, 1957. [6] Dimitri Bertsekas. Dynamic programming and optimal control: Volume I , volume 4. Athena scientific, 2012. [7] John T Betts. Practical methods for optimal control and estimation using nonlinear programming . SIAM, 2010. [8] Luke Bhan, Yuanyuan Shi, and Miroslav Krstic. Neural operators for bypassing gain and control computations in PDE backstepping. IEEE Transactions on Automatic Control , 69(8):5310–5325, 2023. [9] Lucas B¨ ottcher, Nino Antulov-Fantulin, and Thomas Asikis. AI Pontryagin or how artificial neural networks learn to control dynamical systems. Nature communications , 13(1):333, 2022. [10] Arthur Earl Bryson. Applied optimal control: optimization, estimation and control . Routledge, 2018. 28 [11] Ren´ e Caldentey and Martin Haugh. Optimal control and hedging of operations in the presence of financial markets. Mathematics of Operations Research , 31(2):285–304, 2006. [12] Eduardo F Camacho and Carlos Bordons. Constrained model predictive control. In Model predictive control ,pages 177–216. Springer, 2007. [13] Siddhartha P Chakrabarty and Floyd B Hanson. Optimal control of drug delivery to brain tumors for a distributed parameters model. In Proceedings of the 2005, American Control Conference, 2005. , pages 973–978. IEEE, 2005. [14] Ke Chen, Chunmei Wang, and Haizhao Yang. Deep operator learning lessens the curse of dimensionality for PDEs. arXiv preprint arXiv:2301.12227 , 2023. [15] Minshuo Chen, Haoming Jiang, Wenjing Liao, and Tuo Zhao. Nonparametric regression on low-dimensional manifolds using deep relu networks: Function approximation and statistical recovery. Information and Inference: A Journal of the IMA , 11(4):1203–1253, 2022. [16] Ricky TQ Chen, Yulia Rubanova, Jesse Bettencourt, and David K Duvenaud. Neural ordinary differential equa-tions. Advances in neural information processing systems , 31, 2018. [17] Cheng Chi. Neural control: Concurrent system identification and control learning with neural ODE. arXiv preprint arXiv:2401.01836 , 2024. [18] Gerard Cornuejols, Javier Pe˜ na, and Reha T¨ ut¨ unc¨ u. Optimization methods in finance . Cambridge University Press, 2018. [19] Nemanja Djuric, Jing Zhou, Robin Morris, Mihajlo Grbovic, Vladan Radosavljevic, and Narayan Bhamidipati. Hate speech detection with comment embeddings. In Proceedings of the 24th international conference on world wide web , pages 29–30, 2015. [20] Richard M Dudley. The sizes of compact subsets of hilbert space and continuity of gaussian processes. Journal of Functional Analysis , 1(3):290–330, 1967. [21] Divya Garg, Michael Patterson, William W Hager, Anil V Rao, David A Benson, and Geoffrey T Huntington. A unified framework for the numerical solution of optimal control problems using pseudospectral methods. 
+
+Automatica , 46(11):1843–1851, 2010. [22] Jiequn Han and Weinan E. Deep learning approximation for stochastic control problems. arXiv preprint arXiv:1611.07422, Deep Reinforcement Learning Workshop, NIPS , 2016. [23] Jiequn Han and Ruimeng Hu. Deep fictitious play for finding Markovian Nash equilibrium in multi-agent games. In Mathematical and scientific machine learning , pages 221–245. PMLR, 2020. [24] Jiequn Han and Ruimeng Hu. Recurrent neural networks for stochastic control problems with delay. Mathematics of Control, Signals, and Systems , 33(4):775–795, 2021. [25] Zhongkai Hao, Zhengyi Wang, Hang Su, Chengyang Ying, Yinpeng Dong, Songming Liu, Ze Cheng, Jian Song, and Jun Zhu. Gnot: A general neural operator transformer for operator learning. In International Conference on Machine Learning , pages 12556–12569. PMLR, 2023. [26] Matteo Hessel, Hubert Soyer, Lasse Espeholt, Wojciech Czarnecki, Simon Schmitt, and Hado Van Hasselt. Multi-task deep reinforcement learning with popart. In Proceedings of the AAAI Conference on Artificial Intelligence ,volume 33, pages 3796–3803, 2019. [27] Wei Hu, Yue Zhao, Jiequn Han, Jihao Long, et al. Learning free terminal time optimal closed-loop control of manipulators. In 2025 American Control Conference (ACC) , pages 127–133. IEEE, 2025. [28] Han Huang and Rongjie Lai. Unsupervised solution operator learning for mean-field games via sampling-invariant parametrizations. arXiv preprint arXiv:2401.15482 , 2024. [29] Matthew Kelly. An introduction to trajectory optimization: How to do your own direct collocation. SIAM review ,59(4):849–904, 2017. [30] Matthew Peter Kelly. OptimTraj: Trajectory Optimization for Matlab, 12 2022. [31] Diederik P Kingma and Jimmy Ba. Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980 , 2014. [32] Nikola Kovachki, Samuel Lanthaler, and Siddhartha Mishra. On universal approximation and error bounds for fourier neural operators. Journal of Machine Learning Research , 22(290):1–76, 2021. [33] Nikola Kovachki, Zongyi Li, Burigede Liu, Kamyar Azizzadenesheli, Kaushik Bhattacharya, Andrew Stuart, and Anima Anandkumar. Neural operator: Learning maps between function spaces with applications to PDEs. 
+
+Journal of Machine Learning Research , 24(89):1–97, 2023. 29 [34] Miroslav Krstic, Luke Bhan, and Yuanyuan Shi. Neural operators of backstepping controller and observer gain functions for reaction–diffusion PDEs. Automatica , 164:111649, 2024. [35] Karl Kunisch, Donato V´ asquez-Varas, and Daniel Walter. Learning optimal feedback operators and their sparse polynomial approximations. Journal of Machine Learning Research , 24(301):1–38, 2023. [36] Maxence Lamarque, Luke Bhan, Yuanyuan Shi, and Miroslav Krstic. Adaptive neural-operator backstepping control of a benchmark hyperbolic PDE. Automatica , 177:112329, 2025. [37] Samuel Lanthaler, Siddhartha Mishra, and George E Karniadakis. Error estimates for deeponets: A deep learning framework in infinite dimensions. Transactions of Mathematics and Its Applications , 6(1):tnac001, 2022. [38] Steven M LaValle. Planning algorithms . Cambridge university press, 2006. [39] Jae Yong Lee and Yeoneung Kim. Hamilton–Jacobi based policy-iteration via deep operator learning. Neuro-computing , page 130515, 2025. [40] Kimin Lee, Younggyo Seo, Seunghyun Lee, Honglak Lee, and Jinwoo Shin. Context-aware dynamics model for generalization in model-based reinforcement learning. In International Conference on Machine Learning , pages 5757–5766. PMLR, 2020. [41] Xingjian Li, Deepanshu Verma, and Lars Ruthotto. A neural network approach for stochastic optimal control. 
+
+SIAM Journal on Scientific Computing , 46(5):C535–C556, 2024. [42] Zijie Li, Kazem Meidani, and Amir Barati Farimani. Transformer for partial differential equations’ operator learning. arXiv preprint arXiv:2205.13671 , 2022. [43] Zongyi Li, Nikola Kovachki, Kamyar Azizzadenesheli, Burigede Liu, Kaushik Bhattacharya, Andrew Stuart, and Anima Anandkumar. Fourier neural operator for parametric partial differential equations. arXiv preprint arXiv:2010.08895 , 2020. [44] Zongyi Li, Hongkai Zheng, Nikola Kovachki, David Jin, Haoxuan Chen, Burigede Liu, Kamyar Azizzadenesheli, and Anima Anandkumar. Physics-informed neural operator for learning partial differential equations. ACM/IMS Journal of Data Science , 1(3):1–27, 2024. [45] Lu Lu, Pengzhan Jin, Guofei Pang, Zhongqiang Zhang, and George Em Karniadakis. Learning nonlinear op-erators via deeponet based on the universal approximation theorem of operators. Nature machine intelligence ,3(3):218–229, 2021. [46] Oliver GS Lundqvist and Fabricio Oliveira. Were residual penalty and neural operators all we needed for solving optimal control problems? arXiv preprint arXiv:2506.04742 , 2025. [47] Matteo Massaro, Stefano Lovato, Matteo Bottin, and Giulio Rosati. An optimal control approach to the minimum-time trajectory planning of robotic manipulators. Robotics , 12(3):64, 2023. [48] Sharath Matada, Luke Bhan, Yuanyuan Shi, and Nikolay Atanasov. Generalizable motion planning via operator learning. arXiv preprint arXiv:2410.17547 , 2024. [49] Saviz Mowlavi and Saleh Nabi. Optimal control of PDEs using physics-informed neural networks. Journal of Computational Physics , 473:111731, 2023. [50] Tenavi Nakamura-Zimmerer, Qi Gong, and Wei Kang. Adaptive deep learning for high-dimensional hamilton– jacobi–bellman equations. SIAM Journal on Scientific Computing , 43(2):A1221–A1247, 2021. [51] Tenavi Nakamura-Zimmerer, Qi Gong, and Wei Kang. Neural network optimal feedback control with guaranteed local stability. IEEE Open Journal of Control Systems , 1:210–222, 2022. [52] Ariel Norambuena, Marios Mattheakis, Francisco J Gonz´ alez, and Ra´ ul Coto. Physics-informed neural networks for quantum control. Physical Review Letters , 132(1):010801, 2024. [53] Derek Onken, Levon Nurbekyan, Xingjian Li, Samy Wu Fung, Stanley Osher, and Lars Ruthotto. A neural network approach applied to multi-agent optimal control. In 2021 European Control Conference (ECC) , pages 1036–1041. IEEE, 2021. [54] Stanley Osher, Zuoqiang Shi, and Wei Zhu. Low dimensional manifold model for image processing. SIAM Journal on Imaging Sciences , 10(4):1669–1690, 2017. [55] Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, et al. Pytorch: An imperative style, high-performance deep learning library. Advances in neural information processing systems , 32, 2019. [56] James Blake Rawlings, David Q Mayne, Moritz Diehl, et al. Model predictive control: theory, computation, and design , volume 2. Nob Hill Publishing Madison, WI, 2020. 30 [57] Lars Ruthotto, Stanley J Osher, Wuchen Li, Levon Nurbekyan, and Samy Wu Fung. A machine learning frame-work for solving high-dimensional mean field game and mean field control problems. Proceedings of the National Academy of Sciences , 117(17):9183–9193, 2020. [58] Daniel F Salas and Warren B Powell. Benchmarking a scalable approximate dynamic programming algorithm for stochastic control of grid-level energy storage. INFORMS Journal on Computing , 30(1):106–123, 2018. [59] Shai Shalev-Shwartz and Shai Ben-David. Understanding machine learning: From theory to algorithms . Cam-bridge university press, 2014. [60] Yongcun Song, Xiaoming Yuan, Hangrui Yue, and Tianyou Zeng. An operator learning approach to nonsmooth optimal control of nonlinear PDEs. arXiv preprint arXiv:2409.14417 , 2024. [61] Yunlong Song, Angel Romero, Matthias M¨ uller, Vladlen Koltun, and Davide Scaramuzza. Reaching the limit in autonomous racing: Optimal control versus reinforcement learning. Science Robotics , 8(82):eadg1462, 2023. [62] Matthew Tancik, Pratul Srinivasan, Ben Mildenhall, Sara Fridovich-Keil, Nithin Raghavan, Utkarsh Singhal, Ravi Ramamoorthi, Jonathan Barron, and Ren Ng. Fourier features let networks learn high frequency functions in low dimensional domains. Advances in neural information processing systems , 33:7537–7547, 2020. [63] Yuval Tassa, Nicolas Mansard, and Emo Todorov. Control-limited differential dynamic programming. In 2014 IEEE International Conference on Robotics and Automation (ICRA) , pages 1168–1175. IEEE, 2014. [64] Joshua B Tenenbaum, Vin de Silva, and John C Langford. A global geometric framework for nonlinear dimen-sionality reduction. science , 290(5500):2319–2323, 2000. [65] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. Advances in neural information processing systems , 30, 2017. [66] Deepanshu Verma, Nick Winovich, Lars Ruthotto, and Bart van Bloemen Waanders. Neural network approaches for parameterized optimal control. arXiv preprint arXiv:2402.10033 , 2024. [67] Sifan Wang, Mohamed Aziz Bhouri, and Paris Perdikaris. Fast PDE-constrained optimization via self-supervised operator learning. arXiv preprint arXiv:2110.13297 , 2021. [68] Sifan Wang, Hanwen Wang, and Paris Perdikaris. Learning the solution operator of parametric partial differential equations with physics-informed deeponets. Science advances , 7(40):eabi8605, 2021. [69] Yao Xuan, Robert Balkin, Jiequn Han, Ruimeng Hu, and Hector D Ceniceros. Optimal policies for a pandemic: A stochastic game approach and a deep learning algorithm. In Mathematical and Scientific Machine Learning ,pages 987–1012. PMLR, 2022. [70] Jinjun Yong, Xianbing Luo, and Shuyu Sun. Deep multi-input and multi-output operator networks method for optimal control of PDEs. Electronic Research Archive , 32(7):4291–4320, 2024. [71] Yue Zhao and Jiequn Han. Offline supervised learning vs online direct policy optimization: A comparative study and a unified training paradigm for neural network-based optimal feedback control. Physica D: Nonlinear Phenomena , 462:134130, 2024. [72] Mo Zhou, Jiequn Han, and Jianfeng Lu. Actor-critic method for high dimensional static Hamilton–Jacobi– Bellman partial differential equations based on neural networks. SIAM Journal on Scientific Computing ,43(6):A4043–A4066, 2021. [73] Wenxuan Zhou, Lerrel Pinto, and Abhinav Gupta. Environment probing interaction policies. arXiv preprint arXiv:1907.11740 , 2019. 31

@@ -1,0 +1,218 @@
+Title: Classifying long legal documents using short random chunks
+
+URL Source: https://arxiv.org/pdf/2512.24997v1
+
+Published Time: Thu, 01 Jan 2026 02:35:04 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# Classifying long legal documents using short random chunks 
+
+Luis Adrián Cabrera-Diego 
+
+Jus Mundi / 30 Rue de Lisbonne, 75008 Paris, France 
+
+a.cabrera@jusmundi.com 
+
+Abstract 
+
+Classifying legal documents is a challenge, be-sides their specialized vocabulary, sometimes they can be very long. This means that feeding full documents to a Transformers-based models for classification might be impossible, expen-sive or slow. Thus, we present a legal document classifier based on DeBERTa V3 and a LSTM, that uses as input a collection of 48 randomly-selected short chunks (max 128 tokens). Be-sides, we present its deployment pipeline using Temporal, a durable execution solution, which allow us to have a reliable and robust process-ing workflow. The best model had a weighted F-score of 0.898, while the pipeline running on CPU had a processing median time of 498 seconds per 100 files. 
+
+1 Introduction 
+
+Legal AI is the use of artificial intelligence tech-nologies, to help legal professionals in their heavy and redundant tasks (Zhong et al., 2020). And, while Legal AI is not new (Dale, 2019), processing legal documents is challenging. The main challenge is that legal documents are diverse, not only in their length, but also in their vocabulary, structure, subjectivity and scope (Mitchell, 2014; Trautmann, 2023). And while the two latter characteristics can be (partially) mini-mized by training tools using specialized corpora (Chalkidis et al., 2020), the first characteristic, i.e. length, cannot be. For instance, the longer the doc-ument, the harder to keep the correct contexts that are actually relevant for a task (Wagh et al., 2021). As well, when using Transformed-based technolo-gies, such as BERT (Devlin et al., 2019), the mem-ory consumption will explode the longer the input (Vaswani et al., 2017). And while there are now 
+
+Large Language Models (LLM) , such as GPT 1, that can process thousands of tokens, their use can be 
+
+> 1https://openai.com/
+
+expensive, or can have risks (Karla Grossenbacher, 2023; Cassandre Coyer and Isha Marathe, 2024; Fields et al., 2024). Therefore, we present a classifier capable of pro-cessing long legal documents, and can be deployed within in-house CPU servers. To achieve this, we have created a document classifier using DeBERTA V3 (He et al., 2021) and a LSTM , that uses a col-lection of 48 randomly-selected short chunks (the maximum size of the chunks is 128 tokens). As well, we describe how we used Temporal 2 to create durable workflows and to focus on the delivery of our classifier and not how to deal with the work-flows’ execution. The proposed model, has been trained and tested using a large multilingual collection of legal doc-uments of different lengths and that covers 18 classes. The classifier has a median weighted F-score of 0.898 and the median time for processing files using Temporal is 498 seconds per 100 files. 
+
+2 Related Work 
+
+Most of the works related to the classification of long documents rely on the splitting of documents. For instance, Pappagari et al. (2019) segment a long document into smaller chunks of 200 tokens, feed them into a BERT (Devlin et al., 2019) model, and propagate them into either an LSTM or a trans-former layer. CogLXT (Ding et al., 2020) is a clas-sifier that uses only key sentences as input; these are obtained using a model trained as a judge. Park et al. (2022) presented two baselines using BERT where relevant sentences, determined by TextRank 
+
+(Mihalcea and Tarau, 2004), or randomly selected ones, are concatenated to the first 512 tokens of a document. Others works have explored how to increase the input size of Transformer-based models. The best example is Longformer (Beltagy et al., 2020), a 
+
+> 2https://temporal.io/
+> arXiv:2512.24997v1 [cs.CL] 31 Dec 2025
+
+model that is capable of processing up-to 4,096 tokens by using a windowed local-context self-attention and a global attention. Nonetheless, this kind of models tend to suffer from large memory consumption and long processing time (Park et al., 2022). On the legal domain, we can highlight the fol-lowing works. Chalkidis et al. (2019) classified documents by training legal Doc2Vec embeddings (Le and Mikolov, 2014) and feeding them into a BiGRU with a Label-Wise Attention Network (Mul-lenbach et al., 2018). Similarly, Wan et al. (2019) trained legal Doc2Vec embeddings, but they fed them into a BiLSTM, with chunk attention layer. 
+
+LegalDB (Bambroo and Awasthi, 2021) and Law-former (Xiao et al., 2021) converted respectively 
+
+DistillBERT (Sanh et al., 2020) and a Chinese RoBERTa model (Cui et al., 2021) into a Long-former model. Both models were pre-trained using legal corpora. Similarly, Mamakas et al. (2022) converted LegalBERT (Chalkidis et al., 2020) into a legal hierarchical BERT, and a legal Longformer model which can process up to 8,192 tokens. 
+
+D2GCFL (Wang et al., 2022), is a legal docu-ment classifier that extracts relations and represent them into four graphs, which are fed into a graph attention network. Li et al. (2023) split legal con-tracts into smaller chunks, which are filtered using a logistic regression model and then, these are fed into a fine-tuned RoBERTa (Liu et al., 2019). Trautmann (2023) uses prompt chaining for clas-sifying legal documents. The author summarize a legal document, by creating recursively summaries of smaller chunks. The summary is sent to an LLM with a few-shot prompt. The prompt has examples that were generated using the summary approach. 
+
+3 Work’s Scope 
+
+This work presents a tool developed by and for Jus Mundi 3, a legal-tech company, with the purpose of solving an internal need. In other words, Jus Mundi wanted to create a legal document classifier, that can be used in multiple services and tools, internal and external, with the following characteristics: • Privacy-focused: Many LLMs use the data feed into the services to train future models, which, in the legal domain, might pose a pri-vacy risk. 
+
+> 3https://jusmundi.com/
+
+• Quick: The classifier needs to be used in some real-time tools, thus, speed is an essential as-pect to take into account. • Simple: Simple models are easier to maintain and to retrain if necessary. In other words, complex architectures, where multiples mod-els are necessary, such as CogLXT (Ding et al., 2020), are difficult to maintain due to their in-creased technical debt. As well, classifiers based on prompts are sometimes hard to main-tain if new classes are added or the LLM model is updated. • Not expensive: Some models found in the literature need expensive hardware, i.e. big GPUs with large amounts of VRAM, that for production environments might be too expen-sive to run on the long term. Thus, it is es-sential to create a solution that could run the inference task in servers with only CPUs or small GPUs. For achieving this objective, we decided to ex-plore the following hypothesis: It is possible to classify (long) legal documents using small and randomly-selected portions of text . This hypothesis is based on observations and results presented in previous research works. For instance, Ding et al. (2020); Park et al. (2022); Li et al. (2023) noticed that it is not necessary to pass the full document to classify it correctly. Moreover, a random selection of passages perform in some cases equally or even better than complex models such as those based on Longformer, CogLTX, or ToBERT (Park et al., 2022). 
+
+4 Methodology 
+
+We propose an architecture based on the multilin-gual DeBERTa V3 (He et al., 2021) model 4 and a LSTM. In detail, first, a collection of chunks, from a document, are passed through DeBERTa V3 to get their contextual embeddings. Then, the first token of each embedding, i.e. the [CLS] to-ken, is passed through a dense layer and a GELU activation, to get a context pool. 5 After that, the col-lection of context pools are fed into the LSTM. If available, additional features will be concatenated to the final state of the LSTM. The final state will 
+
+> 4https://huggingface.co/microsoft/mdeberta-v3-base
+> 5This is called a Context Pooler Layer, see: https://deberta.readthedocs.io/ DeBERTA V3
+> Context Pooler
+> LSTM
+> Additional
+> Features
+> Dense Layer
+> Softmax
+
+Figure 1: Proposed architecture of the classifier. 
+
+be fed then to a dense layer and a Softmax activa-tion for determining the class of the document. In Figure 1, we present the architecture. As indicated in Section 3, rather than feeding a full document, either as whole or split into small chunks, to the neural network, we decided to ran-domly sample chunks. Therefore, we explored three sample sizes, 20, 48 and 62. The sizes 20 and 62 were selected according to the paragraphs’ quartiles of the corpus (see Table 2); the size 48 was randomly chosen. 6
+
+To create the chunks, we split the documents into paragraphs 7. Then, each paragraph is tokenized and encoded with DeBERTa V3 tokenizer. If the generated chunk surpasses 128 tokens, they are sub-split with an overlapping stride of 16 tokens. The sampling is done over all the document’s encoded chunks, and they are fed into the neural network following the document’s order. Besides, we explored 3 types of document length representations as additional features 8: number of characters ( nc), number of paragraphs ( np), and approximate number of pages ( app = nc/1, 800 )9.To keep these features in a close range of values, all of them were represented using the natural loga-rithm. In Table 1, we present the hyperparameters used 
+
+> 6Although we tried to explore, larger contexts, up to sam-ples of 160 chunks, their training was complex. Those that we partially managed to train (80 and 120), were slower, used more memory, and were not better than those presented here.
+> 7Our data was originally in HTML, thus we used tags such as <p> (paragraph) and <li> (listing) for splitting the texts.
+> 8According to our legal experts, the document length could be a good discriminator of the classes.
+> 9We do not have the original number of pages for all docu-ments, this is why it is approximated.
+
+Table 1: Hyperparameters used for training the models using an NVIDIA - A100 80Gb. 
+
+Hyperparameter Value 
+
+Maximum Epochs 35 Early Stop Patience 5Learning Rate 2e-5 Scheduler Linear with warm-up Warm-up Ratio 0.1 Optimizer Lookahead (Zhang et al., 2019) AdamW with bias correction AdamW ϵ 1 × 10 −8
+
+Random Seed 12 Dropout rate 0.5 Weight decay 0.01 Recurrent layer size 128 Input chunk size 128 Batch 8Gradient accumulation 4Context stride 16 Subsample size 20, 48, 62 
+
+for training the classifier. Moreover, it should be noted that during the training process, the sampling process is done at the beginning of each epoch. In other words, in each epoch, we feed the neural net-work a collection of documents that has different chunks. The goal was to make more robust the training of the document classifier by providing different portions of text that could occur in a legal document. 
+
+5 Data 
+
+We use a proprietary multilingual legal corpus re-lated to the domain of legal arbitration and covering 25 languages 10 .All the documents were manually classified by legal experts into 18 classes throughout multiple years. In this work, we divided this corpus into 3 sets, train (80%), dev (10%), and test (10%); all the data is represented using JSON line files (JSONL). In Table 2, we present the corpus’ statistics. It should be seen that the approximate median number of pages of all the corpus is 7.3. As well, that the longest documents in the corpus are those belonging to the class Expert opinion (the median is 38.8 pages), while the shortest ones are those belonging to the class Other (the median is 1 page). 
+
+> 10 Certain documents have versions in multiple languages. For those cases, we only considered one language, giving priority to those different from English, French, Spanish and Portuguese, since these were the most frequent ones: 9,378, 1,602, 998, and 255 documents respectively.
+
+Table 2: Corpus’ statistics. The paragraphs’ quartiles are the documents’ ones, and not on those generated after the tokenizer. All the quartile figures are rounded, and those about characters are in thousands; Q2 is the median.                                                                                                                                               
+
+> Class Docs. Quartiles Characters [k] ncParagraphs np
+> Q1Q2Q3Q1Q2Q3
+> Amicus curiae 755 1.5 2.0 9.5 12 13 48 Contract 998 13.6 37.6 69.6 88 199 367 Decision 1,020 4.5 16.7 44.3 16 49 134 Discontinuance 155 2.9 4.6 8.6 22 36 57 Expert opinion 587 38.0 70.0 119.3 163 317 685 Notice of arbitr. 871 4.1 11.7 34.4 38 83 199 Notice of intent 250 7.0 17.6 30.6 54 103 168 Opinion 937 6.4 15.4 35.5 12 31 73 Other 1,000 1.4 1.8 3.2 14 17 32 Other requests 248 8.0 27.0 80.5 50 141 436 Pleadings 978 6.1 17.0 45.5 46 96 227 Procedural order 1,000 2.0 3.9 10.8 11 18 49 Publication 1,001 3.8 18.6 46.3 17 65 152 Rule 514 17.3 36.4 63.1 104 199 342 Settlement agrmt. 143 5.5 11.1 18.4 23 46 105 Treaty 966 13.8 16.3 21.2 62 73 95 Wiki 298 4.7 6.5 9.0 17 24 34 Witness stmt. 725 4.0 8.4 21.8 32 54 114
+> Total 12.4k 3.5 13.3 36.7 20 62 160
+
+These figures were calculated by diving the me-dian number of characters by 1,800 (number of characters in a standard page). 
+
+6 Deployment 
+
+Since the goal of the classifier is to be part of a larger project that will be used along other tools, such as an OCR, and a metadata extractor, we de-cided to deploy it within a processing pipeline. Specifically, we used Temporal , an open-source orchestrator that allow us creating robust and scal-able workflows, in a simple way. Where we focus only on the business logic, rather than coding as well, aspects such as distribution of tasks, queue systems and state capture. Thus, in this paper, we present the current workflow created in Temporal and its deployment. However, it should be indi-cated that the described pipeline will change in the near future, since we will add other components that currently are being implemented. Temporal uses 4 basic elements: Activities (a task or collection of simple tasks), Workflows (a collection of Activities), Queues (a waiting list of inputs for Activities and Workflows), and Workers 
+
+(a deployment instance that runs specific Activi-ties and/or Workflows and that listens a specific Queue). Moreover, each Activity and Workflow process only one input at the time, but multiple Activities and Workflows can be run at the same time. This can be done either by configuring the Workers limits or by deploying more Workers. All the input and outputs from/for a user (either a human or another system) are communicated using Temporal’s client. This client can call a specific workflow to run, with its respective input, and can either return an ID (to ask later for the status), or wait for the workflow to finish and return its output. 
+
+6.1 Pipeline 
+
+Our pipeline, at the current state, is composed of three Activities. The first one, a1, for a given direc-tory, it finds all the JSON files and produce a list of path files. The second one, a2, it reads a JSON file and validates it. The third one, a3, process the JSON file to create the input of the neural network and calls the neural network to infer the class. 11 
+
+Furthermore, this last Activity listens to its unique Queue, Qc, which is dedicated for documents ready to be classified, rather than the Queue Qio , which is for input-output processing. These Activities are split into two Workflows. The first Workflow, w1, calls a2 and a3; more-over, it creates batches of 10 documents to process. When a batch has been finished, if there are more documents to process, it will create a new Work-flow instance 12 . The second Workflow w2 calls Activity a1 and Workflow w1.Finally, we have designed two Workers. The Worker W1 is charged of sending data to the Queue 
+
+Qio , and it manages, a1 and a2, plus w2 and part of 
+
+w1. The Worker W2, connects only to the Queue 
+
+Qc, which means that it only runs a3. We can have as many instances of each worker, and all of them will be orchestrated by Temporal automati-cally. An API, deployed independently, sends the input to process to Temporal. In Figure 2, we have a diagram of Temporal’s pipeline architecture. 
+
+7 Results and Discussion 
+
+We present, in Table 3, the results of the top five models according to their weighted F-score over the dev set calculated during their training. 13 As 
+
+> 11 We did not use a different Activity for the creation of the neural network input, since it would have been too expensive to do. In other words, we would need to convert a document (JSON) into Numpy arrays (by tokenizing and encoding it) and then into a new JSON. Then this new JSON would have to be parsed to convert it into a Torch tensor.
+> 12 This is to avoid an explosion of the history event. See https://docs.temporal.io/develop/python/continue-as-new.
+> 13 We use the weighted F-score since the corpus is imbal-ance. Some classes in the dev and test set have as few as 14
+
+Table 3: The best five models based on the dev set, and the model trained with the smallest sampling size. For the results based on the test set, we present the distribution of the weighted F-score over 30 runs; Q2 is the median. 
+
+Sampling Additional Dev Weighted Test Weighted F-score Distribution size Features F-score Min Q1 Q2 Q3 Max 
+
+48 np nc app 0.896 0.883 0.887 0.891 0.893 0.896 48 nc 0.896 0.882 0.888 0.891 0.893 0.897 62 app 0.894 0.886 0.890 0.893 0.895 0.886 62 - 0.892 0.891 0.895 0.898 0.900 0.904 
+
+62 np 0.891 0.875 0.882 0.886 0.887 0.890 20 - 0.869 0.860 0.867 0.871 0.872 0.887 API 
+
+> Temporal Orchestrator
+> Temporal
+> Client
+
+Figure 2: Temporal’s pipeline architecture. Dashed lines are indirect communication managed by Temporal. 
+
+well, we present the result of the smallest sampling explored. It should be noted that the results, re-garding the test set (Table 3), were calculated over 30 runs. The reason is that since we do at run-time (either training or inference) a sampling of the documents’ paragraphs, each run will generate a different weighted F-score. Thus, in this way, we can have a better idea of the actual performance distribution for each model. In Table 3, we can observe that, in general, the models perform within a respectable range of val-ues over the test set, and no great variations are found. Moreover, there is no big difference be-tween the obtained weighted F-score on the dev set and the median ( Q2) obtained on the test set. This means that our approach of changing each epoch the chunks sent to the neural network made ours models robust. However, the best weighted F-score in the dev set did not reflect the best weighted F-score in the test set, although this can be seen as problematic, this was expected, since during the training we only run once per epoch the evaluation 
+
+> documents.
+
+on the dev set. 14 Interestingly, we can also notice in Table 3, that even as few as 20 chunks can be useful for classifying documents, although with a lesser performance, but still good enough for many tasks. We present, in Table 4, the median F-scores ob-tained per each class in the test set over 30 runs 15 
+
+regarding the best models found according to the dev and test sets. As we can see in Table 4, most of the median F-scores are greater than 0.800, few are the exceptions, such as Pleadings , Notice of intent ,and Settlement agreement . These last two classes of documents were some of the less frequent docu-ments in the training corpus. We want to highlight, that we decided to include the additional features because during the first ex-periments we were having issues differencing two classes, Notice of intent and Notice of Arbitration .Both are similar in structure, but according to our legal experts, the former tend to be shorter than the latter. Although, this is not supported according to the corpus’ statistics (Table 2), we considered that nevertheless, the additional features could im-prove in general the classification. Nonetheless, the addition or not of additional features did not im-prove the classification of Notice of intent , which was the class that was the most incorrectly mis-classified of all the dataset. While we consider that, maybe it is because Notice of intent is one of the less frequent documents in the corpus, we ask ourselves as well whether the issue comes as well from annotation errors, which might also explain the length disagreement between the facts and the legal knowledge of our team. Furthermore, it is interesting to notice, that there 
+
+> 14 In the future, we will add the possibility of running mul-tiple evaluations during the training, to be sure to select the actual best model.
+> 15 The same that were used for Table 3.
+
+Table 4: Median F-score per class on the test set . The results are concerning the best two models in the dev set (48 np nc app and 48 nc), and the best one in the test set (62 -). The median was calculated over 30 runs.                                                                                 
+
+> Class Median F-score Docs.
+> 48 npncapp 48 nc62 -Amicus curiae 0.888 0.889 0.911 75 Contract 0.934 0.940 0.934 100 Decision 0.901 0.912 0.902 102 Discontinuance 0.838 0.896 0.899 15 Expert opinion 0.887 0.864 0.859 58 Notice of arbitr. 0.811 0.833 0.845 87 Notice of intent 0.602 0.621 0.636 23 Opinion 0.952 0.951 0.945 93 Other 0.911 0.894 0.905 100 Other requests 0.880 0.851 0.897 25 Pleadings 0.708 0.726 0.757 97 Procedural order 0.931 0.930 0.945 100 Publication 0.957 0.943 0.951 93 Rule 0.949 0.949 0.940 51 Settlement agrmt. 0.750 0.750 0.720 14 Treaty 0.984 0.989 0.984 96 Wiki 0.982 0.981 1.000 28 Witness stmt. 0.825 0.816 0.845 72
+
+is not a clear relationship between low score, few documents and/or document length from compar-ing Table 2 and Table 4. For instance, Pleadings is a frequent class, but it had low performance. The reason is that some Notice of request and Other re-quests are sometimes considered as Pleadings . As well, in occasions Expert opinions were misclassi-fied as Witness statements , regardless of whether we used the additional features and the fact that the former tend to be the longest documents in the corpus. Something similar happens between Settle-ment agreement and Contracts , where the latter is sometimes the class predicted for the former docu-ments, despite their difference in length according to Table 2. 
+
+8 Deployment analysis 
+
+With respect to the deployment using Temporal, we consider it a useful and interesting tools for creating pipelines. For instance, it took us around 2 hours to develop a functional pipeline locally 16 ,and less than a week having a much more robust pipeline that we could deploy in our servers. As well, we really focused more on what we want the pipeline to do, rather than focusing on how to or-chestrate asynchronous tasks, workers, queues, etc. 
+
+> 16 This does not include reading the documentation or de-ploying the Temporal’s Orchestrator in our servers.
+
+For instance, it was very simple to indicate that if the reading or validation of a file was unsuccessful (e.g., does not exist or has the wrong format), the Activity should not be retried again, without failing the whole process (see Figure 3). But, if a Worker was down or stopped giving signals of being alive, the failed Activities should be retried n times. Also, it is very simple to scale horizontally, we just need to deploy another Worker, and Temporal will man-age the rest, e.g. sending to the Worker Activities that were waiting in the queue. In Temporal’s interface, we can see the work-flows’ event history (Figure 3). For example, we can see how long a Workflow/Activity took to start/finish, by which worker it was done, which were the errors, and how many times were retried. 17 
+
+Furthermore, encrypting and decrypting Tempo-ral’s payloads (messages send between Activities, Workflows and Workers), was extremely easy. The only issue we had not expected about Temporal’s payloads, was their limited size. In other words, Temporal communication between workflows and activities are done using gRPC 18 payloads, and these are limited in size: 2MB for requests and 4MB for event history. 19 Thus, we had to change how and how many documents we processed. In other words, we decided to split the list of docu-ments to process in batches of size 10; this splitting is done within Temporal’s logic, thus, for the user there is no further task to be done. We present, in Table 5, the time needed for run-ning 30 pipelines using Temporal for predicting 100 documents. The 100 documents were randomly sampled each run from the test set; the goal was to explore the functioning of the pipeline over differ-ent types of documents, and in consequence differ-ent combinations of lengths. As well, to explore whether a batch of 10 documents was a good fit for Temporal’s payloads. It should be noted that the results presented in Ta-ble 5 were done using a server that only has CPUs, and only one worker of each type ( W1 and W2)was deployed. As well, the inference time com-prises the reading and validation of the documents; in other words, it evaluated the full pipeline. We can observe, in Table 5, that the median  
+
+> 17 This does not replace tools such as DataDog, but it can help developers to better understand the pipeline.
+> 18 https://grpc.io/
+> 19 It is possible to increase their size, but the best practices indicate that it should be avoided in languages with garbage collection; and that the ideal size is in fact less than 1MB, and more around 16KiB to 64KiB. (a) Event history as a diagram. The first circle indicates when the task was received in the queue; the middle one is when it started to run; the last one is when it ended. The fourth Activity, enriched_file_to_input_activity , is red because it failed.
+> (b) Event history as a collection of payloads. We can observe the failed activity and the stack trace.
+
+Figure 3: Temporal’s event history. Despite errors in the workflow, the pipeline continued until completed. Table 5: Distribution of the time needed to run 30 Tem-poral pipelines. Each run processed 100 randomly sam-pled documents. Inference was done over a CPU server. 
+
+Time [seconds per 100 documents] Min Q1 Q2 Q3 Max 
+
+467.679 484.853 498.080 506.678 533.945 
+
+time to process 100 documents is 498.080 seconds (∼4.98 seconds per file). While it might not be bad for a CPU processing (see Park et al., 2022 for other comparisons), it is certainly far from the median (calculated over more than 300 runs) of 68.002 seconds that an NVIDIA A100 took for predicting the full test set (1,229 documents). 
+
+9 Conclusions and Future Work 
+
+Automatizing the classification of legal docu-ments, while necessary for simplifying the tasks of lawyers, can be challenging. This is due to the char-acteristics of legal documents, such as specialized vocabulary and length. In this work, we introduced how Jus Mundi solved an internal need by exploring the following hypothesis it is possible to classify (long) legal doc-uments using small and randomly-selected portions of text . This hypothesis was defined due to internal constraints, but also from observations and results that other researchers in the state-of-the-art have produced. Therefore, we presented the architecture and methodology for creating a classifier for legal documents that uses up to 48 random chunks of maximum 128 tokens. Furthermore, in this work, we explained how we deployed the classifier in our servers using Temporal, an open-source durable execution solution, for creating pipelines that could be used by our tools and services. The results obtained, showed that it is possible to classify documents correctly using random short chunks. Specifically, our models can reach a me-dian weighted F-score of 0.898 and a median speed of ∼4.98 seconds per file on a CPU server. As well, we noticed that the use of Temporal for creat-ing pipelines can simplify their design, coding and deployment. In the future, we want to convert our current Py-Torch model into a ONNX 20 one, using the ONNX Runtime 21 . The goal is to improve the inference by optimizing the model, even exploring its quan-
+
+> 20 https://onnx.ai/
+> 21 https://onnxruntime.ai
+
+tization. As well, we want to compress payloads using Zstandard 22 , for increasing Temporal’s batch size. And at the same time, we need to improve the batching logic used in the neural network when deployed using Temporal, since right now it only processes one document at the time. Finally, we want to analyze deeper the misclas-sified documents with our legal team, in order to better understand what could be the reasons for some of the errors presented in this work. And to analyze whether the language of a document plays a role regarding the classification problems of certain documents and how it affects the global performance of our legal document classifier. 
+
+Ethical considerations 
+
+All the documents used for the development of the classifiers were obtained fairly. In other words, these were either written by our legal team or obtained from public sources, collaborations and through partnerships that indicated that we could use their documents for training machine learning models. As well, documents with sensitive infor-mation were previously anonymized, by experts, and we, the developers of the classifier, did not have access to the original documents. 
+
+Acknowledgments 
+
+This work was possible due to the granted ac-cess of IDRIS (Institut du Développement et des Ressources en Informatique Scientifique) High-performance computing resources under the allo-cation 2024-AD011012667R3 made by GENCI (Grand Équipement National de Calcul Intensif). 
+
+References 
+
+Purbid Bambroo and Aditi Awasthi. 2021. LegalDB: Long DistilBERT for Legal Document Classification. In 2021 International Conference on Advances in Electrical, Computing, Communication and Sustain-able Technologies (ICAECT) , pages 1–4. Iz Beltagy, Matthew E. Peters, and Arman Cohan. 2020. Longformer: The Long-Document Trans-former. _eprint: 2004.05150. Cassandre Coyer and Isha Marathe. 2024. Legal Indus-try Players Missed a Microsoft AI Loophole That Could Expose Confidential Data. Law.com .
+
+> 22 https://facebook.github.io/zstd/
+
+Ilias Chalkidis, Emmanouil Fergadiotis, Prodromos Malakasiotis, and Ion Androutsopoulos. 2019. Large-Scale Multi-Label Text Classification on EU Legisla-tion. In Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics , pages 6314–6322, Florence, Italy. Association for Compu-tational Linguistics. Ilias Chalkidis, Manos Fergadiotis, Prodromos Malaka-siotis, Nikolaos Aletras, and Ion Androutsopoulos. 2020. LEGAL-BERT: The Muppets straight out of Law School. In Findings of the Association for Com-putational Linguistics: EMNLP 2020 , pages 2898– 2904, Online. Association for Computational Lin-guistics. Yiming Cui, Wanxiang Che, Ting Liu, Bing Qin, and Ziqing Yang. 2021. Pre-training with whole word masking for chinese bert. IEEE/ACM Transac-tions on Audio, Speech, and Language Processing ,29:3504–3514. Robert Dale. 2019. Law and Word Order: NLP in Legal Tech. Natural Language Engineering , 25(1):211– 217. Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2019. BERT: Pre-training of Deep Bidirectional Transformers for Language Un-derstanding. In Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Tech-nologies, Volume 1 (Long and Short Papers) , pages 4171–4186, Minneapolis, Minnesota. Association for Computational Linguistics. Ming Ding, Chang Zhou, Hongxia Yang, and Jie Tang. 2020. CogLTX: Applying BERT to Long Texts. In 
+
+Advances in Neural Information Processing Systems ,volume 33, pages 12792–12804. Curran Associates, Inc. John Fields, Kevin Chovanec, and Praveen Madiraju. 2024. A Survey of Text Classification With Trans-formers: How Wide? How Large? How Long? How Accurate? How Expensive? How Safe? IEEE Ac-cess , 12:6518–6531. Pengcheng He, Jianfeng Gao, and Weizhu Chen. 2021. DeBERTaV3: Improving DeBERTa using ELECTRA-Style Pre-Training with Gradient-Disentangled Embedding Sharing. CoRR ,abs/2111.09543. ArXiv: 2111.09543. Karla Grossenbacher. 2023. Employers Should Con-sider These Risks When Employees Use ChatGPT. 
+
+Bloomberg Law .Quoc Le and Tomas Mikolov. 2014. Distributed rep-resentations of sentences and documents. In Pro-ceedings of the 31st International Conference on Ma-chine Learning , volume 32 of Proceedings of Ma-chine Learning Research , pages 1188–1196, Bejing, China. PMLR. Zehua Li, Neel Guha, and Julian Nyarko. 2023. Don’t Use a Cannon to Kill a Fly: An Efficient Cascading Pipeline for Long Documents. In Proceedings of the Nineteenth International Conference on Artificial Intelligence and Law , ICAIL ’23, pages 141–147, Braga, Portugal. Association for Computing Machin-ery. Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Man-dar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. 2019. RoBERTa: A Robustly Optimized BERT Pretrain-ing Approach. Dimitris Mamakas, Petros Tsotsi, Ion Androutsopoulos, and Ilias Chalkidis. 2022. Processing Long Legal Documents with Pre-trained Transformers: Modding LegalBERT and Longformer. In Proceedings of the Natural Legal Language Processing Workshop 2022 ,pages 130–142, Abu Dhabi, United Arab Emirates (Hybrid). Association for Computational Linguistics. Rada Mihalcea and Paul Tarau. 2004. TextRank: Bring-ing order into text. In Proceedings of the 2004 Con-ference on Empirical Methods in Natural Language Processing , pages 404–411, Barcelona, Spain. Asso-ciation for Computational Linguistics. Jay A Mitchell. 2014. Document appreciation: some characteristics of legal documents (and talking with students about them). SSRN , page 18. James Mullenbach, Sarah Wiegreffe, Jon Duke, Jimeng Sun, and Jacob Eisenstein. 2018. Explainable predic-tion of medical codes from clinical text. In Proceed-ings of the 2018 Conference of the North American Chapter of the Association for Computational Lin-guistics: Human Language Technologies, Volume 1 (Long Papers) , pages 1101–1111, New Orleans, Louisiana. Association for Computational Linguis-tics. Raghavendra Pappagari, Piotr Zelasko, Jesús Villalba, Yishay Carmiel, and Najim Dehak. 2019. Hierarchi-cal Transformers for Long Document Classification. In 2019 IEEE Automatic Speech Recognition and Understanding Workshop (ASRU) , pages 838–844. Hyunji Park, Yogarshi Vyas, and Kashif Shah. 2022. Efficient Classification of Long Documents Using Transformers. In Proceedings of the 60th Annual Meeting of the Association for Computational Lin-guistics (Volume 2: Short Papers) , pages 702–709, Dublin, Ireland. Association for Computational Lin-guistics. Victor Sanh, Lysandre Debut, Julien Chaumond, and Thomas Wolf. 2020. Distilbert, a distilled version of bert: smaller, faster, cheaper and lighter. Preprint ,arXiv:1910.01108. Dietrich Trautmann. 2023. Large Language Model Prompt Chaining for Long Legal Document Clas-sification. _eprint: 2308.04138. Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, \Lukasz Kaiser, and Illia Polosukhin. 2017. Attention is all you need. In Advances in neural information pro-cessing systems , pages 5998–6008. Vedangi Wagh, Snehal Khandve, Isha Joshi, Apurva Wani, Geetanjali Kale, and Raviraj Joshi. 2021. Com-parative Study of Long Document Classification. In 
+
+TENCON 2021 - 2021 IEEE Region 10 Conference (TENCON) , pages 732–737. Lulu Wan, George Papageorgiou, Michael Seddon, and Mirko Bernardoni. 2019. Long-length Legal Docu-ment Classification. _eprint: 1912.06905. Qiqi Wang, Kaiqi Zhao, Robert Amor, Benjamin Liu, and Ruofan Wang. 2022. D2GCLF: Document-to-Graph Classifier for Legal Document Classification. In Findings of the Association for Computational Linguistics: NAACL 2022 , pages 2208–2221, Seattle, United States. Association for Computational Lin-guistics. Chaojun Xiao, Xueyu Hu, Zhiyuan Liu, Cunchao Tu, and Maosong Sun. 2021. Lawformer: A pre-trained language model for Chinese legal long documents. 
+
+AI Open , 2:79–84. Michael Zhang, James Lucas, Jimmy Ba, and Geof-frey E Hinton. 2019. Lookahead Optimizer: k steps forward, 1 step back. In Advances in Neural In-formation Processing Systems , volume 32. Curran Associates, Inc. Haoxi Zhong, Chaojun Xiao, Cunchao Tu, Tianyang Zhang, Zhiyuan Liu, and Maosong Sun. 2020. How does NLP benefit legal system: A summary of legal artificial intelligence. In Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics , pages 5218–5230, Online. Association for Computational Linguistics.

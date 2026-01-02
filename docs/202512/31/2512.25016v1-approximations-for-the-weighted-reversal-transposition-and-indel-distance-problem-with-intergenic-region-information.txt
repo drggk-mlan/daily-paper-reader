@@ -1,0 +1,440 @@
+Title: Approximations for the Weighted Reversal, Transposition, and Indel Distance Problem with Intergenic Region Information
+
+URL Source: https://arxiv.org/pdf/2512.25016v1
+
+Published Time: Thu, 01 Jan 2026 02:48:20 GMT
+
+Number of Pages: 12
+
+Markdown Content:
+# Approximations for the Weighted Reversal, Transposition, and Indel Distance Problem with Intergenic Region Information 
+
+Gabriel Siqueira 1, Alexsandro Oliveira Alexandrino 1, Zanoni Dias 11Instituto de Computac ¸ ˜ ao, Universidade Estadual de Campinas (Unicamp), Campinas, Brazil 
+
+> {gabriel.siqueira,alexsandro,zanoni }@ic.unicamp.br
+
+Abstract. Genome rearrangement distances are an established method in genome comparison. Works in this area may include various rearrangement op-erations representing large-scale mutations, gene orientation information, the number of nucleotides in intergenic regions, and weights reflecting the expected frequency of each operation. In this article, we model genomes containing at most one copy of each gene by considering gene sequences, with orientations, and representing intergenic regions according to their nucleotide lengths. We looked at a problem called Weighted Reversal, Transposition, and Indel Dis-tance, which seeks the minimal cost sequence composed by the rearrangement operations of reversals, transposition, and indels, capable of transforming one genome into another. We leverage a structure called Labeled Intergenic Break-point Graph to show an algorithm for that problem with guaranteed approxima-tions considering some sets of weights for the operations. 
+
+1. Introduction 
+
+In many scenarios of Computational Biology it is important to have some measure for the difference between two genomes considering some biological basis. If we are using genetic mutations, one such measure is the Genome Rearrangement distance, which seeks the shortest sequence of genome rearrangements (mutations that affect a large sequence of genetic material) capable of transforming one genome into the other. Two common rearrangements that are normally adopted in rearrangement prob-lems are reversals, which invert a sequence of genetic material, and transpositions, which exchange two consecutive sequences of genetic material. Those two operations are called conservative, because they only change the order and orientation of sequences of the ge-netic material. There are also non-conservative operations, such as the indel, which inserts or removes a sequence of genetic material. In this work, we assume that each gene can have at most one copy. With these re-strictions and considering only the sequence of genes, each with an associated orientation, we have the following known results: • If we are only considering reversals, finding the rearrangement distance can be done in polynomial time [Hannenhalli and Pevzner 1999]. 
+
+> This work appeared in the Proceedings of the XVIII Brazilian Symposium on Bioinformatics (BSB’2025).
+> arXiv:2512.25016v1 [cs.DS] 31 Dec 2025
+
+• If we are considering both operations of reversals and transpositions, finding the rearrangement distance is NP-hard [Oliveira et al. 2019a] and the best known ap-proximation is 2 [Walter et al. 1998]. • If we are considering both operations of reversals and indels, finding the rear-rangement distance can be done in polynomial time [Willing et al. 2021]. • If we are considering the operations of reversals, transpositions, and indels, find-ing the rearrangement distance is NP-hard and the best known approximation is 
+
+2 [Alexandrino et al. 2022, Alexandrino et al. 2023c]. Beyond using the sequence of genes, some works in genome rearrangements also consider information presented in intergenic regions (normally represented by the number of nucleotides contained therein). The following results consider this additional informa-tion: • If we are only considering reversals, finding the rearrangement distance is NP-hard and the best known approximation is 2 [Oliveira et al. 2021a]. • If we are considering both operations of reversals and transpositions, finding the rearrangement distance is NP-hard and the best known approximation is 
+
+3 [Oliveira et al. 2021b]. • If we are considering both operations of reversals and indels, finding the rear-rangement distance has unknown complexity and the best known approximation is 2.5 [Alexandrino et al. 2023a]. • If we are considering the operations of reversals, transpositions, and indels, find-ing the rearrangement distance is NP-hard and the best known approximation is 
+
+4 [Alexandrino et al. 2023b]. Another important variant of the genome rearrangement problems considers dis-tinct weights for each operation. This is important to overcome a tendency the algo-rithms have to prefer transpositions, which may be a problem in populations where another rearrangement is more likely to occur [Blanchette et al. 1996]. For instance, if reversals have a weight of 2 and transpositions have a weight of 3 there is an 1.5-approximation algorithm for the rearrangement problem that does not consider intergenic regions [Oliveira et al. 2019b] (if the ratio between the cost of reversals and transpositions is between 1 and 3 the approximation is lower or equal to 2 in this algorithm). In 2020, there was a study of weighted operations considering intergenic regions [Brito et al. 2020] with the description of approximations for different weight functions considering reversal, transpositions and indels, but the indels were only allowed to affect intergenic regions. In this work, we take another step in the study of genome rearrangement problems with weighted operations by considering weights for the operations of reversal, transpo-sition, and indel, such that the indels may also affect genes. For that goal, we apply some known results from the literature and prove the necessary facts to develop an algorithm and ensure its approximation factor. In Section 2, we provide some necessary definitions and a formal description of the problem. Afterward, in Section 3, we present the Labeled Intergenic Breakpoint Graph. Next, in Section 4 we describe an approximation algorithm for the rearrangement prob-lem considering intergenic regions and different weights for the operations of reversal, transposition, and indel. Finally, Section 5 concludes the paper. 2. Definitions 
+
+A genome G = ( S, ˘S) is represented by a string S, with size n, and a list of integers ˘S,with size n + 1 . For 1 ≤ i ≤ n, the element Si, in the i-th position of S, represents the 
+
+i-th gene of S and the i-th integer ˘Si of ˘S represents the number of nucleotides (size of the intergenic region) between Si−1 and Si, or before S1 if i = 0 . There is also an integer 
+
+˘Sn+1 representing the size of the intergenic region at the end of the genome. The alphabet 
+
+ΣS denotes the set of characters from S. We also encode gene orientation by assigning a 
+
++ or − sign to each element of S.Given a genome G = ( S, ˘S), the reversal ρ(i,j )(x,y ), with 1 ≤ i ≤ j ≤ n, 0 ≤ x ≤ ˘Si,and 0 ≤ y ≤ ˘Sj+1 is an operation that inverts a segment of G. This segment starts in the 
+
+x-th nucleotide of the intergenic region ˘Si and ends in the y-th nucleotide of the intergenic region ˘Sj+1 . The order and orientation of the genes and the order of the intergenic regions on this segment are inverted, resulting in a new genome G1 · ρ(i,j )(x,y ) = ( S′, ˘S′). Next, we show the application of this operation: 
+
+S = ( S1 S2 . . . S i Si+1 . . . S j . . . S n−1 Sn)˘S = ( ˘S1 ˘S2 . . . (x+x′) ˘Si+1 ˘Si+2 . . . ˘Sj (y+y′) . . . ˘Sn ˘Sn+1 )
+
+S′ = ( S1 S2 . . . −Sj . . . − Si+1 − Si . . . S n−1 Sn)˘S = ( ˘S1 ˘S2 . . . (x+y) ˘Sj . . . ˘Si+2 ˘Si+1 (x′+y′) . . . ˘Sn ˘Sn+1 )
+
+x′ = ˘Si − x, y′ = ˘Sj+1 − y
+
+Given a genome G = ( S, ˘S), the transposition τ (i,j,k )(x,y,z ), with 1 ≤ i < j < k ≤ n+1 ,
+
+0 ≤ x ≤ ˘Si, 0 ≤ y ≤ ˘Sj , and 0 ≤ z ≤ ˘Sk, is an operation that exchanges two segments of G. The first segment starts in the x-th nucleotide of the intergenic region ˘Si and ends in the y-th nucleotide of the intergenic region ˘Sj . The second segment starts in the y-th nucleotide of the intergenic region ˘Sj and ends in the z-th nucleotide of the intergenic region ˘Sk. The genes and intergenic regions of these segments are swapped, resulting in a new genome G · τ (i,j,k )(x,y,z ) = ( S′, ˘S′). Next, we show the application of this operation: 
+
+S = ( S1 . . . S i . . . S j−1 Sj . . . S k−1 . . . S n)˘S = ( ˘S1 . . . (x+x′) ˘Si+1 . . . ˘Sj−1 (y +y′) ˘Sj+1 . . . ˘Sk−1 (z + z′) . . . ˘Sn+1 )
+
+S′ = ( S1 . . . S j . . . S k−1 Si . . . S j−1 . . . S n)˘S′ = ( ˘S1 . . . (x+y′) ˘Sj+1 . . . ˘Sk−1 (z +x′) ˘Si+1 . . . ˘Sj−1 (y + z′) . . . ˘Sn+1 )
+
+x′ = ˘Si − x, y′ = ˘Sj − y, z′ = ˘Sk − z
+
+Given a genome G = ( S, ˘S), a sequence of genes (characters) A, with size |A|,and a sequence of intergenic regions (integers) ˘A, with size |A| + 1 , the insertion ϕ(i,A, ˘A)(x) ,with 1 ≤ i ≤ n and 0 ≤ x ≤ ˘Si, is an operation that inserts the sequences A and ˘A
+
+in G. The insertion occurs after the x-th nucleotide of the intergenic region ˘Si. After the insertion, we have a new genome G · ϕ(i,A, ˘A)(x) . Note that, if A is empty, the insertion only adds nucleotides in the intergenic region ˘Si. Next, we show the application of this operation: 
+
+S = ( S1 S2 . . . S i Si+1 . . . S n−1 Sn)˘S = ( ˘S1 ˘S2 . . . ˘Si−1 (x + x′) ˘Si+1 . . . ˘Sn ˘Sn+1 )
+
+S′ = ( S1 S2 . . . S i A1 A2 . . . A |A| Si+1 . . . S n−1 Sn)˘S′ = ( ˘S1 ˘S2 . . . ˘Si−1 (x + ˘A1) ˘A2 . . . ( ˘A|A|+1 +x′) ˘Si+1 . . . ˘Sn ˘Sn+1 )
+
+x′ = ˘Si − x
+
+Given a genome G = ( S, ˘S), the deletion ψ(i,j )(x,y ), with 1 ≤ i ≤ j ≤ n + 1 ,
+
+0 ≤ x ≤ ˘Si, and 0 ≤ y ≤ ˘Sj , is an operation that removes a segment of G. This segment starts in the x-th nucleotide of the intergenic region ˘Si and ends in the y-th nucleotide of the intergenic region ˘Sj . After the deletion, we have a new genome G · ψ(i,j )(x,y ). Note that, if i = j, the deletion only removes nucleotides in the intergenic region ˘Si. In that case, we require that 0 ≤ x ≤ y ≤ ˘Sj . Next, we show the application of this operation: 
+
+S = ( S1 S2 . . . S i−1 Si Si+1 . . . S j−1 Sj . . . S n−1 Sn)˘S = ( ˘S1 ˘S2 . . . ˘Si−1(x+x′) ˘Si+1 ˘Si+2 . . . ˘Sj−1 (y+y′) ˘Sj+1 . . . ˘Sn ˘Sn+1 )
+
+S = ( S1 S2 . . . S i−1 Sj . . . S n−1 Sn)˘S = ( ˘S1 ˘S2 . . . ˘Si−1(x + y′) ˘Sj+1 . . . ˘Sn ˘Sn+1 )
+
+x′ = ˘Si − x, y′ = ˘Sj − y
+
+When we want to discuss an operation that can be either an insertion or a deletion, we use the term indel. Given a genome G and a sequence of operations 
+
+R = ( β1, β 2, . . . , β |R|), where each βi can be a reversal, a transposition, or an indel, we denote by G · R the genome G · β1 · β2 · . . . · β|R|, which is the result of applying in order each operation of R to G.We are interested in comparing two genomes G1 and G2 that may have a distinct set of genes. So we need to insert or delete characters from the genomes. If we are allowed to insert or remove any segment of the genome then the problem becomes trivial, just remove the whole genome G1 and insert the genome G2. Consequently, we assume that only genes that appear exclusively in G1 can be deleted and only genes that appear exclusively in G2 can be inserted. However, we do not restrict which intergenic regions can be inserted or deleted. Considering that each gene can have at most one copy, we use the following rep-resentation for a pair of genomes G1 and G2. The genome G2, with m genes, is represented by the identity string ι = (+1 + 2 . . . + m), with all elements positive, and by the integer list ˘ι. The genome G1, with n genes, is represented by the string S and integer list ˘S, such that each character of S that corresponds to a gene present in G2 receives the same number used in ι, and the other characters are represented by the symbol α, because they need to be deleted and therefore do not need to be distinguished from one another. As we can delete or insert multiple consecutive characters and intergenic regions, we can combine any consecutive sequence of characters that appear only in ι or only in S (the intergenic regions between those characters are removed from ˘ι and ˘S). Consequently, we assume that there are no two consecutive characters in ι that appear only in ι, and there are no two consecutive characters α in S.We want to attribute a weight to each operation (reversal, transposition, or in-del). We denote the weight of a rearrangement β by W (β), and we denote the sum of the weights of all rearrangements of a sequence R by W (R). In the Intergenic Weighted Reversal, Transposition, and Indel Distance (IWRTID) problem, we are in-terested in a sequence of operations R that turns G1 into G2 such that the value of 
+
+W (R) is minimized. This problem is NP-hard even if all operations have the same weight [Alexandrino et al. 2023b]. 
+
+3. Labeled Intergenic Breakpoint Graph 
+
+To develop the new algorithms, we will use the Labeled Intergenic Breakpoint Graph presented in a previous study [Alexandrino et al. 2021]. To define this graph, we include two characters S0 = ι0 = 0 and Sn+1 = ιm+1 = m + 1 at the beginning and the end of the genomes G1 and G2. Let πS be the string S without the characters α. We denote by ΣπS the set of characters in πS and by Σι the set of characters in ι. We also defined 
+
+next (x, ΣπS ∩ Σι) = min (y ∈ ΣπS ∩ Σι|y > x ), for x ∈ ΣπS \ { m + 1 }.Given two genomes G1 = ( S, ˘S) and G2 = ( ι, ˘ι), the Labeled Intergenic Break-point Graph G(G1, G2) = ( V, E, w, ℓ ) is a graph with the vertex set V , the edge set E,the weight function w : E → N, and the label function ℓ : E → (Σ ι \ ΣπS ) ∪ { α}.The set V has a vertex +πS 
+
+> 0
+
+, a vertex −πSn+1 , and, for each character πSi , 1 ≤ i ≤ n, two vertices −πSi and +πSi . The edge set E is separated into the set Eo of origin edges and the set Et of target edges. For each 1 ≤ i ≤ n + 1 , there is an origin edge 
+
+oi = (+ πSi−1, −πSi ) with weight w(oi) equal to the sum of intergenic regions in ˘S be-tween the elements πSi−1 and πSi . The label ℓ(oi) is equal to α, if there is one α between 
+
+πSi−1 and πSi , or is empty otherwise. For every x ∈ ΣπS \ { m + 1 }, there is a target edge tx = (+ x, −next (x, ΣπS ∩ Σι)) with weight w(tx) equal to the sum of the inter-genic regions in ˘ι between x and next (x, ΣπS ∩ Σι). The label ℓ(tx) is equal to x + 1 , if 
+
+x + 1 ̸ = next (x, ΣπS ∩ Σι), or is empty otherwise. Each vertex from V has only one incident target edge and one incident origin edge. Consequently, there is a unique decomposition of G(G1, G2) into alternating cycles (cycles formed by interleave target and origin edges). One such cycle is called trivial if it has only one target and one origin edge, and it is called non-trivial otherwise. If some edge of a cycle has a label the cycle is called labeled , and it is called clean otherwise. A cycle C is balanced if the sum of the weights of the origin edges is equal to the sum of the weights of the target edges, and it is unbalanced otherwise. An unbalanced cycle is 
+
+positive if the sum of the weights of the origin edges is lower than the sum of the weights of the target edges, and it is negative otherwise. If a cycle is balanced and clean it is called 
+
+good , and it is called bad otherwise (if it is unbalanced or labeled). We use the following standard drawing of the graph G(G1, G2), which will help in the following definitions. We place all vertices aligned in the order +πS 
+
+> 0
+
+, −πS 
+
+> 1
+
+, +πS 
+
+> 1
+
+, . . . ,
+
+−πSn , +πSn , −πSn+1 . The origin edges are shown as horizontal lines. Note that these edges always connect two neighbor vertices, considering the order in which they are drawn. +0 −1 +1 +8 −8 −4 +4 −2 +2 +7 −7 +9 −9 −5 +5 −10                          
+
+> 3
+> α
+> 2012232
+> 3
+> 0
+> 2
+> 3
+> 3
+> 2
+> 6
+> 1
+> 3
+> 1
+> Figure 1. Standard drawing of the graph G(G1,G2)created from two genomes
+> G1=((+0 + α+1 −8 +4 +2 −7−9 +5 +10) ,(1 2 2 0 1 2 2 3 2)) and G2=((+0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +10) ,(3 0 1 1 3 0 2 1 3 1)) .Each color rep-resents a different cycle of the cycle decomposition of G(G1,G2).The weights (representing the intergenic regions) are indicated above each edge, and the la-bels (encoding the genes exclusive to one of the genomes) are indicated below each edge.
+
+The target edges are shown as arcs above the vertices. Figure 1 shows an example of the standard drawing of a breakpoint graph. In this graph, the black cycle is trivial, bad, labeled, and balanced, the red cycle is good, the blue cycle is bad, labeled, and positive, and the cyan cycle is bad, labeled, and negative. Considering the standard drawing, when traversing a cycle, starting from the right-most vertices being traversed from right to left starting always using an origin edge, we may traverse an origin edge from right to left or from left to right. If all origin edges of cycles are traversed from right to left, we call this cycle convergent , and we call it diver-gent otherwise. Given a non-trivial convergent cycle C. If the edges are traversed in order from right to left, then the cycles C is called non-oriented , and it is called oriented oth-erwise. In Figure 1, the cyan cycle is divergent, the red cycle is convergent and oriented, and the blue cycle is convergent and non-oriented. We will use c(G1, G2) and cg(G1, G2) to denote the number of cycles and the number of good cycles in G(G1, G2), respectively. For a rearrangement sequence R,let πS · β be the resulting πS after the application of the sequence R in G1 = ( S, ˘S).We use ∆c(G1, G2, β ) = ( |πS | + 1 − c(G1, G2)) − (|πS · R| + 1 − c(G1 · R, G2)) and 
+
+∆cg(G1, G2, β ) = ( |πS | + 1 − cg(G1, G2)) − (|πS · R| + 1 − cg(G1 · R, G2)) to describe the effect of this rearrangement on the number of cycles and vertices in the graph. Note that any distinction in the order of the genes of G1 and G2 will produce non-trivial cycles in G(G1, G2), any difference in the size of the intergenic regions in G1 and G2
+
+will produce unbalanced cycles in G(G1, G2), and any difference in the gene content of G1
+
+and G2 will produce labeled cycles in G(G1, G2). This leads us to the following remark. 
+
+Remark 1. G(G1, G2) has only trivial good cycles if and only if G1 = G2.
+
+Note that any operation of reversal and transposition applied to G1 can be seen as an operation that affects the graph G(G1, G2), changing the order of the vertices and replacing some origin edges according to the new order. The weights and labels of the new edges will be attributed according to the parameters of the operation and weights and labels of the edges that have been removed. Similarly, a deletion or insertion can be seen as changes to the weights and labels of the origin edges, with the possible inclusion of some vertices in the case of insertion. Note that an insertion that only affects inter-genic regions corresponds to adding weight to one of the origin edges. Considering the +0 −1 +1 +3 −3 +2 −2 −4                                             
+
+> 3
+> α
+> 242
+> 2
+> 1
+> 2
+> 3
+> +0 −1+1 −2+2 −3+3 −4
+> 2143
+> 2143
+> Figure 2. Given G1=((+0 +α+1 −3−2+4) ,(1 2242)) and G2=((+0 +1 +2 +3 +4) ,(2 1 2 3)) .A sequence of rearrangement operations being applied to the graph G(G1,G2), and the correspondent sequence applied to the genome G1producing the genome G2. The sequence is composed of: a virtual insertion in the cyan edge correspondent to the deletion ψ(4 ,4) (0 ,2) ; a reversal affect-ing the red edges correspondent to the reversal ρ(4 ,5) (1 ,0) ; a deletion in the blue edge correspondent to the deletion ψ(1 ,2) (0 ,0) .
+
+convenience of this type of operation, we also define the operation of adding weight to one of the target edges with a clean label. This is a virtual insertion because there is no rearrangement operation directly correspondent to it, but the following lemma allows us to use it. Figure 2 shows an example of the use of this lemma. 
+
+Lemma 1. If a sequence R of rearrangement operations (including virtual insertions in target edges with clean label) can transform G(G1, G2) into a graph with only good cycles, then there is a sequence R′ with at most as many rearrangements as R that transforms G1
+
+into G2.Proof. After the application of the operations from the sequence R in G(G1, G2) we have a new graph G(G′
+
+> 1
+
+, G′
+
+> 2
+
+), such that G′ 
+
+> 1
+
+= G′ 
+
+> 2
+
+(Remark 1). Note that G′ 
+
+> 1
+
+is the result of applying all non-virtual operations in G1, because the virtual insertion only affects target edges. Besides, the virtual insertion is the only operation that affects target edges with clean labels. Consequently, the only distinction between G′ 
+
+> 1
+
+and G2 is the size of some intergenic regions. We just have to apply deletions in each of these intergenic regions to turn G′ 
+
+> 1
+
+into G2. We can take R′ to be the sequence of non-virtual operations of R
+
+plus these deletions added to the end. Note that R′ has at most as many operations as 
+
+R, because the number of distinct intergenic regions between G′ 
+
+> 1
+
+and G2 is at most the number of virtual insertions in R.
+
+4. Approximation Algorithms 
+
+In this section, we present the approximation algorithm for the IWRTID problem. First, we establish how the operations can affect the values of ∆c and ∆cg.
+
+Lemma 2. [Bafna and Pevzner 1996, Theorem 1] For any reversal ρ, we have 
+
+∆c(G1, G2, ρ ) ≤ 1.
+
+Lemma 3. [Alexandrino et al. 2021, Lemma 2] For any reversal ρ, we have 
+
+∆cg(G1, G2, ρ ) ≤ 1.
+
+Lemma 4. For any indel δ, we have ∆c(G1, G2, δ ) ≤ 0.Proof. We can only delete characters α, so deletions cannot have ∆c(G1, G2, δ )̸ = 0 .Besides, for each cycle inserted in G(G1, G2) we must also insert at least one gene. Con-sequently, any change in c(G1, G2)) will be offset by a change in |πS |, so insertions cannot have ∆c(G1, G2, δ ) > 0.
+
+Lemma 5. [Alexandrino et al. 2021, Lemma 3] For any indel δ, we have 
+
+∆cg(G1, G2, δ ) ≤ 1.
+
+Lemma 6. [Bafna and Pevzner 1998, Lemma 2.1] For any transposition τ , we have 
+
+∆c(G1, G2, τ ) ≤ 2.
+
+Lemma 7. [Alexandrino et al. 2023b, Lemma 2] For any transposition τ , we have 
+
+∆cg(G1, G2, τ ) ≤ 2.
+
+In the next lemmas, we describe operations that can produce a positive value for 
+
+∆c or ∆cg depending on the characteristics of a given cycle C of the graph G(G1, G2).
+
+Lemma 8. [Alexandrino et al. 2021, Lemma 5] If there is in G(G1, G2) a trivial cycle C
+
+with an empty origin edge, such that C is unbalanced and the desire edge is empty or C
+
+is non-negative and the target edge has a non-empty label, then there exists an indel δ,such that ∆c(G1, G2, (δ)) = 0 and ∆cg(G1, G2, (δ)) = 1 .
+
+Lemma 9. [Alexandrino et al. 2021, Lemma 6] If there is in G(G1, G2) a trivial bad cycle 
+
+C, then there exists a sequence R with up to 2 indels, such that ∆c(G1, G2, R ) = 0 and 
+
+∆cg(G1, G2, R ) = 1 .
+
+Lemma 10. If there is in G(G1, G2) an unbalanced clean cycle C, then there exists an indel δ, such that ∆c(G1, G2, (δ)) = 0 and ∆cg(G1, G2, (δ)) = 1 .Proof. If C is positive, we apply an insertion that increases the weight of an origin edge of C to make C balanced. If C is negative, we apply a virtual insertion (that will be turned into a deletion in the end) that increases the weight of a target edge of C to turn C
+
+balanced. 
+
+Lemma 11. [Oliveira et al. 2021b, Lemma 4.6] If there is in G(G1, G2) an good oriented cycle C, then there exists a sequence R with 3 transpositions, such that ∆c(G1, G2, R ) = 2 
+
+and ∆cg(G1, G2, R ) = 2 .
+
+Lemma 12. If there is in G(G1, G2) an good oriented cycle C, then there exists a se-quence R with 1 transposition and up to 2 indels, such that ∆c(G1, G2, R ) = 2 and 
+
+∆cg(G1, G2, R ) = 2 .Proof. By Lemma 4.3 from a previous work [Oliveira et al. 2021b] we can apply one transposition that splits C into three cycles such that one of them is balanced, and there-fore good, because C is clean. We can balance the other two cycles with one indel each, as stated in Lemma 10. 
+
+Lemma 13. If there is in G(G1, G2) a bad oriented cycle C, then there exists a se-quence R with uma transposition and up to um indel, such that ∆c(G1, G2, R ) = 2 and 
+
+∆cg(G1, G2, R ) = 1 .Proof. By Lemma 12 from a previous work [Alexandrino et al. 2023b], there is a trans-position that turns C into three cycles such that one of them is a trivial non-negative cycle with a clean source edge. If necessary, we can apply Lemma 8 to turn this cycle good with one indel. 
+
+Lemma 14. [Alexandrino et al. 2021, Lemma 7] If there is in G(G1, G2) a labeled diver-gent cycle C, then there exists a sequence R with 1 reversal and up to 1 indel, such that 
+
+∆c(G1, G2, R ) = 1 and ∆cg(G1, G2, R ) = 1 .
+
+Lemma 15. [Alexandrino et al. 2021, Lemma 8] If there is in G(G1, G2) a good divergent cycle C, then there exists one reversal, such that ∆c(G1, G2, R ) = 1 and ∆cg(G1, G2, R ) = 1.
+
+Lemma 16. If there is no divergent cycles in G(G1, G2) and there are still nontrivial or bad cycles, then there exists a sequence R with 3 reversals and up to 2 indels, such that 
+
+∆c(G1, G2, R ) = 1 and ∆cg(G1, G2, R ) = 2 .Proof. If C is oriented, the result is direct from Lemma 9 from a previous work [Alexandrino et al. 2023a]. If C is non-oriented, the result is direct from Lemma 10 from the same work [Alexandrino et al. 2023a]. 
+
+Algorithm 1 The input is a pair of genomes G1 and G2. The output is a sequence S′′ of reversal, transposition and indel operations such that G1 · S′′ = G2.
+
+G ← G(G1, G2)
+
+S ← [ ] 
+
+while G has a cycle that is not good and trivial. do if there is a trivial bad cycle in G. then 
+
+S′ ← [δ] or [δ1, δ 2] ▷ Step I: lemmas 8 or 9. 
+
+else if there is an unbalanced clean cycle in G. then 
+
+S′ ← [δ] ▷ Step II: Lemma 10 
+
+else if there is a good oriented cycle in G. then 
+
+S′ ← [τ1, τ 2, τ 3] or [τ, δ 1, δ 2] ▷ Step III: lemmas 11 and 12 
+
+else if there is a bad oriented cycle in G. then 
+
+S′ ← [τ, δ ] ▷ Step IV: Lemma 13. 
+
+else if there is a labeled divergent cycle in G then 
+
+S′ ← [ρ, δ ] ▷ Step V: Lemma 14. 
+
+else if there is a good divergent cycle in G then 
+
+S′ ← [ρ] ▷ Step VI: Lemma 15. 
+
+else 
+
+S′ ← [ρ1, ρ 2, ρ 3, δ 1, δ 2] ▷ Step VII: Lemma 16. 
+
+end if 
+
+G ← G · S′
+
+S ← S + S′
+
+end while 
+
+S′′ ← S with the virtual insertions replaced by deletions at the end of the sequence. 
+
+return S′′ Let us consider the weight of an operation as a cost to apply it. To prove the approximation of Algorithm 1, we use the following value to describe the variation in 
+
+∆cg and ∆c per weight of the operations applied. 
+
+∆cc g(p1, p 2, G1, G2, R ) = p1∆cg(G1, G2, R ) + p2∆c(G1, G2, R )
+
+W (R)
+
+In this equation for ∆cc g, the parameters p1 and p2 control the contribution of ∆cg
+
+and ∆c and are useful to adjust this equation depending on the weights we are considering for the operations. In the following theorem, we show approximations for some choices of weights. The weights are motivated by the fact that transpositions cut the genome in more points, which makes them preferred by most algorithms. To investigate how weight variations af-fect approximation performance, we also tested scenarios with equal weights for reversals and indels, as well as cases where reversals have higher weights compared to indels. 
+
+Theorem 17. Algorithm 1 ensures the following approximations for the IWRTID problem: 
+
+• 3.33 , if W (ρ) = 2 , W (τ ) = 3 , W (δ) = 2 , p1 = 4 , and p2 = 1 .
+
+• 2.67 , if W (ρ) = 2 , W (τ ) = 3 , W (δ) = 1 , p1 = 1 , and p2 = 1 .
+
+• 2.5, if W (ρ) = 1 , W (τ ) = 2 , W (δ) = 1 , p1 = 4 , and p2 = 1 .
+
+• 2, if W (ρ) = 2 , W (τ ) = 4 , W (δ) = 1 , p1 = 1 , and p2 = 1 .Proof. Considering Remark 1 and the fact that at each iteration the algorithm finds a re-arrangement sequence with positive value for ∆c or ∆cg, eventually, the algorithm stops producing the desired sequence S′′ , capable of transforming G1 into G2. We must prove that the weight of this sequence is at most the desire approximation factor times the opti-mal weight. For that goal, it is enough to prove that this fact is valid for each step. For a reversal ρ, we know that ∆cc g(p1, p 2, G1, G2, (ρ)) ≤ p1+ p2  
+
+> W(ρ)
+
+(lemmas 2 and 3). Similarly, for a transposition τ , ∆cc g(p1, p 2, G1, G2, (τ )) ≤ 2( p1+ p2)    
+
+> W(τ)
+
+(lemmas 6 and 7), and for an indel δ, ∆cc g(p1, p 2, G1, G2, (δ)) ≤ p1  
+
+> W(δ)
+
+(lemmas 4 and 5). Consider ∆max =
+
+max 
+
+p1+ p2  
+
+> W(ρ)
+
+, 2( p1+ p2)    
+
+> W(τ)
+
+, p1 
+
+> W(δ)
+
+
+
+, which is the maximum possible value of ∆cc g produce by a single operation. Note that if a sequence of operations reaches this value, then the sequence is optimal. Let us look at the value of ∆cc g(p1, p 2, G1, G2, R ) for each step of Algorithm 1: • Step I: ∆I = ∆ cc g(p1, p 2, G1, G2, R ) = p1 
+
+> 2W(δ)
+
+• Step I: ∆I = ∆ cc g(p1, p 2, G1, G2, R ) = p1 
+
+> W(δ)
+
+• Step III: ∆II = ∆ cc g(p1, p 2, G1, G2, R ) = 2p1+2 p2     
+
+> min (3 W(τ),W (τ)+2 W(δ))
+
+• Step IV: ∆III = ∆ cc g(p1, p 2, G1, G2, R ) = p1+2 p2   
+
+> W(τ)+ W(δ)
+
+• Step V: ∆IV = ∆ cc g(p1, p 2, G1, G2, R ) = p1+p2  
+
+> W(ρ)+ W(δ)
+
+• Step VI: ∆IV = ∆ cc g(p1, p 2, G1, G2, R ) = p1+p2 
+
+> W(ρ)
+
+• Step VII: ∆V = ∆ cc g(p1, p 2, G1, G2, R ) = 2p1+2 p2  
+
+> 3W(ρ)+2 W(δ)
+
+For each step K, the applied sequence is within a factor of ∆max  
+
+> ∆k
+
+from the optimal. Consequently, the approximation factor of algorithm 1 is max (∆max  
+
+> ∆I
+
+, ∆max  
+
+> ∆II
+
+, ∆max  
+
+> ∆III
+
+, ∆max  
+
+> ∆IV
+
+, 
+
+> ∆max
+> ∆V
+
+, ∆max  
+
+> ∆V I
+
+, ∆max  
+
+> ∆V II
+
+). By replacing the values for W (ρ), W (τ ), W (δ), p1, and p2, we reach the informed approximations. 5. Conclusion 
+
+In this work, we investigated the genome rearrangement problem considering intergenic regions represented by their lengths and allowing reversal, transposition, and indel op-erations. We developed approximation algorithms with factors between 2 and 3.33 for distinct weights attributed to each operation. Our contribution represents a meaningful step toward developing algorithms for rearrangement distances that consider operation weights. The main novelty of our ap-proach is the integration of intergenic regions and indels in such problems. Nevertheless, as an initial effort, our study remains restricted to single-copy genes and a simplified representation of intergenic regions. In future works, this problem can be explored with some alternative representation of intergenic regions or without the restriction of a single copy of each gene. It is also relevant to perform tests with real genomes to observe if the weights are helpful in the estimation of the evolutionary distance between them. 
+
+Acknowledgment 
+
+This work was supported by the S˜ ao Paulo Research Foundation, FAPESP (grant 2021/13824-8). 
+
+References 
+
+Alexandrino, A. O., Brito, K. L., Oliveira, A. R., Dias, U., and Dias, Z. (2021). Reversal Distance on Genomes with Different Gene Content and Intergenic Regions Informa-tion. In Proceedings of the 8th International Conference on Algorithms for Compu-tational Biology (AlCoB’2021) , volume 12715, pages 121–133. Springer International Publishing. Alexandrino, A. O., Brito, K. L., Oliveira, A. R., Dias, U., and Dias, Z. (2023a). Reversal and indel distance with intergenic region information. IEEE/ACM Transactions on Computational Biology and Bioinformatics , 20(3):1628–1640. Alexandrino, A. O., Oliveira, A. R., Dias, U., and Dias, Z. (2022). Labeled Cycle Graph for Transposition and Indel Distance. Journal of Computational Biology , 29(03):243– 256. Alexandrino, A. O., Oliveira, A. R., Jean, G., Fertin, G., Dias, U., and Dias, Z. (2023b). Reversal and transposition distance on unbalanced genomes using intergenic informa-tion. Journal of Computational Biology , 30(8):861–876. Alexandrino, A. O., Siqueira, G., Brito, K. L., Oliveira, A. R., Dias, U., and Dias, Z. (2023c). Block interchange and reversal distance on unbalanced genomes. In Advances in Bioinformatics and Computational Biology , pages 1–13, Cham. Springer Nature Switzerland. Bafna, V. and Pevzner, P. A. (1996). Genome Rearrangements and Sorting by Reversals. 
+
+SIAM Journal on Computing , 25(2):272–289. Bafna, V. and Pevzner, P. A. (1998). Sorting by Transpositions. SIAM Journal on Discrete Mathematics , 11(2):224–240. Blanchette, M., Kunisawa, T., and Sankoff, D. (1996). Parametric Genome Rearrange-ment. Gene , 172(1):GC11–GC17. Brito, K. L., Jean, G., Fertin, G., Oliveira, A. R., Dias, U., and Dias, Z. (2020). Sorting by Genome Rearrangements on both Gene Order and Intergenic Sizes. Journal of Computational Biology , 27(2):156–174. Hannenhalli, S. and Pevzner, P. A. (1999). Transforming Cabbage into Turnip: Polyno-mial Algorithm for Sorting Signed Permutations by Reversals. Journal of the ACM ,46(1):1–27. Oliveira, A. R., Brito, K. L., Dias, U., and Dias, Z. (2019a). On the Complexity of Sorting by Reversals and Transpositions Problems. Journal of Computational Biology ,26:1223–1229. Oliveira, A. R., Brito, K. L., Dias, Z., and Dias, U. (2019b). Sorting by Weighted Rever-sals and Transpositions. Journal of Computational Biology , 26:420–431. Oliveira, A. R., Jean, G., Fertin, G., Brito, K. L., Bulteau, L., Dias, U., and Dias, Z. (2021a). Sorting Signed Permutations by Intergenic Reversals. IEEE/ACM Transac-tions on Computational Biology and Bioinformatics , 18(6):2870–2876. Oliveira, A. R., Jean, G., Fertin, G., Brito, K. L., Dias, U., and Dias, Z. (2021b). Sorting Permutations by Intergenic Operations. IEEE/ACM Transactions on Computational Biology and Bioinformatics , 18(6):2080–2093. Walter, M. E. M. T., Dias, Z., and Meidanis, J. (1998). Reversal and Transposition Dis-tance of Linear Chromosomes. In Proceedings of the 5th International Symposium on String Processing and Information Retrieval (SPIRE’1998) , pages 96–102, Los Alami-tos, CA, USA. IEEE Computer Society. Willing, E., Stoye, J., and Braga, M. (2021). Computing the Inversion-Indel Distance. 
+
+IEEE/ACM Transactions on Computational Biology and Bioinformatics , 18(6):2314– 2326.

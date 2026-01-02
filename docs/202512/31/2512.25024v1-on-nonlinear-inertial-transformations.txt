@@ -1,0 +1,2693 @@
+Title: On Nonlinear Inertial Transformations
+
+URL Source: https://arxiv.org/pdf/2512.25024v1
+
+Published Time: Thu, 01 Jan 2026 02:52:16 GMT
+
+Number of Pages: 22
+
+Markdown Content:
+# On Nonlinear Inertial Transformations 
+
+Nicholas Agia ∗
+
+University of New Hampshire, Department of Physics & Astronomy 
+
+Abstract 
+
+It is often assumed that the most general transformation between two inertial reference frames is affine linear in their Cartesian coordinates, an assumption which is however not true. We provide a complete derivation of the most general inertial frame transformation, which is indeed nonlinear; along the way, we shall find that the conditions of preserving the Law of Inertia take the form of Schwarzian differential equations, providing perhaps the simplest possible physics setting in which the Schwarzian derivative appears. We then demonstrate that the most general such inertial transformation which further preserves the speed of light in all directions is, however, still affine linear. Physically, this paper may be viewed as a reduction of the number of postulates needed to uniquely specify special relativity by one, as well as a proof that inertial transformations automatically imbue spacetime with a vector space structure, albeit in one higher dimension than might be expected. Mathematically, this paper may be viewed as a derivation of the higher-dimensional analog of the Schwarzian differential equation and its most general solution. 
+
+# Contents 
+
+1 Introduction and Summary 12 Derivation of the Inertiality Constraints 33 Solving the Constraint Equations 6
+
+3.1 Isolating f and the Schwarzian Differential Equation . . . . . . . . . . . . . . . . 73.2 Solving for gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11 
+
+4 Properties and Significance of the Nonlinear Transformations 12 
+
+4.1 Mathematical Structure . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12 4.2 Physical Structure . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15 
+
+5 The Higher-Dimensional Schwarzian Derivative 17 
+
+# 1 Introduction and Summary 
+
+Frameworks of relativity based on inertial reference frames and the transformations therebetween have a long history. Undoubtedly, the most famous and important such framework is that of special relativity, whose inertial transformations were discovered by Lorentz and by Poincar´ eand finally unified by Einstein in 1905 [1]. Despite the nonexistence of inertial reference frames in our physical Universe, the concept continues to be fundamental to the current description 
+
+> ∗Nicholas.Agia@unh.edu
+
+1
+
+> arXiv:2512.25024v1 [physics.class-ph] 31 Dec 2025
+
+of the Laws of Nature because general relativity is based on locally inertial frames through the equivalence principle [2], which is also why special-relativistic quantum field theories such as the Standard Model continue to be so useful in cases where the effects of gravitation are negligible. One of the most basic questions one can ask is the following: what is the most general possible inertial frame transformation between two inertial observers? To set up our conventions, let us denote by ( t,⃗ x) the spacetime coordinates of the first (“unprimed”) observer and by ( t ′,⃗ x ′) the spacetime coordinates of the second (“primed”) observer. We work in d − 1 spatial dimensions which we take to be the Euclidean space Rd−1 equipped with the usual Euclidean metric. We make no further assumptions about the structure of spacetime or about any dynamics of any physical theory. The frame transformation ( t,⃗ x) 7 → (t ′,⃗ x ′) allows us to transform the trajectory ⃗x(t) of any particle as measured in the unprimed frame, say, to the trajectory ⃗x ′(t′) of the same particle as measured in the primed frame. The only piece of information we are given is that the two reference frames are inertial, which here means that a trajectory with vanishing acceleration in one frame transforms to a trajectory with vanishing acceleration in the other frame, i.e. ⃗a(t) = 0 ⇐⇒ ⃗ a ′(t′) = 0; (1) we use the Cartesian coordinates for ⃗x in which the Euclidean metric takes the standard form, so that ⃗a(t) = d2⃗x(t) 
+
+> dt 2
+
+is the appropriate notion of acceleration. It is now a well-defined question to ask: what is the most general such inertial transformation ( t,⃗ x) 7 → (t ′,⃗ x ′)? On account of this being one of the most minimalistic questions one can ask in physics, it is somewhat surprising that a rigorous derivation of the answer does not appear to be readily available in the searchable literature. Often, it is simply assumed that an inertial transformation must be affine linear in the spacetime coordinates, i.e. of the form t′ = c1 +⃗c 2 ·⃗x + c 3t and ⃗x ′ =⃗c 4 + A⃗ x +⃗c 5t
+
+where the scalars c1 and c3, the vectors ⃗c 2,⃗c 4 and ⃗c 6 as well as the matrix A are all constant, but this assumption is wrong. In fact, even Einstein in his derivation of the Lorentz boost from postulates effectively assumed that the transformation had to be linear [1] 1. Of course, there is no issue with the framework of special relativity itself or its assumptions, but this specific assumption is actually unnecessary, as we shall see. The most general inertial transformation is, in fact, nonlinear; as proven below, such a transformation is not affine linear but rather projective linear in the spacetime coordinates, i.e. it takes the form 
+
+t′ = c1 +⃗c 2 ·⃗x + c 3tc6 +⃗c 7 ·⃗x + c 8t (2) ⃗x ′ =⃗ c 4 + A⃗ x +⃗c 5tc6 +⃗c 7 ·⃗x + c 8t , (3) where all coefficients involved are constant. Certainly, that these nonlinear transformations are indeed inertial is not new, and given that this question is hundreds of years old it seems likely that the derivation showing that they are the complete set of inertial transformations would have appeared somewhere at some point; nevertheless, the purpose of this paper is to provide a rigorous proof of this fact that is accessible to the modern audience. As a consequence, it demonstrates that the assumption of linearity (or, equivalently, homogeneity) in Einstein’s derivation is unnecessary, as the nonlinear transformations are eliminated upon demanding the preservation of the speed of light in all directions, thus decreasing the number of postulates needed to derive special relativity by one. A more interesting consequence is that inertial transformations can always be viewed as changes of basis in a (projectivized) vector space,  
+
+> 1In the 1923 English edition, Einstein’s words were “In the first place it is clear that the equations must be
+> linear on account of the properties of homogeneity which we attribute to space and time.”, which only hides the assumption in that of homogeneity; the point is that even this assumption is unnecessary.
+
+2automatically endowing spacetime with a vector space structure without first having to assume that spacetime is already a vector space. On the mathematics side, this derivation constitutes perhaps the simplest example in physics in which the famous Schwarzian derivative arises, a single-variable nonlinear differential operator with numerous applications. We shall be able to go even further and derive a suitable higher-dimensional version of the Schwarzian derivative and its associated differential equation, whose solutions are the projective linear transformations above. These constitute the main results of this paper. Everything contained below is quite elementary, both conceptually and computationally. The point is to provide a thorough proof of the foregoing statements, with all steps of the derivations being shown; we also shall not assume that the reader is familiar with projective geometry, so those and other mathematical details will be explained in greater detail than they otherwise would be, with the intention that this paper be accessible to a wide range of undergraduate students. The structure of this paper is as follows. In Section 2, we shall derive the coupled set of nonlinear partial differential equations satisfied by all inertial frame transformations, by all means a standard result. In Section 3, we shall obtain the most general solution to these equations by decoupling the temporal and spatial transformation functions and then solving them one at a time; it is here where the first decoupled equation for the temporal transformation function will be seen to be the Schwarzian differential equation. In Section 4, we shall detail some of the most important properties of the nonlinear inertial transformations, both from the mathematics perspective and from the physics perspective. Lastly, in Section 5, we shall prove that the inertiality constraints can be recast as a higher-dimensional Schwarzian differential equation, introducing a rank-4 totally symmetric nonlinear differential operator whose kernel consists of the projective linear transformations above. 
+
+# 2 Derivation of the Inertiality Constraints 
+
+Consider two inertial reference frames ( t,⃗ x) and ( t ′,⃗ x ′) whose coordinates are related to each other by the transformation 
+
+t′ = f (t,⃗ x) t = F (t ′,⃗ x ′) (4) ⃗x ′ =⃗g(t,⃗ x)⃗ x =⃗ G(t′,⃗ x ′); (5) by convention, let us say that each observer defines its coordinate system with itself forever at the spatial origin, so that for instance the trajectory ⃗x(t) of the primed observer as measured by the unprimed observer is given by the solution to ⃗g  t,⃗ x(t)  = 0. In full generality, the only condition placed on the above frame transformation so far is that it be invertible on some open connected subset Ω ⊂ R × Rd−1, as both ( t,⃗ x) ∈ Ω and ( t ′,⃗ x ′) ∈ Ω′ ≡ (f,⃗ g )(Ω) by definition should provide unique coordinates to each spacetime point in the overlap of the domains of validity of the respective observers. The fundamental task of interest to the relativity of point particles is to transform any trajectory ⃗x(t) of a point particle measured in the ( t,⃗ x) frame to the analogous trajectory ⃗x ′(t′) as measured in the ( t′,⃗ x ′) frame. This transformation is effected by the fact that the new independent variable t′ is the time at which the particle has coordinates ( t′,⃗ x ′(t′)) in the new frame corresponding to the original time coordinate t at which this particle has coordinates ( t,⃗ x(t)) in the original frame, which defines the function 
+
+t(t′) between the independent variables for this trajectory in the two frames. The physical requirement that both t and t′ be valid time coordinates is the condition that this function 
+
+t(t′) also be invertible as a trajectory-dependent map t  t,⃗ x(t)  ∈ Ω → t′  t′,⃗ x ′(t′) ∈ Ω′ ,namely 
+
+t′(t) = f  t,⃗ x(t)  ⇐⇒ t(t′) = F  t′,⃗ x ′(t′). (6) 3Of course, this invertibility depends also on the trajectory ⃗x(t) under consideration, and so the injectivity of t(t′) places restrictions on the allowed particle trajectories themselves if one assumes that ( t,⃗ x) 7 → (t ′,⃗ x ′) is a valid local frame transformation, providing one of the simplest connections between kinematics and dynamics 2. Since we would like to construct the most general possible inertial frame transformation, the only assumption we should make is that sufficiently many linear trajectories with different velocities are allowed, to be clarified below. As a result, that t′(t) and t(t′) are true inverses here merely serves to eliminate the pathological transformations ( t,⃗ x) 7 → (t ′,⃗ x ′); for instance, the trivial trajectories ⃗x(t) = 0 and ⃗x ′(t′) = 0 corresponding to the two observers always exist, which requires both f (t, 0) and F (t′, 0) to be invertible functions of their respective variables on their respective domains. We slightly expand this condition by requiring that the constant trajectories ⃗x(t) = ⃗x 0 and ⃗x ′(t′) = ⃗x ′ 
+
+> 0
+
+are also allowed for all fixed ⃗x 0 and ⃗x ′ 
+
+> 0
+
+in the relevant domains, which imposes the invertibility of f (t,⃗ x)and F (t′,⃗ x ′) at constant ⃗x and ⃗x ′, respectively. Now, the transformation ⃗x ′(t′) of any allowed trajectory ⃗x(t) can be obtained either as the solution to ⃗x ′(t′) = ⃗g
+
+
+
+F  t′,⃗ x ′(t′),⃗ x  F  t′,⃗ x ′(t′) 
+
+, (7) or as the solution to ⃗x  F  t′,⃗ x ′(t′) =⃗ G t′,⃗ x ′(t′), (8) which are equivalent due to the invertibility conditions above. While the latter equation is often seen as more palatable from the point of view of computing the explicit form of the transformed trajectory, it is the former equation which most easily lends itself to the computation of the transformed velocity. From now on, we shall employ standard index notation and summation conventions for spatial quantities, for instance writing the spatial coordinates ⃗x as x i where 
+
+i ∈ { 1, 2, . . . , d − 1}. Furthermore, to derive the transformation of acceleration, we now assume that the functions f (t,⃗ x) and each g i(t,⃗ x) are twice continuously differentiable, i.e. elements of 
+
+C2(Ω). In particular, the aforementioned invertibility of t(t′) means that the map t 7 → t′(t) is a diffeomorphism on its domain t  t,⃗ x(t)  ∈ Ω . Then, directly differentiating (7) immediately yields the familiar result 3
+
+v′i(t′) = 1
+
+> dt ′(t)
+> dt
+
+ddt (t′)
+
+h
+
+gi
+
+t(t′),⃗ x  t(t′)i 
+
+= 
+
+> ∂g i
+> ∂t
+
++ ∂g i 
+
+> ∂x j
+
+vj∂f ∂t + ∂f ∂x k vk , (9)                     
+
+> 2For instance, this invertibility under arbitrary Lorentz boosts is the simplest way to derive that the speed of any particle in special relativity must forever remain below the speed of light, forever remain at the speed of light or forever remain above the speed of light, which does not rely on any dynamics whatsoever or energy considerations.
+> 3It is a good exercise (in calculus and in index manipulation) for a student to derive this result the hard way from (8) instead. From that equation, the transformed velocity is the solution to
+> ∂G i
+> ∂x ′jv′j=vi∂f ∂t +∂f ∂x jvj−∂G i
+> ∂t ′.
+> Then, one has to derive the spatial inverse
+>   ∂G ∂x ′
+> −1ij
+> =∂g i
+> ∂x j−1
+> ∂f ∂t
+> ∂g i
+> ∂t ∂f ∂x j
+> and hence   ∂G ∂x ′
+> −1ij
+> ∂G j
+> ∂t ′=−1
+> ∂f ∂t
+> ∂g i
+> ∂t ,
+> after which (9) follows.
+
+4where we have suppressed most of the arguments for clarity but it is understood that each term is a function of t′ alone, and one further derivative with respect to the sole independent variable 
+
+t′ yields the transformed acceleration. Specifically, the acceleration of the particle in the new frame in terms of its acceleration and velocity in the old frame is 
+
+a′i = 1
+
+ ∂f ∂t + ∂f ∂x m vm
+
+3
+
+(  ∂f ∂t ∂g i
+
+∂x j − ∂f ∂x j
+
+∂g i
+
+∂t +
+
+ ∂f ∂x k
+
+∂g i
+
+∂x j − ∂f ∂x j
+
+∂g i
+
+∂x k
+
+
+
+vk
+
+
+
+aj
+
++ ∂f ∂t ∂2gi
+
+∂t 2 − ∂2f∂t 2
+
+∂g i
+
+∂t +
+
+ ∂f ∂x j
+
+∂2gi
+
+∂t 2 + 2 ∂f ∂t ∂2gi
+
+∂t∂x j − 2 ∂2f∂t∂x j
+
+∂g i
+
+∂t − ∂2f∂t 2
+
+∂g i
+
+∂x j
+
+
+
+vj
+
++
+
+ ∂f ∂t ∂2gi
+
+∂x j ∂x k + 2 ∂f ∂x j
+
+∂2gi
+
+∂t∂x k − 2 ∂2f∂t∂x j
+
+∂g i
+
+∂x k − ∂2f∂x j ∂x k
+
+∂g i
+
+∂t 
+
+
+
+vj vk
+
++
+
+ ∂f ∂x j
+
+∂2gi
+
+∂x k∂x ℓ − ∂2f∂x j ∂x k
+
+∂g i
+
+∂x ℓ
+
+
+
+vj vkvℓ
+
+)
+
+, (10) where as usual all quantities are implicitly expressed as functions of t′ everywhere. Without invoking any additional postulates, the only piece of information we know about two inertial reference frames is that a vanishing acceleration in one frame implies a vanishing acceleration in the other frame irrespective of velocity. That is, assuming both frames are inertial, ai = 0 must imply a′i = 0 for all allowed constant velocities vi. If the set of allowed constant velocities has a continuous part, then this property is possible if and only if just the term linear in aj
+
+survives; we shall assume either that such a continuous part exists or otherwise that this set is discrete but contains sufficiently many non-collinear velocities so that the conditions below still hold. Hence, we automatically know that the transformation of acceleration between inertial 
+
+frames must be given by inertial transformation: a′i = 
+
+> ∂f ∂t ∂g i
+> ∂x j
+
+− ∂f ∂x j 
+
+> ∂g i
+> ∂t
+
++
+
+ ∂f ∂x k 
+
+> ∂g i
+> ∂x j
+
+− ∂f ∂x j
+
+> ∂g i
+> ∂x k
+
+
+
+vk
+
+ ∂f ∂t + ∂f ∂x ℓ vℓ
+
+3 aj . (11) Inertiality requires that the sum of the other terms in the general acceleration transformation (10) vanish for all possible allowed constant velocities vi. Since the term ∂f ∂t + ∂f ∂x m vm in the denominator is always strictly finite (because it equals dt ′(t) 
+
+> dt
+
+and t′(t) is necessarily differentiably invertible), the constraints imposed by inertiality are the separate vanishing of the rank-1, -2, -3 and -4 coefficients in the velocity expansion in (10). Therefore, the frame transformation 
+
+t′ = f (t,⃗ x) and x ′i = gi(t,⃗ x) is inertial over its domain of validity if and only if the following conditions hold: 0 !
+
+= ∂f ∂t ∂2gi
+
+∂t 2 − ∂2f∂t 2
+
+∂g i
+
+∂t (12) 0 !
+
+= ∂f ∂x j
+
+∂2gi
+
+∂t 2 + 2 ∂f ∂t ∂2gi
+
+∂t∂x j − 2 ∂2f∂t∂x j
+
+∂g i
+
+∂t − ∂2f∂t 2
+
+∂g i
+
+∂x j (13) 0 !
+
+= ∂f ∂t ∂2gi
+
+∂x j ∂x k + 2 ∂f ∂x (j
+
+∂2gi
+
+∂t∂x k) − 2 ∂2f∂t∂x (j
+
+∂g i
+
+∂x k) − ∂2f∂x j ∂x k
+
+∂g i
+
+∂t (14) 0 !
+
+= ∂f ∂x (j
+
+∂2gi
+
+∂x k∂x ℓ) − ∂2f∂x (j ∂x k
+
+∂g i
+
+∂x ℓ) , (15) where we use the notation ( · · · ) to indicate total symmetrization in the enclosed indices with 5unit weight, for example 4 A(iBj) ≡ 12 (AiBj + Bj Ai). The derivation of (12)-(15) is completely standard and uninteresting; we include it in part for completeness but more importantly in order to emphasize the precise assumptions made in this paper and how they enter. What is not standard, and does not even seem to be readily accessible, is a rigorous derivation of the most general solution to these constraint equations, which we provide below. It is admittedly understandable that one may not wish to attempt to solve a system of coupled nonlinear partial differential equations, especially when it is obvious that any f (t,⃗ x) and g i(t,⃗ x) consisting of affine-linear functions in space and time yields a solution. Nevertheless, these equations are still homogeneous and bilinear with constant coefficients, allowing us to decouple the equations and solve them completely, which will yield the most general nonlinear solution. 
+
+# 3 Solving the Constraint Equations 
+
+We now proceed to solve the inertiality constraint equations (12)-(15) where f (t,⃗ x) and g i(t,⃗ x)are now taken to be elements of C3(Ω) and not merely C2(Ω); the property of being thrice continuously differentiable is what will enable us to decouple the equations. On account of the physical condition that ∂f ∂t be nonzero everywhere on Ω, we first rewrite the constraint equations (12)-(15) as 
+
+∂2gi
+
+∂t 2!
+
+=
+
+> ∂g i
+> ∂t ∂f ∂t
+
+∂2f∂t 2 (16) 2 ∂2gi
+
+∂t∂x j
+
+> !
+
+= 
+
+> ∂f ∂t ∂g i
+> ∂x j
+
+− ∂f ∂x j
+
+> ∂g i
+> ∂t
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2 
+
+> ∂g i
+> ∂t ∂f ∂t
+
+∂2f∂t∂x j (17) 
+
+∂2gi
+
+∂x j ∂x k
+
+> !
+
+= −
+
+> ∂f ∂x (j
+
+ ∂f ∂t ∂g i 
+
+> ∂x k)
+
+− ∂f ∂x k)
+
+> ∂g i
+> ∂t
+
+  ∂f ∂t 
+
+3
+
+∂2f∂t 2 + 2 
+
+ ∂f ∂t ∂g i 
+
+> ∂x (j
+
+− ∂f ∂x (j
+
+> ∂g i
+> ∂t
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t∂x k) +
+
+> ∂g i
+> ∂t ∂f ∂t
+
+∂2f∂x j ∂x k (18) 0 !
+
+=
+
+ ∂f ∂t ∂g i
+
+∂x (j − ∂f ∂x (j
+
+∂g i
+
+∂t 
+
+ " ∂f ∂x k
+
+> ∂f ∂x ℓ)
+
+  ∂f ∂t 
+
+3
+
+∂2f∂t 2 − 2
+
+> ∂f ∂x k
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t∂x ℓ) + 1
+
+> ∂f ∂t
+
+∂2f∂x k∂x ℓ)
+
+#
+
+. (19) The physicality conditions on the frame transformation require that ∂f ∂t ∂g i 
+
+> ∂x j
+
+− ∂f ∂x j 
+
+> ∂g i
+> ∂t
+
+be an invertible matrix; denoting the spacetime Jacobian by 
+
+J ≡
+
+> ∂f ∂t ∂f ∂x j
+> ∂g i
+> ∂t ∂g i
+> ∂x j
+
+!
+
+, (20) this invertibility follows from 5
+
+det 
+
+ ∂f ∂t ∂g i
+
+∂x j − ∂f ∂x j
+
+∂g i
+
+∂t 
+
+
+
+=
+
+ ∂f ∂t 
+
+d−1
+
+det J. (21) 
+
+> 4
+
+The general rank-n index symmetrization is given by 
+
+A(i1 
+
+> 1
+
+Ai2 
+
+> 2
+
+· · · Ain) 
+
+> n
+
+≡ 1
+
+n!
+
+X
+
+> σ∈Sn
+
+Aiσ(1)  
+
+> 1
+
+Aiσ(2)  
+
+> 2
+
+· · · Aiσ(n) 
+
+> n
+
+,
+
+where Sn is the group of permutations of the set {1, 2, . . . , n }.
+
+> 5
+
+It is worth noting that the nonvanishing of det J and of ∂f ∂t does not by itself imply the invertibility of the spatial Jacobian ∂g i 
+
+> ∂x j
+
+; rather, it implies that the kernel of ∂g i 
+
+> ∂x j
+
+is at most one-dimensional. However, the nonvanishing of det J, of ∂f ∂t and of ∂F ∂t ′ does indeed imply that ∂g i 
+
+> ∂x j
+
+is invertible, because 
+
+∂F ∂t ′ = det   ∂g ∂x 
+
+ 
+
+> ∂f ∂t
+
+det   ∂g ∂x 
+
+ − ∂f ∂x i adj   ∂g ∂x 
+
+ij∂g j
+
+> ∂t
+
+,
+
+6Then, multiplying the final condition above by the inverse of this matrix yields 0 !
+
+= δi(j
+
+" ∂f ∂x k
+
+> ∂f ∂x ℓ)
+
+  ∂f ∂t 
+
+3
+
+∂2f∂t 2 − 2
+
+> ∂f ∂x k
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t∂x ℓ) + 1
+
+> ∂f ∂t
+
+∂2f∂x k∂x ℓ)
+
+#
+
+, (22) and now contracting i with ℓ immediately says that the symmetric quantity in brackets identi-cally vanishes, i.e. 
+
+∂2f∂x j ∂x k
+
+> !
+
+= −
+
+> ∂f ∂x j
+> ∂f ∂x k
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2 
+
+> ∂f ∂x (j
+> ∂f ∂t
+
+∂2f∂t∂x k) , (23) on account of which the third condition above simplifies to 
+
+∂2gi
+
+∂x j ∂x k
+
+> !
+
+= ∂g i
+
+∂x (j
+
+"
+
+−
+
+> ∂f ∂x k)
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2
+
+> ∂f ∂t
+
+∂2f∂t∂x k)
+
+#
+
+. (24) In summary, so far the inertiality constraint equations are (16), (17), (24) and (23), which require the differentiability class of all functions involved to be C2(Ω). 
+
+3.1 Isolating f and the Schwarzian Differential Equation 
+
+It is now simple to decouple the equations for f (t,⃗ x) via the Schwarz integrability conditions of the commutativity of the third-order partial derivatives of f (t,⃗ x) and g i(t,⃗ x), which is why we now need to restrict to functions of class C3(Ω). Equating the spatial derivative of (16) with the temporal derivative of (17) results in 0 !
+
+= ∂∂x j
+
+ ∂2gi
+
+∂t 2
+
+
+
+− ∂∂t 
+
+ ∂2gi
+
+∂t∂x j
+
+
+
+= − 12 
+
+> ∂f ∂t ∂g i
+> ∂x j
+
+− ∂f ∂x j
+
+> ∂g i
+> ∂t
+
+  ∂f ∂t 
+
+2
+
+"
+
+∂3f∂t 3 − 321
+
+> ∂f ∂t
+
+ ∂2f∂t 2
+
+2#
+
+, (25) which on account of the fact that the prefactor here cannot vanish as a matrix at any point in the domain requires that the term in brackets vanish. On account of the vanishing of this term, equating the spatial derivative of (17) with the temporal derivative of (24) then yields 0 !
+
+= ∂∂x k
+
+ ∂2gi
+
+∂t∂x j
+
+
+
+− ∂∂t 
+
+ ∂2gi
+
+∂x j ∂x k
+
+
+
+= Aijk + 2 Aikj , (26) where 
+
+Aijk ≡ − 12 
+
+> ∂f ∂t ∂g i
+> ∂x j
+
+− ∂f ∂x j
+
+> ∂g i
+> ∂t
+
+  ∂f ∂t 
+
+2
+
+"
+
+∂3f∂t 2∂x k + 12
+
+> ∂f ∂x k
+
+  ∂f ∂t 
+
+2
+
+ ∂2f∂t 2
+
+2
+
+− 2
+
+> ∂f ∂t
+
+∂2f∂t 2
+
+∂2f∂t∂x k
+
+#
+
+. (27) Of course, applying the condition above a second time but with j and k swapped results in 
+
+Aijk = −2Aikj = 4 Aijk and hence Aijk = 0; as before, the prefactor in Aijk cannot vanish as a matrix anywhere and thus the term in brackets is forced to vanish. Lastly, on account of the above expressions for ∂3f∂t 3 and for ∂3f∂t 2∂x i , the spatial derivative of (24) reads 
+
+∂∂x ℓ
+
+ ∂2gi
+
+∂x j ∂x k
+
+
+
+= 32
+
+∂g i
+
+∂x (j
+
+"
+
+−
+
+> ∂f ∂x k
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2
+
+> ∂f ∂t
+
+∂2f∂t∂x k
+
+# " 
+
+−
+
+> ∂f ∂x ℓ)
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2
+
+> ∂f ∂t
+
+∂2f∂t∂x ℓ)
+
+#
+
+, (28)         
+
+> where adj  ∂g ∂x
+> ijis the adjugate of the matrix ∂g i
+> ∂x j. As such, we might as well say that the physicality conditions consist of the nonvanishing of det J, of ∂f ∂t and of det  ∂g ∂x
+> .
+
+7which is already totally symmetric in j, k and ℓ, and similarly the spatial derivative of (23) is found to be 
+
+∂3f∂x i∂x j ∂x k = 32
+
+> ∂f ∂x i
+> ∂f ∂x j
+> ∂f ∂x k
+
+  ∂f ∂t 
+
+4
+
+ ∂2f∂t 2
+
+2
+
+− 6
+
+> ∂f ∂x (i
+> ∂f ∂x j
+
+  ∂f ∂t 
+
+3
+
+∂2f∂t 2
+
+∂2f∂t∂x k) + 6 
+
+> ∂f ∂x (i
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t∂x j
+
+∂2f∂t∂x k) , (29) which is again totally symmetric automatically. Therefore, we have successfully isolated the function f (t,⃗ x) by showing that it obeys the constraint equations 
+
+∂3f∂t 3!
+
+= 321
+
+> ∂f ∂t
+
+ ∂2f∂t 2
+
+2
+
+(30) 
+
+∂3f∂t 2∂x i
+
+> !
+
+= − 12
+
+> ∂f ∂x i
+
+  ∂f ∂t 
+
+2
+
+ ∂2f∂t 2
+
+2
+
++ 2
+
+> ∂f ∂t
+
+∂2f∂t 2
+
+∂2f∂t∂x i (31) 
+
+∂2f∂x i∂x j
+
+> !
+
+= −
+
+> ∂f ∂x i
+> ∂f ∂x j
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2 
+
+> ∂f ∂x (i
+> ∂f ∂t
+
+∂2f∂t∂x j) . (32) The remaining constraint equations (16), (17) and (24) express the second-order derivatives of 
+
+gi(t,⃗ x) in terms of its first-order derivatives as well as f (t,⃗ x); hence, there are no constraints on f (t,⃗ x) beyond (30), (31) and (32) because the latter set of equations imposes the Schwarz integrability conditions of the former set of equations, which guarantees that a local solution for gi(t,⃗ x) exists for any solution of f (t,⃗ x). As such, we now proceed to find the most general solution f (t,⃗ x) to the three equations (30), (31) and (32). The first of the isolated constraint equations we obtained above, (30), happens to be a particularly famous one known as the Schwarzian differential equation. Consider for the moment a function f (z) of a single real or complex variable z whose domain Ω is an open subset of either 
+
+R or C, and let f : Ω → C be of class C3(Ω) (which is equivalent to f being holomorphic on Ω in the case that Ω ⊂ C); for this discussion only we let f ′(z) denote the derivative of f (z) with respect to z. Then, the Schwarzian derivative of f with respect to z is defined as [3] 6
+
+Sz f (z) ≡ f ′′′ (z)
+
+f ′(z) − 32
+
+ f ′′ (z)
+
+f ′(z)
+
+2
+
+. (33) This nonlinear differential operator is familiar in mathematics for its role in complex analysis and in projective geometry [4], and it is famous in physics for its appearances in two-dimensional conformal field theory [5] and in the low-energy limit of Jackiw-Teitelboim gravity [6]. The (homogeneous) Schwarzian differential equation is then 
+
+Sz f (z) = 0 . (34) For instance, it is a standard mathematical result 7 that the automorphism group of the Riemann sphere, PSL(2 , C), is the kernel of the Schwarzian derivative and conversely that the Schwarzian derivative is the sole generator of the annihilator of PSL(2 , C) [4], explaining its importance to two-dimensional conformal field theory (and to projective geometry, since the Riemann sphere 
+
+C is equivalent to the complex projective line CP 1). Moreover, the solutions to the Schwarzian      
+
+> 6For historical reasons, the Schwarzian derivative Szfis often denoted {f, z }instead; this is the notation introduced by Cayley in [3], where he named the derivative after Schwarz.
+> 7The Schwarzian derivative is, more properly speaking, a (holomorphic) quadratic differential [4], and it is for this reason that it plays a key role in the theory of the moduli space of Riemann surfaces (i.e. Teichm¨ uller theory) [7].
+
+8differential equation (34) are well-known; as long as the domain Ω is open and connected, the most general solution f : Ω → C of class C3(Ω) to (34) is 8
+
+f (z) = α + βz γ + δz , (35) where α, β, γ, δ ∈ C are constants such that αδ − βγ ̸ = 0. The map f 7 →
+
+α βγ δ
+
+
+
+then provides a homomorphism with GL(2 , C), which after quotienting by the C∗ which acts by multiplication yields an isomorphism with 9 PGL(2 , C) ∼= PSL(2 , C). When describing (35) as the most general automorphism of the Riemann sphere, it is understood that z is a stereographic coordinate and that z = − γδ maps to the point at infinity; if one does not wish to include a point at infinity, then one naturally excludes z = − γδ from the domain Ω. A function f (z) of the form (35) is commonly called either a projective linear transformation or a M¨ obius transformation, with PSL(2 , C) being the M¨ obius group. In our problem, the function f (t,⃗ x) has d independent (real) variables, so we define its Schwarzian derivative with respect to each of them by replacing the ordinary derivatives in (33) with the appropriate partial derivatives. With this notation, the third-derivative constraint (30) at once reads 
+
+Stf (t,⃗ x) !
+
+= 0 , (36) which immediately determines the time dependence of f (t,⃗ x) to be 
+
+f (t,⃗ x) = b1(⃗x) + b 2(⃗x)tb3(⃗x) + b 4(⃗x)t , (37) where b1(⃗x), b 2(⃗x), b 3(⃗x) and b 4(⃗x) are purely-spatial functions satisfying b 1b4 − b2b3̸ = 0 at all points in the domain. In fact, (29) together with (32) implies as a special case that 
+
+f (t,⃗ x) also obeys the Schwarzian differential equation in each spatial coordinate x i separately, i.e. Sxi f (t,⃗ x) !
+
+= 0, but it does not behoove us much to use this fact at the moment; we shall return to a more powerful statement along these lines later. Next we must impose the remaining constraint equations, (31) and (32), on the function 
+
+f (t,⃗ x) given in (37); we shall primarily leave the spatial arguments of the functions b α implicit and use the standard index notation ∂ibα to represent the derivative ∂b α(⃗x) 
+
+> ∂x i
+
+. From (37) we straightforwardly compute 
+
+∂3f∂t 2∂x i + 12
+
+> ∂f ∂x i
+
+  ∂f ∂t 
+
+2
+
+ ∂2f∂t 2
+
+2
+
+− 2
+
+> ∂f ∂t
+
+∂2f∂t 2
+
+∂2f∂t∂x i = 2( b4∂ib2 − b2∂ib4)(b3 + b4t)2 , (38)                                      
+
+> 8The general solution is almost trivial to obtain; as long as df (z)
+> dz ̸= 0, one simply needs to note that
+> Szf(z) = −2
+> rdf (z)
+> dz d2
+> dz 2
+> 1
+> qdf (z)
+> dz
+> .
+> Indeed, it is this presentation of the Schwarzian derivative which appeared first historically, used not by Schwarz but rather nearly a century earlier by Lagrange [8]. The assumption that df (z)
+> dz ̸= 0 is then lifted by noting that either f(z) is constant (which is precisely the function (35) in the degenerate case αδ −βγ = 0) or there exists a neighborhood in which df (z)
+> dz does not vanish and hence the solution is (35), after which continuity implies the nonvanishing of df (z)
+> dz everywhere in the domain.
+> 9The complex projective linear groups can be written either way, since PGL( n, C)∼= PSL( n, C) for all n;however, for real projective linear groups, PGL( n, R) is isomorphic to PSL( n, R) if and only if nis odd, otherwise the former is a cover of the latter.
+
+9so that the constraint (31) is equivalent to 
+
+b4∂ib2 − b2∂ib4 !
+
+= 0 . (39) If b4̸ = 0, then this condition clearly just says that b2 
+
+> b4
+
+is a constant. Continuing with the case b4̸ = 0, and using the constancy of b2 
+
+> b4
+
+, a slightly more tedious computation then yields 
+
+∂2f∂x i∂x j +
+
+> ∂f ∂x i
+> ∂f ∂x j
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 − 2
+
+> ∂f ∂x (i
+> ∂f ∂t
+
+∂2f∂t∂x j) = b3b4
+
+b3∂i∂j
+
+  b1
+
+> b4
+
+ − b1∂i∂j
+
+  b3
+
+> b4
+
+ 
+
+(b3 + b4t)3
+
++ b4
+
+2b3b4∂i∂j
+
+  b1
+
+> b4
+
+ − (b1b4 + b2b3)∂i∂j
+
+  b3
+
+> b4
+
+ t
+
+(b3 + b4t)3 + b24
+
+b4∂i∂j
+
+  b1
+
+> b4
+
+ − b2∂i∂j
+
+  b3
+
+> b4
+
+ t2
+
+(b3 + b4t)3 , (40) so that the constraint (32) imposes the conditions 
+
+b3
+
+
+
+b3∂i∂j
+
+ b1
+
+b4
+
+
+
+− b1∂i∂j
+
+ b3
+
+b4
+
+ !
+
+= 0 (41) 2b3b4∂i∂j
+
+ b1
+
+b4
+
+
+
+− (b1b4 + b2b3)∂i∂j
+
+ b3
+
+b4
+
+ !
+
+= 0 (42) 
+
+b4∂i∂j
+
+ b1
+
+b4
+
+
+
+− b2∂i∂j
+
+ b3
+
+b4
+
+ !
+
+= 0 . (43) Given the nonvanishing of b4 and of b1b4 − b2b3, substituting the third condition into the second and then back into the third again shows that these conditions are equivalent to 
+
+∂i∂j
+
+ b1
+
+b4
+
+ !
+
+= 0 (44) 
+
+∂i∂j
+
+ b3
+
+b4
+
+ !
+
+= 0 . (45) Thus, we have determined that the most general solution to the integrability conditions (30), (31) and (32) in the case b4̸ = 0 is given by (37) in which b2 
+
+> b4
+
+is constant and both b1 
+
+> b4
+
+and b3 
+
+> b4
+
+are affine linear in ⃗x. Of course, since in this case we may divide both numerator and denominator in (37) by b4, this solution is equivalent to both b2 and b4 being constant and both b1 and b3
+
+being affine linear in ⃗x.Lastly we revisit the other original possibility that b4 = 0. In this case we simply rewrite 
+
+f (t,⃗ x) = c 1(⃗x) + c 2(⃗x)t for purely-spatial functions c 1 and c2̸ = 0. The constraint (31) is then trivially satisfied, and we have 
+
+∂2f∂x i∂x j +
+
+> ∂f ∂x i
+> ∂f ∂x j
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 − 2
+
+> ∂f ∂x (i
+> ∂f ∂t
+
+∂2f∂t∂x j) = ∂i∂j c1 − 2
+
+c2
+
+∂(ic1∂j)c2 +
+
+
+
+∂i∂j c2 − 2
+
+c2
+
+∂ic2∂j c2
+
+
+
+t
+
+= c2
+
+
+
+∂i∂j
+
+ c1
+
+c2
+
+
+
+− c1∂i∂j
+
+ 1
+
+c2
+
+ 
+
+− c22∂i∂j
+
+ 1
+
+c2
+
+
+
+t, (46) so that the constraint (32) now imposes 
+
+∂i∂j
+
+ 1
+
+c2
+
+ !
+
+= 0 (47) 
+
+∂i∂j
+
+ c1
+
+c2
+
+ !
+
+= 0 . (48) 10 Thus, 1 
+
+> c2
+
+and c1 
+
+> c2
+
+are both affine linear in ⃗x, and hence even in the case b 4 = 0 the temporal transformation function can still be written as f = c1 + c2t = b1+b2tb3 , where b2 is constant and both b1 and b3 are affine linear in ⃗x.Therefore, we have shown that the most general thrice continuously-differentiable solution to the integrability conditions (30), (31) and (32) is 
+
+f (t,⃗ x) = b1(⃗x) + b 2tb3(⃗x) + b 4t , where ∂ib2 = ∂ib4 = 0 and ∂i∂j b1 = ∂i∂j b3 = 0 , (49) subject to the physicality condition b4b1(⃗x)−b 2b3(⃗x)̸ = 0. That is, f (t,⃗ x) is necessarily projective linear in spacetime. 
+
+3.2 Solving for gi
+
+Having obtained the general solution for f (t,⃗ x) in (49), it is now simple to solve the remaining constraints (16), (17) and (24) for the spatial functions gi(t,⃗ x). First, we note that the constraint (16) is equivalently written as 
+
+∂∂t 
+
+> ∂g i
+> ∂t ∂f ∂t
+
+!
+
+> !
+
+= 0 , (50) which says that there exist purely-spatial functions βi(⃗x) and d i(⃗x) such that 
+
+gi(t,⃗ x) = β i(⃗x)f (t,⃗ x) + d i(⃗x). (51) With this expression, the remaining two constraint equations, (17) and (24), become 
+
+∂j βi !
+
+= b4(b3 + b4t)
+
+b1b4 − b2b3
+
+ f ∂ j βi + ∂j di (52) 
+
+f ∂ j ∂kβi + 2∂(j βi(∂k)b1 − f ∂ k)b3)
+
+b3 + b4t + ∂j ∂kdi !
+
+= − 2 f ∂ (j βi + ∂(j di∂k)b3
+
+b3 + b4t , (53) which simplify to 0 !
+
+= ∂j
+
+ b2βi + b4di (54) 0 !
+
+= ∂j ∂k
+
+ b1βi + b3di + ∂j ∂k
+
+ b2βi + b4di t. (55) We have previously parametrized gi = b1βi+b3di+( b2βi+b4di)tb3+b4t due to the first constraint equation (16), and now the final two constraint equations (17) and (24) simply say that the numerator coefficients bi
+
+> 5
+
+(⃗x) ≡ b 1(⃗x)β i(⃗x) + b 3(⃗x)d i(⃗x) and b i 
+
+> 6
+
+≡ b2βi(⃗x) + b 4di(⃗x) must satisfy 
+
+∂j bi
+
+> 6!
+
+= 0 (56) 
+
+∂j ∂kbi
+
+> 5
+
+(⃗x) !
+
+= 0 . (57) Since these are the only conditions placed on the spatial functions βi(⃗x) and d i(⃗x), it is clear that we may choose them so as to make bi
+
+> 5
+
+(⃗x) any affine-linear function and b i 
+
+> 6
+
+any constant. In conclusion, we have exhaustively proven that locally the most general possible inertial transformation of class C3(Ω) on an open connected domain Ω ⊂ R × Rd−1 is t′ = f (t,⃗ x) and 
+
+x′i = gi(t,⃗ x) given by 
+
+f (t,⃗ x) = b1(⃗x) + b 2tb3(⃗x) + b 4t (58) 
+
+gi(t,⃗ x) = bi
+
+> 5
+
+(⃗x) + b i
+
+> 6
+
+tb3(⃗x) + b 4t , (59) 11 where b2, b4 and each bi 
+
+> 6
+
+are constants and b1(⃗x), b 3(⃗x) and each b i
+
+> 5
+
+(⃗x) are affine-linear spatial functions, all independent apart from having to satisfy the physicality conditions that det J, ∂f ∂t 
+
+and det   ∂g ∂x 
+
+ must all be nonvanishing everywhere in the domain of the transformation. 
+
+# 4 Properties and Significance of the Nonlinear Transformations 
+
+We have now proven that the most general thrice continuously-differentiable inertial transfor-mation ( t, x i) 7 → (t′, x ′i) in some open connected domain is given by 
+
+t′ = α + βixi + γt A + Bj xj + Ct (60) 
+
+x′i = δi + ϵij xj + ζitA + Bkxk + Ct , (61) where all of A, Bi, C, α, βi, γ, δi, ϵij and ζi are now constants, which is subject to three minor conditions in order to furnish a bona fide transformation between reference frames. The first physicality condition is that 
+
+∂t ′
+
+∂t = Aγ − Cα − (Cβ i − γB i)xi
+
+(A + Bj xj + Ct )2̸ = 0 . (62) The second physicality condition is then that det 
+
+ ∂x ′
+
+∂x 
+
+
+
+= (A + Ct ) det ϵ − Bi(adj ϵ)ij (δj + ζj t)(A + Bixi + Ct )d+1 ̸ = 0 , (63) where (adj ϵ)ij is the adjugate matrix of ϵij ; in full generality, we should express such quantities in terms of the adjugate matrix instead of an inverse ( ϵ−1)ij because the matrix ϵij is not 
+
+required to be invertible (though it is obviously necessary, but not sufficient, for the adjugate to be a nonzero matrix 10 ). Nevertheless, the final invertibility condition is most easily written in the case that ϵij actually is invertible 11 , in which case it reads det J = [A − Bi(ϵ−1)ij δj ][ γ − βk(ϵ−1)kℓζℓ] − [C − Bi(ϵ−1)ij ζj ][ α − βk(ϵ−1)kℓδℓ](A + Bmxm + Ct )d+2 det ϵ̸ = 0 .
+
+(64) Of these physicality conditions, it is only the nonvanishing of this det J that truly constrains the actual coefficients in the transformation; the roles of (62) and of (63), on the other hand, are to restrict the domain of ( t, x i) so that their numerators never vanish. Likewise, if Bi and 
+
+C do not both vanish, then the hyperplane A + Bixi + Ct = 0 is also supposed to be excluded from the domain of the transformation. 
+
+4.1 Mathematical Structure 
+
+The general inertial map defined by (60) and (61) subject to (64) is a projective linear trans-formation in the d-dimensional space R × Rd−1. In any framework of relativity, the set of                 
+
+> 10 As a special case, the adjugate of any matrix in one dimension is the identity.
+> 11 If det ϵ= 0 but ϵij+viwjis invertible for fixed vector viand one-form wj, then the inverse of ϵij+viwjwill depend on the Jordan normal form of ϵijand so does not have an explicit general expression.
+
+12 reference frame transformations always forms a group under composition. Here, the composi-tion of the inertial transformation ( t, x i) 7 → (t′, x ′i) defined by (60) and (61) with the inertial transformation ( t′, x ′i) 7 → (t′′ , x ′′ i) defined by 
+
+t′′ = α′ + β′
+
+> i
+
+x′i + γ′t′
+
+A′ + B′ 
+
+> j
+
+x′j + C′t′ and x′′ i = δ′i + ϵ′ij x′j + ζ′it′
+
+A′ + B′
+
+> k
+
+x′k + C′t′ (65) is the inertial transformation ( t, x i) 7 → (t′′ , x ′′ i) defined by 
+
+t′′ = α′′ + β′′  
+
+> i
+
+xi + γ′′ tA′′ + B′′  
+
+> j
+
+xj + C′′ t and x′′ i = δ′′ i + ϵ′′ ij xj + ζ′′ itA′′ + B′′  
+
+> k
+
+xk + C′′ t , (66) where the parameters in this new transformation are 
+
+α′′ = α′A + γ′α + β′
+
+> i
+
+δi (67) 
+
+β′′  
+
+> i
+
+= α′Bi + γ′βi + β′ 
+
+> j
+
+ϵji (68) 
+
+γ′′ = α′C + γ′γ + β′
+
+> i
+
+ζi (69) 
+
+A′′ = A′A + C′α + B′
+
+> k
+
+δk (70) 
+
+B′′  
+
+> i
+
+= A′Bi + C′βi + B′ 
+
+> j
+
+ϵji (71) 
+
+C′′ = A′C + C′γ + B′
+
+> k
+
+ζk (72) 
+
+δ′′ i = δ′iA + ζ′iα + ϵ′ij δj (73) 
+
+ϵ′′ ij = δ′iBj + ζ′iβj + ϵ′ikϵkj (74) 
+
+ζ′′ i = δ′iC + ζ′iγ + ϵ′ij ζj . (75) To the inertial transformation (60) and (61) we may associate a ( d + 1)-dimensional matrix via 
+
+
+
+(t, x i) 7 → (t′, x ′i)
+
+
+
+7−→ 
+
+
+
+A C Bj
+
+α γ βj
+
+δi ζi ϵij
+
+ , (76) which on account of the multiplication law above provides a homomorphism with GL( d + 1 , R), since the determinant of this ( d + 1)-dimensional matrix is equal to the expression multiplying  
+
+> 1(A+Bmxm+Ct )d+2
+
+in det J given in (64) and hence does not vanish. Of course, the only ambiguity in (60) and (61) is that all the parameters may be simultaneously scaled by the same nonzero constant and still define the same inertial transformation, and quotienting by this multiplicative 
+
+R∗ provides an isomorphism of the general inertial transformation group with the projective group PGL( d + 1 , R) of dimension dim PGL( d + 1 , R) = d(d + 2). Of course, the matrix in (76) is in one-to-one correspondence with the automorphisms of a ( d + 1)-dimensional vector space R × R × Rd−1, and quotienting this vector space (minus the origin and adding the points at infinity) by the overall multiplicative R∗ means that the transformation (60) and (61) is simply the most general automorphism of the projective space  (R × R × Rd−1)∗/R∗ ∼= RP d
+
+[9]. Therefore, inertial frame transformations can always be identified with automorphisms of spacetime by giving the latter the structure of the projective space RP d; this is the central result of this paper. It must be emphasized that viewing the general inertial transformation as a projective transformation does not mean that we should actually identify spacetime with a projective space itself; indeed, we certainly should not do so if we would like to have any notion of causality. Instead, we do not add the points at infinity, and the truly nonlinear inertial transformations are simply not global. 13 We have now proven that the unrestricted inertial transformation group on R × Rd−1 is PGL( d + 1 , R), but of course a specific framework of relativity based on inertial transformations is supposed to select a subgroup of this PGL( d+1 , R) corresponding to the actual symmetries of spacetime. Specifically, the physical transformation between two inertial observers is supposed to be determined by the trajectory of one observer relative to the other together with the relation between their spatial frame at a fixed time. The most general inertial transformation (60) and (61) also shows that the most general inertial observers necessarily travel at constant velocities with respect to each other, a familiar foundational statement which nevertheless is usually just assumed to be true; we have proven that its assumption is unnecessary. The independent types of inertial transformations are thus always given by translations, boosts and constant spatial frame transformations (almost always taken to be rotations, though this is not a requirement if one does not wish to impose the cosmological principle). It is highly convenient subsequently to view the selected subgroup of allowed inertial transformations as those automorphisms which preserve an additional structure on the vector (or projective) space. For vector spaces, this extra structure is most frequently taken to be an inner product; for instance, the famous example of special relativity is built upon the equivalence of the Poincar´ e transformations with the isometries of the Minkowski metric. Projective spaces, on the other hand, do not admit inner products, but they do still admit metrics such as Cayley-Klein metrics [10] which may be used for the same purpose. If Bi and C vanish identically, then the inertial transformations (60) and (61) reduce to the exceedingly familiar affine linear ones, corresponding to the subgroup of PGL( d + 1 , R)given by GL( d, R) ⋉ Rd of dimension dim  GL( d, R) ⋉ Rd = d(d + 1). In the projective space 
+
+RP d, the generic GL( d, R) transformation fixes both an origin and the points at infinity, the generic GL( d, R) ⋉ Rd transformation fixes precisely the points at infinity whereas the generic PGL( d + 1 , R) transformation does not fix any of the points at infinity. As such, the vector space structure of spacetime endowed by a framework of relativity restricted to affine linear inertial transformations can be embedded into a projective space simply by demanding that the points at infinity are invariant under the inertial transformations. In fact, it was Felix Klein who first pointed out that the Lorentz transformations of special relativity can be viewed in this way as the isometries of a Cayley-Klein metric in projective space [11] (in which the invariant quadric which defines the Cayley-Klein metric is essentially the lightcone). On the one hand, the existence of the projective inertial transformations (60) and (61) is mathematically obvious if one assumes a vector space structure of spacetime — specifically, if one assumes that the spacetime R × Rd−1 can be viewed as an actual d-dimensional vector space (and not just the Cartesian product of the temporal line R and the spatial vector space Rd−1 as sets), then zero-acceleration trajectories correspond to straight lines in this vector space, and the fundamental theorem of projective geometry states that the most general map on a vector space which sends lines to lines is a projective linear transformation 12 [9]. Hence, the existence of projective linear inertial transformations is neither surprising nor new. What does appear to be new, however, is the proof that the most general nonlinear inertial transformation is in fact projective linear, which automatically endows spacetime in any inertial theory of relativity with a vector space structure, albeit in one higher dimension.              
+
+> 12 Strictly speaking, the most general map sending lines to lines is called a “collineation”, which in general includes more than just the projective linear transformations. However, the quotient of the collineation group by the projective linear group is related to field automorphisms, and so for real projective spaces all collineations are projective linear transformations (whereas for complex projective spaces of dimension n⩾2, the collineation group is instead PGL( n+ 1 ,C)⋊Z2, where the Z2refers to complex conjugation).
+
+14 4.2 Physical Structure 
+
+The truly nonlinear inertial transformations, in which Bi and C are not both zero, have rather bizarre properties compared to their affine-linear cousins, both on account of the nonlinearity itself and of the non-global nature of the transformations. Here we record only the most basic physical properties of (60) and (61). We already know that the validity of the transformation begins or ends at a fixed time if 
+
+Bi = 0 or is restricted to one side of a spatial hyperplane whose normal direction is Bi, and this limiting spatial hyperplane further travels at constant velocity parallel to Bi if C̸ = 0. The valid spatial coordinates are further restricted by the first physicality condition (62), and the valid time coordinates are further restricted by the second physicality condition (63). The presence of these singular points of the transformations introduces (non-causal) horizons, and implies either that the spacetime does not admit any global observers or that there exist preferred inertial frames. These possibilities are familiar in other examples, though ones in which space is not Cartesian: the non-existence of global observers is typical in black-hole spacetimes 13 , and the existence of preferred inertial frames often occurs in topologically-nontrivial flat spacetimes or in æther theories. It should be noted that the limiting spatial hyperplane A+Bixi +Ct = 0, which would map to the points at infinity, can be excluded from the domain of the transformation automatically by hiding it behind the spatial hyperplane and the time slice for which the physicality conditions (62) and (63) are violated. Let us now consider the general inertial transformation between two observers in relative motion, for which we may set α = 0 and δi = 0 in (60) and (61) without loss of generality. Note that setting α = 0 and δi = 0 does not in any way assume that translations are part of the spacetime symmetry group of the relativity framework; rather, the trajectories of two inertial observers in relative motion intersect at a unique spacetime point, and we simply define the spacetime coordinates of the two observers such that this unique intersection occurs at (t, x i) = ( t′, x ′i) = (0 , 0). Then, that the transformation be valid in a neighborhood of their shared spacetime origins requires that A̸ = 0, which we may thus scale away and set A = 1. Subsequently, the physicality conditions (62) and (63) applied at the spacetime origin here require that γ̸ = 0 and that ϵij is in fact invertible. Lastly, let us call vi the velocity of the primed observer as measured in the unprimed frame, so that ζi = −ϵij vj . Thus, the transformation under consideration here is of the form 
+
+t′ = βixi + γt 
+
+1 + Bj xj + Ct and x′i = ϵij (xj − vj t)1 + Bkxk + Ct , (77) where now the invertibility condition (64) requires also that γ̸ = −βivi. The inverse transfor-mation is then given by 
+
+t = β′
+
+> i
+
+x′i + γ′t′
+
+1 + B′ 
+
+> j
+
+x′j + C′t′ and xi = ϵ′ij x′j + ζ′it
+
+1 + B′
+
+> k
+
+x′k + C′t′ , (78)   
+
+> 13 It should be noted that by “global observer” here we mean a single global observer, i.e. one observer whose worldline intersects the causal past and the causal future of every point in spacetime.
+
+15 where 
+
+β′ 
+
+> i
+
+= − βj (ϵ−1)ji
+
+γ + βkvk (79) 
+
+γ′ = 1
+
+γ + βivi (80) 
+
+B′ 
+
+> i
+
+= −Bj (ϵ−1)ji + C + Bkvk
+
+γ + βℓvℓ βj (ϵ−1)ji (81) 
+
+C′ = − C + Bivi
+
+γ + βj vj (82) 
+
+ϵ′ij = ( ϵ−1)ij − viβk(ϵ−1)kj
+
+γ + βℓvℓ (83) 
+
+ζ′i = vi
+
+γ + βkvk . (84) The linear trajectory xi(t) = xi 
+
+> 0
+
++ vi
+
+> 0
+
+t in the unprimed frame becomes the linear trajectory 
+
+x′i(t′) = x′i 
+
+> 0
+
++ v′i 
+
+> 0
+
+t′ in the primed frame, where the velocity transformation formula is 
+
+v′i 
+
+> 0
+
+= ϵij [(1 + Bkxk 
+
+> 0
+
+)( vj 
+
+> 0
+
+− vj ) − (C + Bkvk 
+
+> 0
+
+)xj
+
+> 0
+
+](γ + βℓvℓ
+
+> 0
+
+)(1 + Bmxm 
+
+> 0
+
+) − (C + Bℓvℓ
+
+> 0
+
+)βmxm
+
+> 0
+
+(85) The nonlinearity of the transformation manifests itself in the dependence of the velocity trans-formation formula on the position of the particle at the time of intersection of the two observers. Of course, this nonlinearity is completely invisible for all constant-velocity trajectories passing through the shared spacetime origin, for which the velocity transformation v′i 
+
+> 0
+
+= ϵij (vj  
+
+> 0−vj)
+> γ+βkvk
+> 0
+
+coin-cides with that for linear inertial transformations. Moreover, since the velocity of the unprimed observer as measured in the primed frame is v′i = − ϵij vj 
+
+> γ
+
+, one often wishes to impose that 
+
+ϵij vj = γv i, which is always possible by suitably choosing the orientation and scaling of the primed spatial coordinate axes; nevertheless, there is no reason to impose Einstein’s reciprocity postulate in general, especially if one wishes to consider theories which are not symmetric under spatial parity. It is now simple to see that it is not possible to preserve the speed of light universally under the above generalized boost unless Bi and C both vanish, i.e. constancy of the speed of light automatically forces the inertial transformation to be linear. It suffices to show that the norm of ( ϵ−1)ij v′i 
+
+> 0
+
+cannot be made independent of xi 
+
+> 0
+
+except when Bi = 0 and C = 0. For the speed of light to be preserved, the norm-squared of (1 + Bkxk 
+
+> 0
+
+)( vj 
+
+> 0
+
+− vj ) − (C + Bkvk 
+
+> 0
+
+)xj 
+
+> 0
+
+would have to be proportional to the square of ( γ + βℓvℓ
+
+> 0
+
+)(1 + Bmxm 
+
+> 0
+
+) − (C + Bℓvℓ
+
+> 0
+
+)βmxm 
+
+> 0
+
+, where the constant of proportionality cannot depend on xi 
+
+> 0
+
+or on the direction of vi
+
+> 0
+
+. Identifying the coefficients of the terms quadratic in xi 
+
+> 0
+
+results in the condition 
+
+|⃗v 0 −⃗v| 2BiBj − 2( C + Bkvk 
+
+> 0
+
+)( v0,(i − v(i)Bj) + ( C + Bkvk 
+
+> 0
+
+)2δij 
+
+> !
+
+= ϵ−1v′ 
+
+> 0
+> 2
+
+[( γ + βkvk 
+
+> 0
+
+)Bi − (C + Bkvk 
+
+> 0
+
+)βi][( γ + βℓvℓ
+
+> 0
+
+)Bj − (C + Bℓvℓ
+
+> 0
+
+)βj ]. (86) If Bi and C are not both zero, then this equality would require the matrix δij + w(iBj), where 
+
+wi ≡ − 2 
+
+> C+Bjvj
+> 0
+
+(v0,i − vi) + |⃗v 0−⃗v| 2  
+
+> (C+Bjvj
+> 0)2
+
+Bi, to have rank 1 for different values of wi (corresponding to different directions of vi
+
+> 0
+
+) but the same Bi, which is clearly impossible if there are at least 16 two spatial dimensions. That leaves just the case of one spatial dimension to consider, in which all the coefficients are simply numbers, and the condition of proportionality reads (v0 − v)2 !
+
+=
+
+ 1
+
+ϵ v′
+
+> 0
+
+2
+
+(γ + βv 0)2 (87) 
+
+−(vB + C)( v0 − v) !
+
+=
+
+ 1
+
+ϵ v′
+
+> 0
+
+2
+
+(γ + βv 0)( Bγ − Cβ ) (88) (vB + C)2 !
+
+=
+
+ 1
+
+ϵ v′
+
+> 0
+
+2
+
+(Bγ − Cβ )2; (89) however, equality for both signs of v0 = ±c would require γ = −vβ , which is the value forbidden by invertibility. Therefore, it is possible to preserve the speed of light in all directions from all starting points only if Bi = 0 and C = 0, irrespective of dimension; the rest of Einstein’s deriva-tion then proceeds normally, with the assumption of linearity (or, equivalently, homogeneity) now being eliminated. Of course, one is free to consider Lorentz-violating theories of relativity [12], and one is well-motivated to do so because special relativity is hardly guaranteed to be valid even locally at the highest energies. The nonlinear transformations considered in this paper provide the complete set of ways to break Lorentz symmetry while still preserving the Law of Inertia. In particular, the natural vector space structure which appears then allows one to construct locally Lorentz violating generalizations of general relativity by taking the equivalence principle to mean the existence of the corresponding locally inertial frames in the same way as traditional general relativity is constructed from local Lorentz frames. It is not the purpose of this paper to try to classify the different nonlinear inertial transformation subgroups that would give rise to viable Lorentz-violating but inertial theories of relativity, especially since it is not clear which if any are physically well-motivated. Nevertheless, as pedagogical exercises, such explorations are well-suited to beginning undergraduate researchers, as mostly what is required is algebraic manipulation and a soup¸ con of ingenuity. 
+
+# 5 The Higher-Dimensional Schwarzian Derivative 
+
+Previously, we showed that the most general solution for f (t,⃗ x) satisfying the nonlinear differ-ential equations (30), (31) and (32) is the projective linear transformation (49). Here, we show that these nonlinear differential equations are equivalent to a suitable higher-dimensional gen-eralization of the Schwarzian differential equation, which simultaneously shows that the general solution of the latter is a projective linear transformation. First, we note that (29) and (32) immediately imply 
+
+∂f ∂x (i
+
+∂3f∂x j ∂x k∂x ℓ) = 32
+
+∂2f∂x (i∂x j
+
+∂2f∂x k∂x ℓ) . (90) The original equation (30) said that Stf (t,⃗ x) = 0, and now this equation in the special case 
+
+i = j = k = ℓ says that Sxi f (t,⃗ x) = 0 for each separate spatial coordinate x i. The rank-4 spatial equation here is of course much stronger, and we now generalize it to all combinations of spacetime coordinates as well. 17 Still from (29) and (32), we also compute the combinations 14
+
+ ∂f ∂t ∂3f∂x i∂x j ∂x k + 3 ∂f ∂x (i
+
+∂3f∂t∂x j ∂x k)
+
+
+
+= 32 −
+
+> ∂f ∂x (i
+> ∂f ∂x j
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2
+
+∂2f∂t∂x k) +2 
+
+> ∂f ∂x (i
+> ∂f ∂t
+
+∂2f∂t∂x j
+
+∂2f∂t∂x k)
+
+!
+
+= 32
+
+∂2f∂t∂x (i
+
+∂2f∂x j ∂x k) (91) 16
+
+
+
+3 ∂f ∂t ∂3f∂t∂x i∂x j + 3 ∂f ∂x (i
+
+∂3f∂t 2∂x j)
+
+
+
+= − 12
+
+> ∂f ∂x i
+> ∂f ∂x j
+
+  ∂f ∂t 
+
+2
+
+ ∂2f∂t 2
+
+2
+
++
+
+> ∂f ∂x (i
+> ∂f ∂t
+
+∂2f∂t 2
+
+∂2f∂t∂x j) + ∂2f∂t∂x i
+
+∂2f∂t∂x j
+
+= 32
+
+ 13
+
+ ∂2f∂t 2
+
+∂2f∂x i∂x j + 2 ∂2f∂t∂x i
+
+∂2f∂t∂x j
+
+ 
+
+(92) 14
+
+
+
+3 ∂f ∂t ∂3f∂t 2∂x i + ∂f ∂x i
+
+∂3f∂t 3
+
+
+
+= 32
+
+∂2f∂t 2
+
+∂2f∂t∂x i . (93) Therefore, writing x0 ≡ ct , where the constant c is introduced purely for dimensional reasons, and writing spacetime indices now as μ ∈ { 0, i } as usual, we see that the constraint equations (30), (31) and (32) imply 
+
+∂f ∂x (μ
+
+∂3f∂x ν ∂x ρ∂x λ) = 32
+
+∂2f∂x (μ∂x ν
+
+∂2f∂x ρ∂x λ) . (94) Now let us show conversely that (94) is in fact equivalent to the constraint equations (30), (31) and (32). To that end, we note that the five equations contained in (94) are 
+
+∂f ∂t ∂3f∂t 3 = 32
+
+ ∂2f∂t 2
+
+2
+
+(95) 3 ∂f ∂t ∂3f∂t 2∂x i + ∂f ∂x i
+
+∂3f∂t 3 = 6 ∂2f∂t 2
+
+∂2f∂t∂x i (96) 
+
+∂f ∂t ∂3f∂t∂x i∂x j + ∂f ∂x (i
+
+∂3f∂t 2∂x j) = ∂2f∂t 2
+
+∂2f∂x i∂x j + 2 ∂2f∂t∂x i
+
+∂2f∂t∂x j (97) 
+
+∂f ∂t ∂3f∂x i∂x j ∂x k + 3 ∂f ∂x (i
+
+∂3f∂t∂x j ∂x k) = 6 ∂2f∂t∂x (i
+
+∂2f∂x j ∂x k) (98) 
+
+∂f ∂x (i
+
+∂3f∂x j ∂x k∂x ℓ) = 32
+
+∂2f∂x (i∂x j
+
+∂2f∂x k∂x ℓ) . (99) Isolating the third-order derivatives one at a time then yields 
+
+∂3f∂t 3 = 321
+
+> ∂f ∂t
+
+ ∂2f∂t 2
+
+2
+
+(100) 
+
+∂3f∂t 2∂x i = − 12
+
+> ∂f ∂x i
+
+  ∂f ∂t 
+
+2
+
+ ∂2f∂t 2
+
+2
+
++ 2
+
+> ∂f ∂t
+
+∂2f∂t 2
+
+∂2f∂t∂x i (101) 
+
+∂3f∂t∂x i∂x j = 12
+
+> ∂f ∂x i
+> ∂f ∂x j
+
+  ∂f ∂t 
+
+3
+
+ ∂2f∂t 2
+
+2
+
+− 2
+
+> ∂f ∂x (i
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2
+
+∂2f∂t∂x j) + 2
+
+> ∂f ∂t
+
+∂2f∂t∂x i
+
+∂2f∂t∂x j + 1
+
+> ∂f ∂t
+
+∂2f∂t 2
+
+∂2f∂x i∂x j ,
+
+(102) 18 followed by 
+
+∂3f∂x i∂x j ∂x k = − 32
+
+∂f ∂x i
+
+∂f ∂x j
+
+∂f ∂x k
+
+  ∂f ∂t 
+
+4
+
+ ∂2f∂t 2
+
+2
+
++ 6 
+
+∂f ∂x (i
+
+∂f ∂x j
+
+  ∂f ∂t 
+
+3
+
+∂2f∂t 2
+
+∂2f∂t∂x k)
+
+− 6
+
+∂f ∂x (i
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t∂x j
+
+∂2f∂t∂x k) − 3
+
+∂f ∂x (i
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2
+
+∂2f∂x j ∂x k) + 6
+
+∂f ∂t 
+
+∂2f∂t∂x (i
+
+∂2f∂x j ∂x k) (103) and 
+
+∂2f∂x (i∂x j
+
+∂2f∂x k∂x ℓ) = −
+
+∂f ∂x i
+
+∂f ∂x j
+
+∂f ∂x k
+
+∂f ∂x ℓ
+
+  ∂f ∂t 
+
+4
+
+ ∂2f∂t 2
+
+2
+
++ 4 
+
+∂f ∂x (i
+
+∂f ∂x j
+
+∂f ∂x k
+
+  ∂f ∂t 
+
+3
+
+∂2f∂t 2
+
+∂2f∂t∂x ℓ)
+
+− 4
+
+∂f ∂x (i
+
+∂f ∂x j
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t∂x k
+
+∂2f∂t∂x ℓ) − 2
+
+∂f ∂x (i
+
+∂f ∂x j
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2
+
+∂2f∂x k∂x ℓ) + 4 
+
+∂f ∂x (i
+
+∂f ∂t 
+
+∂2f∂t∂x j
+
+∂2f∂x k∂x ℓ) . (104) Next, note that 
+
+∂∂t −
+
+∂f ∂x i
+
+∂f ∂x j
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2 
+
+∂f ∂x (i
+
+∂f ∂t 
+
+∂2f∂t∂x j)
+
+!
+
+= − 12
+
+∂f ∂x i
+
+∂f ∂x j
+
+  ∂f ∂t 
+
+3
+
+ ∂2f∂t 2
+
+2
+
++ 2
+
+∂f ∂t 
+
+∂2f∂t∂x i
+
+∂2f∂t∂x j , (105) followed by 
+
+∂∂x i −
+
+∂f ∂x j
+
+∂f ∂x k
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2 
+
+∂f ∂x (j
+
+∂f ∂t 
+
+∂2f∂t∂x k)
+
+!
+
+= 32
+
+∂f ∂x i
+
+∂f ∂x j
+
+∂f ∂x k
+
+  ∂f ∂t 
+
+4
+
+ ∂2f∂t 2
+
+2
+
+− 2
+
+∂f ∂x j
+
+∂f ∂x k
+
+  ∂f ∂t 
+
+3
+
+∂2f∂t 2
+
+∂2f∂t∂x i − 2
+
+∂f ∂x i
+
+∂f ∂x (j
+
+  ∂f ∂t 
+
+3
+
+∂2f∂t 2
+
+∂2f∂t∂x k)
+
++ 2 
+
+∂f ∂x (j
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t∂x k)
+
+∂2f∂t∂x i + 2
+
+∂f ∂t 
+
+∂2f∂t∂x (j
+
+∂2f∂x k)∂x i . (106) The equation above for ∂3f∂t∂x i∂x j can hence be written as 
+
+∂∂t 
+
+1
+
+∂f ∂t 
+
+∂2f∂x i∂x j
+
+!
+
+= 12
+
+∂f ∂x i
+
+∂f ∂x j
+
+  ∂f ∂t 
+
+4
+
+ ∂2f∂t 2
+
+2
+
+− 2
+
+∂f ∂x (i
+
+  ∂f ∂t 
+
+3
+
+∂2f∂t 2
+
+∂2f∂t∂x j) + 2
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t∂x i
+
+∂2f∂t∂x j
+
+= ∂∂t 
+
+"
+
+1
+
+∂f ∂t 
+
+−
+
+∂f ∂x i
+
+∂f ∂x j
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2 
+
+∂f ∂x (i
+
+∂f ∂t 
+
+∂2f∂t∂x j)
+
+!# 
+
+. (107) We similarly compute 
+
+∂∂x i
+
+"
+
+1
+
+∂f ∂t 
+
+−
+
+∂f ∂x j
+
+∂f ∂x k
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2 
+
+∂f ∂x (j
+
+∂f ∂t 
+
+∂2f∂t∂x k)
+
+!# 
+
+= 32
+
+∂f ∂x i
+
+∂f ∂x j
+
+∂f ∂x k
+
+  ∂f ∂t 
+
+5
+
+ ∂2f∂t 2
+
+2
+
+−
+
+∂f ∂x j
+
+∂f ∂x k
+
+  ∂f ∂t 
+
+4
+
+∂2f∂t 2
+
+∂2f∂t∂x i − 2
+
+∂f ∂x i
+
+∂f ∂x (j
+
+  ∂f ∂t 
+
+4
+
+∂2f∂t 2
+
+∂2f∂t∂x k) + 2
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t∂x (j
+
+∂2f∂x k)∂x i ,
+
+(108) 19 so that 
+
+∂∂x i
+
+"
+
+1
+
+> ∂f ∂t
+
+−
+
+> ∂f ∂x j
+> ∂f ∂x k
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2 
+
+> ∂f ∂x (j
+> ∂f ∂t
+
+∂2f∂t∂x k)
+
+!
+
+− 1
+
+> ∂f ∂t
+
+∂2f∂x j ∂x k
+
+#
+
+= 3 
+
+> ∂f ∂x i
+> ∂f ∂x j
+> ∂f ∂x k
+
+  ∂f ∂t 
+
+5
+
+ ∂2f∂t 2
+
+2
+
+− 9
+
+> ∂f ∂x (i
+> ∂f ∂x j
+
+  ∂f ∂t 
+
+4
+
+∂2f∂t 2
+
+∂2f∂t∂x k) + 6 
+
+> ∂f ∂x (i
+
+  ∂f ∂t 
+
+3
+
+∂2f∂t∂x j
+
+∂2f∂t∂x k)
+
++ 3 
+
+> ∂f ∂x (i
+
+  ∂f ∂t 
+
+3
+
+∂2f∂t 2
+
+∂2f∂x j ∂x k) − 3
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t∂x (i
+
+∂2f∂x j ∂x k) . (109) The solution to (107) is 
+
+∂2f∂x j ∂x k = −
+
+> ∂f ∂x j
+> ∂f ∂x k
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2 
+
+> ∂f ∂x (j
+> ∂f ∂t
+
+∂2f∂t∂x k) + ∂f ∂t hjk (⃗x), (110) where hjk = hkj with ∂h jk  
+
+> ∂t
+
+= 0. Substituting this expression into (109) then results in 
+
+∂h jk 
+
+∂x i = 3 −
+
+> ∂f ∂x (i
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 1
+
+> ∂f ∂t
+
+∂2f∂t∂x (i
+
+!
+
+hjk ), (111) which is automatically independent of time already. Finally, substituting (110) into the remain-ing equation (104) yields the simple condition 
+
+ ∂f ∂t 
+
+2
+
+hi(j hkℓ ) = 0 . (112) In summary, the higher-dimensional Schwarzian differential equation (94) is equivalent to 
+
+∂3f∂t 3 = 321
+
+> ∂f ∂t
+
+ ∂2f∂t 2
+
+2
+
+(113) 
+
+∂3f∂t 2∂x i = − 12
+
+> ∂f ∂x i
+
+  ∂f ∂t 
+
+2
+
+ ∂2f∂t 2
+
+2
+
++ 2
+
+> ∂f ∂t
+
+∂2f∂t 2
+
+∂2f∂t∂x i (114) 
+
+∂2f∂x i∂x j = −
+
+> ∂f ∂x i
+> ∂f ∂x j
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2 
+
+> ∂f ∂x (i
+> ∂f ∂t
+
+∂2f∂t∂x j) + ∂f ∂t hij (115) 
+
+∂ihjk = 3 −
+
+> ∂f ∂x (i
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 1
+
+> ∂f ∂t
+
+∂2f∂t∂x (i
+
+!
+
+hjk ) (116) 
+
+hi(j hkℓ ) = 0 . (117) However, the quadratic constraint hi(j hkℓ ) = 0 is equivalent to the condition that hij be an antisymmetric matrix 14 , but hij is forced to be symmetric on account of the symmetry of ∂2f∂x i∂x j
+
+> 14
+
+The proof is elementary. Taking the special case j = k = ℓ = i of the quadratic condition hi(j hkℓ ) = 0 immediately says that all diagonal elements of the matrix vanish, i.e. hii = 0 (no index summation). Then taking the special case k = i and ℓ = j says that hij (hij + hji ) + hii hjj = 0 (no index summation), which on account of the vanishing of all the diagonal elements determines hij (hij + hji ) = 0, whose most general solution is simply 
+
+hij = −hji (which subsumes the possibility that hij could vanish for a fixed i and j, since the condition with i
+
+and j swapped, i.e. hji (hij + hji ) = 0, must hold as well), after which hi(j hkℓ ) trivially vanishes identically. 
+
+20 in (110), and thus hij = 0. Therefore, we have proven the equivalence 
+
+∂f ∂x (μ
+
+∂3f∂x ν ∂x ρ∂x λ) = 32
+
+∂2f∂x (μ∂x ν
+
+∂2f∂x ρ∂x λ) ⇐⇒ ∂3f∂t 3 = 321
+
+> ∂f ∂t
+
+ ∂2f∂t 2
+
+2
+
+∂3f∂t 2∂x i = − 12
+
+> ∂f ∂x i
+
+  ∂f ∂t 
+
+2
+
+ ∂2f∂t 2
+
+2
+
++ 2
+
+> ∂f ∂t
+
+∂2f∂t 2
+
+∂2f∂t∂x i
+
+∂2f∂x i∂x j = −
+
+> ∂f ∂x i
+> ∂f ∂x j
+
+  ∂f ∂t 
+
+2
+
+∂2f∂t 2 + 2 
+
+> ∂f ∂x (i
+> ∂f ∂t
+
+∂2f∂t∂x j) (118) between the higher-dimensional Schwarzian differential equation (94) and the original constraint equations (30), (31) and (32). We hence define an appropriate generalization of the Schwarzian derivative of a function 
+
+f (x) of any number of variables xμ to be the rank-4 totally symmetric nonlinear differential operator 
+
+Sμνρλ (f ) ≡ ∂f ∂x (μ
+
+∂3f∂x ν ∂x ρ∂x λ) − 32
+
+∂2f∂x (μ∂x ν
+
+∂2f∂x ρ∂x λ) . (119) We have therefore shown in the course of this paper that the kernel of this higher-dimensional Schwarzian differential operator precisely consists of the fractional linear transformations, 
+
+Sμνρλ (f ) = 0 ⇐⇒ f (x) = α + βμxμ
+
+γ + δν xν , (120) for constants α, γ, βμ and δμ. In the case of a single dimension with variable z, the operator 
+
+Szzzz (f ) is of course   df dz 
+
+2 times the usual Schwarzian differential operator Sz f , but the only difference in the kernels is that Sμνρλ (f ) = 0 allows the constant solutions as well. The reason for this difference here is that (119) acts on a single function f (x) and not a vector of functions 
+
+f μ(x), but it is really just the first component of the full higher-dimensional Schwarzian operator whose kernel is the full set of projective linear transformations f μ(x) = αμ+βμν xν 
+
+> γ+δρxρ
+
+, for which we can divide by the square of the determinant of the Jacobian so that we obtain only the invertible projective linear transformations. Also, while in this paper we solved these differential equations by using the additional physicality conditions ∂f ∂t ̸ = 0 and det   ∂g ∂x 
+
+̸ = 0, they are actually unnecessary 15 ; one still obtains the solutions (60) and (61) subject only to the invertibility condition (64). Finally, we should mention that the higher-dimensional Schwarzian derivative (119) is differ-ent than others given in the mathematical literature. Part of the variety of options which exist is that usually there are many ways to generalize a differential operator in one dimension to an analogous one in higher dimensions. The other reason is due to a coincidence — on CP 1, the M¨ obius group is equal to PSL(2 , C), the group of projective linear transformations, which is the same as the group of (global) conformal transformations. In all higher dimensions, the M¨ obius group is just the group of conformal transformations, which is not equivalent to a projective linear group. In two real dimensions, the two concepts merge, but in higher dimensions they differ, and many of the higher-dimensional Schwarzian derivative generalizations focus on its connection to M¨ obius transformations (and generalizations thereof) [13]. The closest to the higher-dimensional generalization presented here seems to be the one given by Ovsienko in [14], which is applicable to Lagrangian subspaces of symplectic vector spaces.        
+
+> 15 At no point did we need to use the invertibility of the spatial Jacobian ∂g i
+> ∂x j. As for ∂f ∂t , if there exists an open neighborhood in the domain in which it does not vanish, then the preceding derivation goes through unaltered and the solution in the full connected domain is the same by continuity. Otherwise, one merely looks for the solutions to the original constraint equations with ∂f ∂t = 0 everywhere, a shorter and very similar exercise which again yields projective linear solutions.
+
+21 Acknowledgments 
+
+I am grateful to Jacob Barandes for useful discussions and for encouraging me to write up this derivation. 
+
+# References 
+
+[1] A. Einstein, “Zur Elektrodynamik bewegter K¨ orper,” Annalen Phys. 322 , no.10, 891-921 (1905) [2] A. Einstein, “The foundation of the general theory of relativity.,” Annalen Phys. 49 , no.7, 769-822 (1916) [3] A. Cayley, “On the Schwarzian derivative and the polyhedral functions” (1880), reprinted in The Collected Mathematical Papers , Cambridge University Press, 148-216 (2009) [4] V. Ovsienko and S. Tabachnikov, Projective Differential Geometry Old and New: From the Schwarzian Derivative to the Cohomology of Diffeomorphism Groups , Cambridge Univer-sity Press (2005) [5] P. Di Francesco, P. Mathieu and D. S´ en´ echal, “Conformal Field Theory,” Springer-Verlag, (1997) [6] J. Maldacena, D. Stanford and Z. Yang, “Conformal symmetry and its breaking in two dimensional Nearly Anti-de-Sitter space,” PTEP 2016 , no.12, 12C104 (2016) [arXiv:1606.01857] [7] L. Bers, “Automorphic forms and general Teichm¨ uller spaces,” in Proceedings of the Confer-ence on Complex Analysis: Minneapolis 1964 , Springer Berlin Heidelberg, 109-113 (1965) [8] J.-L. Lagrange, “Sur la construction des cartes g´ eographiques,” Nouveaux M´ emoires de l’Acad´ emie royale des Sciences et des Belles-Lettres de Berlin, 161-210 (1779) [9] R. Hartshorne, Foundations of Projective Geometry , W.A. Benjamin, Inc. (1967) [10] F. Klein, ” ¨Uber die sogenannte Nicht-Euklidische Geometrie,” Mathematische Annalen, 4
+
+(4), 573–625 (1871) [11] F. Klein, “ ¨Uber die geometrischen Grundlagen der Lorentzgruppe,” Gesammelte Mathe-matische Abhandlungen, Vol. 19, 533-552 (1921) [12] S. Liberati, “Tests of Lorentz invariance: a 2013 update,” Class. Quant. Grav. 30 , 133001 (2013) [arXiv:1304.5795] [13] B. Osgood and D. Stowe, “The Schwarzian derivative and conformal mapping of Rieman-nian manifolds”, Duke Mathematical Journal , 67 (1), 57-99 (1992) [14] V. Ovsienko, “Lagrange Schwarzian derivative and symplectic Sturm theory,” Annales de la Facult´ e des sciences de Toulouse, Math´ ematiques, Vol. 2, Issue 1, 73-96 (1993) 22

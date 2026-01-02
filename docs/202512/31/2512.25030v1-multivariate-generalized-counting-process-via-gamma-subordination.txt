@@ -1,0 +1,3449 @@
+Title: Multivariate Generalized Counting Process via Gamma Subordination
+
+URL Source: https://arxiv.org/pdf/2512.25030v1
+
+Published Time: Thu, 01 Jan 2026 02:52:22 GMT
+
+Number of Pages: 20
+
+Markdown Content:
+MULTIVARIATE GENERALIZED COUNTING PROCESS VIA GAMMA SUBORDINATION 
+
+MANISHA DHILLON, KULDEEP KUMAR KATARIA, AND SHYAN GHOSH 
+
+Abstract. In this paper, we study a multivariate gamma subordinator whose compo-nents are independent gamma processes subject to a random time governed by an in-dependent negative binomial process. We derive the explicit expressions for its joint Laplace–Stieltjes transform, its probability density function and the associated governing differential equations. Also, we study a time-changed variant of the multivariate general-ized counting process where the time is changed by an independent multivariate gamma subordinator. For this time-changed process, we obtain the corresponding L´ evy measure and probability mass function. Later, we discuss an application of the time-changed mul-tivariate generalized counting process to a shock model. 
+
+1. Introduction 
+
+Di Crescenzo et al. (2016) intoduced and studied a generalization of the Poisson process by considering the possibility of finitely many arrivals in an infinitesimal time interval. It is known as the generalized counting process (GCP), and we denote it by {M (t)}t≥0. It is a L´ evy process which performs independent jumps of size 1 , 2, . . . , k with positive rates 
+
+λ1, λ 2, . . . , λ k, respectively. Its state probabilities are given by (see Di Crescenzo et al. 
+
+(2016)) 
+
+p(n, t ) = Pr {M (t) = n} = X
+
+> Ω( k,n )
+> k
+
+Y
+
+> j=1
+
+(λj t)nj
+
+nj ! e−λj t, n ≥ 0,
+
+where Ω( k, n ) = (n1, n 2, . . . , n k) : Pkj=1 jn j = n, n j ∈ N0 . Also, its L´ evy measure and probability generating function (pgf) are given by (see Kataria and Khandakar (2022a)) ΠM (t)(d x) = 
+
+> k
+
+X
+
+> j=1
+
+λj δj (d x),
+
+and 
+
+GM (t)(u) = E(uM (t)) = exp 
+
+
+
+− t
+
+> k
+
+X
+
+> j=1
+
+λj (1 − uj )
+
+
+
+, |u| ≤ 1, (1.1) respectively, where δj ’s denote the Dirac measures. Also, Di Crescenzo et al. (2016) studied a time-changed variant of the GCP where an independent inverse stable subordinator is utilized for the random time change. Such time-changed processes are of broad interest in statistical physics as they are closely related to anomalous diffusion phenomena (see Beghin 
+
+et al. (2020)). As the time-changed processes exhibit long-range dependence property, capturing the long-term memory effects, they have several applications in areas, such as 
+
+Date : January 1, 2026. 2020 Mathematics Subject Classification. Primary: 60G22, 60G51; Secondary: 60G20, 60G55. 
+
+Key words and phrases. multivariate generalized counting process; L´ evy process; multivariate subordi-nator; gamma subordinator. 
+
+> 1
+> arXiv:2512.25030v1 [math.PR] 31 Dec 2025
+
+finance, risk theory, and internet data traffic modelling. Two mainly studied time-changed variants of the GCP are space fractional and time fractional GCPs which are obtained by considering an independent stable subordinator and its inverse as the time changing components, respectively. For more details on GCP and its time-changed variants, we refer the reader to Kataria and Khandakar (2022a), Buchak and Sakhno (2024) and Kataria et al. (2025). Moreover, for martingale characterizations of the GCP and its time-changed variants, we refer the reader to Dhillon and Kataria (2024). In recent past, the subordination of L´ evy processes has been extensively studied (see Bertoin (1996), (1999), and Sato (1999)). In Sato (1999, Chapter 6), the classical framework of multivariate subordination is discussed. Beghin and Macci (2016) studied a multivariate version of the time-changed Poisson process. An application of multivariate subordination to financial models is given by Semeraro (2022). Cha and Giorgio (2018) introduced a class of bivariate counting processes with marginal regularity property that have appli-cations to certain shock models. Moreover, an application of the bivariate Poisson pro-cess time-changed by an independent stable subordinator to the competing risks model is given by Di Crescenzo and Meoli (2022). Barndorff-Nielsen et al. (2001) considered ¯T (t) = ( T1(t), T 2(t), . . . , T d(t)) as a d-dimensional subordinator, and introduced a multi-variate subordinated process on Rd as follows: ¯Y (t) = ( X1(T1(t)) , X 2(T2(t)) , . . . , X d(Td(t))) ,
+
+where the multivariate processes ¯X(t) = ( X1(t), X 2(t), . . . , X d(t)) and ¯T (t) = ( T1(t), T 2(t), 
+
+. . . , T d(t)), t ≥ 0 are assumed to be independent. Beghin et al. (2020) studied multi-variate inverse subordinators where the component processes are right-continuous hitting time of the component processes {Ti(t)}t≥0. Recently, Meoli (2025) studied a bivariate Poisson process subordinated by an independent bivariate gamma process with conditional independent component processes, where an application of the obtained results to a shock model is discussed. The outline of this paper is as follows: First, we study a multivariate subordinator and then use it as a time changing compo-nent to study a time-changed variant of the multivariate GCP. In Section 2, we set some notations and recall some preliminary results which will be used throughout the paper. In Section 3, we study a multivariate gamma subordinator in which the component processes are conditionally independent given a negative binomial process. For this multivariate sub-ordinator, we give the explicit expressions for the joint Laplace-Stieltjes transform of its component processes, and obtain its probability density function (pdf) and derive the gov-erning differential equations of its pdf. Also, we obtain the covariance and codifference of its component processes. In Section 4, we study a time-changed variant of the multivariate GCP by time changing it by an independent multivariate subordinator. Several distribu-tional properties of the resulting time-changed multivariate GCP are derived that includes the explicit expressions for its state probabilities, pgf, their governing system of differential equations as well as the covariance and codifference of the component processes. Later, we discuss an application of this time-changed variant to a shock model. For some particular cases, we obtain the survival function of system’s failure time. 2. Preliminaries 
+
+In this section, we first introduce the notation that will be used throughout the paper. We then recall several definitions and established results related to special functions, the 
+
+> 2
+
+gamma process, and the multivariate GCP, etc. These preliminaries will be used in the subsequent sections. Throughout the paper, we will use the following notations: Let N = {1, 2, 3, . . . } denote the set of positive integers, N0 = {0, 1, 2, . . . } be the set of non-negative integers, Nq 
+
+> 0
+
+=
+
+N0 × N0 × · · · × N0 (q copies), IA be the indicator function on set A, ¯ n = ( n1, n 2, . . . , n q), ¯0 = (0 , 0, . . . , 0) be q-tuple zero vector and ω = √−1. By ¯ n ≥ ¯m (¯ n > ¯m), we mean ni ≥ mi
+
+(ni > m i) for all i ∈ { 1, 2, . . . , q }. Also, ¯ n ≻ ¯m denotes that ni ≥ mi for all i ∈ { 1, 2, . . . , q }
+
+and ¯ n̸ = ¯ m. Also, for i ≥ 1, Ω( ki, n i) = (ni1, n i2, . . . , n ik i ) : Pki 
+
+> ji=1
+
+jinij i = ni, n ij i ∈ N0 .2.1. Generalized hypergeometric function. It is defined as follows (see Kilbas et al. 
+
+(2006), Eq. (1.6.28)): 
+
+> p
+
+Fq(a1, a 2, . . . , a p; b1, b 2, . . . , b q; z) := 
+
+> ∞
+
+X
+
+> k=0
+
+(a1)k(a2)k . . . (ap)k
+
+(b1)k(b2)k . . . (bq)k
+
+zk
+
+k! , z ∈ C, |z| < 1,
+
+where ( x)k denotes the Pochhammer symbol, that is, (x)k =
+
+x(x + 1) . . . (x + k − 1) , k ≥ 1,
+
+1, k = 0 . (2.1) 2.2. Gamma process. The pdf of gamma process {Z(t)}t≥0 is given by 
+
+f (x, t ) = aλt 
+
+Γ( λt )xλt −1e−ax , x > 0. (2.2) That is, its marginals Z(t) are gamma distributed with shape parameter λt , λ > 0 and rate parameter a > 0. We write Z(t) ∼ Γ( λt, a ). Thus, its mean and variance are given by 
+
+E(Z(t)) = λt a and Var( Z(t)) = λt a2 , (2.3) respectively. Its Laplace transform is given by (see Applebaum (2009), p. 55) 
+
+E(e−uZ (t)) = 
+
+
+
+1 + ua
+
+−λt 
+
+, u ≥ 0. (2.4) 2.3. Negative binomial process. The probability mass function (pmf) of negative bi-nomial process {B−(t)}t≥0 with parameter 0 < θ < 1 is given by (see Barndorff-Nielsen (2001), Example 2.1) Pr {B−(t) = n} = (1 − θ)t
+
+n + t − 1
+
+n
+
+
+
+θn, n ∈ N0. (2.5) Thus, its mean and variance are 
+
+E(B−(t)) = θt 
+
+1 − θ and Var( B−(t)) = θt 
+
+(1 − θ)2 , (2.6) respectively. Also, its pgf and Laplace transform are given by 
+
+GB−(t)(u) = E(uB−(t)) = 
+
+ 1 − θ
+
+1 − θu 
+
+t
+
+, |u| < 11 − θ (2.7) and 
+
+E(e−uB −(t)) = 
+
+ 1 − θ
+
+1 − θe −u
+
+t
+
+, u ≥ 0,
+
+respectively. 32.4. L´ evy-Khintchine formula. The characteristic function of a L´ evy process {X(t)}t≥0
+
+is given by the following L´ evy-Khintchine formula (see Applebaum (2009), p. 45): 
+
+E eωuX (t) = exp 
+
+
+
+t
+
+
+
+ωbu − 12σ2u2 +
+
+Z
+
+> R\{ 0}
+
+(eωux − 1 − ωux I{| x|<1}) Π X(t)(d x)
+
+ 
+
+, (2.8) where b ∈ R, σ ∈ R and Π X(t)(·) is the L´ evy measure of {X(t)}t≥0 concentrated on R \ { 0}
+
+which satisfies R 
+
+> R\{ 0}
+
+min {1, x 2} ΠX(t)(d x) < ∞.2.5. Codifference of random variables. The codifference of two random variables X
+
+and Y is defined as follows (see Kokoszka and Taqqu (1996), Eq. (1.7)): 
+
+τ (X, Y ) := ln E(eω(X−Y )) − ln E(eωX ) − ln E(e−ωY ). (2.9) 2.6. Multivariate GCP. For i = 1 , 2, . . . , q , let {Mi(t)}t≥0’s be q independent GCPs which perform independently ki kinds of jumps of size ji with positive rate λij i , ji =1, 2, . . . , k i. Then, a multivariate GCP { ¯M (t)}t≥0 is defined as (see Kataria and Dhillon (2025), Section 3) ¯M (t) := ( M1(t), M 2(t), . . . , M q(t)) , t ≥ 0.
+
+For ¯ n ≥ ¯0, its state probabilities p(¯ n, t ) = Pr { ¯M (t) = ¯ n} are given by (see Kataria and Dhillon (2025), Eq. (3.7)) 
+
+p(¯ n, t ) = 
+
+> q
+
+Y
+
+> i=1
+
+X
+
+> Ω( ki,n i)
+> ki
+
+Y
+
+> ji=1
+
+(λij i t)nij i
+
+nij i ! e−λij i t. (2.10) 3. Multivariate Gamma Subordinator 
+
+Let {Z1(t)}t≥0, {Z2(t)}t≥0, . . . , {Zq(t)}t≥0 be independent gamma L´ evy processes with marginal distribution Γ( λt, a 1), Γ( λt, a 2), . . . , Γ( λt, a q), respectively. Here, λt > 0 is the shape parameter and ai > 0 are the rate parameters. Also, let {B−(λt )}t≥0 be a negative binomial L´ evy process with parameter 0 < θ < 1. Then, for i = 1 , 2, . . . , q , we consider the following time-changed processes: 
+
+Gi(t) = Zi
+
+ t + λ−1B−(λt ), t ≥ 0, (3.1) where {B−(λt )}t≥0 is independent of {Zi(t)}t≥0.Note that {Gi(t)}t≥0 is a gamma process with distribution Γ( λt, (1 −θ)ai) (see Barndorff-Nielsen et al. (2001), Example 2.2). We define a multivariate gamma subordinator as follows: ¯G(t) := ( G1(t), G 2(t), . . . , G q(t)) , (3.2) where the component processes {Gi(t)}t≥0, i = 1 , 2, . . . , q are conditionally independent given {B−(λt )}t≥0.
+
+Proposition 3.1. The pdf of { ¯G(t)}t≥0 is given by 
+
+g(¯ x, t ) = (1 − θ)λt 
+
+Γ( λt )
+
+> ∞
+
+X
+
+> n=0
+
+θn
+
+n!(Γ( n + λt )) q−1
+
+> q
+
+Y
+
+> i=1
+
+(aixi)n+λt 
+
+xi
+
+e−aixi , ¯x > ¯0, t ≥ 0, (3.3) where ai > 0 and 0 < θ < 1. 
+
+> 4
+
+Proof. Let fi(xi, t ) be the marginal pdf of gamma process {Zi(t)}t≥0. Then, from (3.2), we have 
+
+g(¯ x, t ) = 
+
+> ∞
+
+X
+
+> n=0
+
+Pr {B−(λt ) = n}
+
+> q
+
+Y
+
+> i=1
+
+fi(xi, t + λ−1n)=
+
+> ∞
+
+X
+
+> n=0
+
+(1 − θ)λt 
+
+n + λt − 1
+
+n
+
+
+
+θnq
+
+Y
+
+> i=1
+
+an+λt i
+
+Γ( n + λt )xn+λt −1 
+
+> i
+
+e−aixi , (using (2.2) and (2.5)) = (1 − θ)λt 
+
+ q
+
+Y
+
+> i=1
+
+e−aixi (aixi)λt 
+
+xi
+
+ ∞X
+
+> n=0
+
+n + λt − 1
+
+n
+
+ θn
+
+(Γ( n + λt )) qq
+
+Y
+
+> i=1
+
+(aixi)n.
+
+This completes the proof. □
+
+Remark 3.1. On substituting q = 2 and a1 = a2 = a in (3.3), we get the pdf of bivariate gamma subordinator (see Barndorff-Nielsen et al. (2001), Example 2.2). Also, for q = 1, the pdf in (3.3) reduces to that of gamma subordinator (see Applebaum (2009), p. 54). 
+
+Proposition 3.2. Let IA be the indicator function on set A. Then, for any i = 1, 2, . . . ,
+
+q and j = 1, 2, . . . , q, the covariance of {Gi(t)}t≥0 and {Gj (t)}t≥0 is given by Cov( Gi(t), G j (t)) = λt aiaj (1 − θ)2 (θI{i̸ =j} + I{i=j}).
+
+Proof. For i = j, by using Eq. (3) of Leonenko et al. (2014), we have Cov( Gi(t), G j (t)) = ( E(Z(1))) 2 Var( t + λ−1B−(λt )) + Var( Z(1)) E(t + λ−1B−(λt )) = λt 
+
+(ai(1 − θ)) 2 , (3.4) where we have used (2.3) and (2.6). For i̸ = j, by using the independence of {Zi(t)}t≥0’s, we get 
+
+E(Gi(t)Gj (t)) = 
+
+> ∞
+
+X
+
+> n=0
+
+Pr {B−(λt ) = n}E(Zi(t + λ−1n)) E(Zj (t + λ−1n)) =
+
+> ∞
+
+X
+
+> n=0
+
+(1 − θ)λt 
+
+n + λt − 1
+
+n
+
+
+
+θn (n + λt )2
+
+aiaj
+
+= λt (λt + θ)
+
+aiaj (1 − θ)2 . (3.5) Also, by using Eq. (2) of Leonenko et al. (2014), we obtain 
+
+E(Gi(t)) = E(Z(1)) E(t + λ−1B−(λt )) = λt ai(1 − θ), (3.6) which follows on using (2.3) and (2.6). Thus, in this case, by using (3.5) and (3.6), the covariance of {Gi(t)}t≥0 and {Gj (t)}t≥0
+
+is given by Cov( Gi(t), G j (t)) = λtθ aiaj (1 − θ)2 . (3.7) Finally, the result follows from (3.4) and (3.7). □
+
+> 5
+
+Proposition 3.3. For i = 1, 2, . . . , q and j = 1, 2, . . . , q, the codifference of {Gi(t)}t≥0
+
+and {Gj (t)}t≥0 is 
+
+τ (Gi(t), G j (t)) = λt ln 
+
+ aiaj (1 − θ)
+
+aiaj (1 − θ) + ωa i − ωa j + 1 
+
+
+
+I{i̸ =j} − λt ln 
+
+ aiaj (1 − θ)2
+
+(ai(1 − θ) − ω)( aj (1 − θ) + ω)
+
+
+
+.
+
+Proof. From (2.9), we have 
+
+τ (Gi(t), G j (t)) := ln E(eω(Gi(t)−Gj (t)) ) − ln E(eωG i(t)) − ln E(e−ωG j (t)). (3.8) Also, from (2.4), we get 
+
+E(eωG i(t)) = 
+
+ ai(1 − θ)
+
+ai(1 − θ) − ω
+
+λt 
+
+. (3.9) For i = j, on substituting (3.9) in (3.8), we obtain 
+
+τ (Gi(t), G i(t)) = −λt ln 
+
+ (ai(1 − θ)) 2
+
+(ai(1 − θ)) 2 + 1 
+
+
+
+. (3.10) For i̸ = j, we have 
+
+E(eω(Gi(t)−Gj (t)) ) = E E(eωG i(t)e−ωG j (t)|B−(λt )) 
+
+=
+
+> ∞
+
+X
+
+> n=0
+
+E eωZ i(t+λ−1n)e−ωZ j (t+λ−1n)(1 − θ)λt 
+
+n + λt − 1
+
+n
+
+
+
+θn
+
+=
+
+> ∞
+
+X
+
+> n=0
+
+ aiaj
+
+aiaj (1 − θ) + ωa i − ωa j + 1 
+
+n+λt 
+
+(1 − θ)λt 
+
+n + λt − 1
+
+n
+
+
+
+θn
+
+=
+
+ aiaj (1 − θ)
+
+aiaj (1 − θ) + ωa i − ωa j + 1 
+
+λt 
+
+.
+
+Thus, for i̸ = j, we obtain 
+
+τ (Gi(t), G j (t)) = λt 
+
+
+
+ln 
+
+ (ai(1 − θ) − ω)( aj (1 − θ) + ω)(1 − θ)( aiaj (1 − θ) + ωa i − ωa j + 1) 
+
+ 
+
+. (3.11) 
+
+Finally, the required result follows from (3.10) and (3.11). □
+
+Proposition 3.4. The joint Laplace-Stieltjes transform of multivariate gamma subordina-tor ¯G(t) is given by 
+
+E e−¯s· ¯G(t) =
+
+ 1 − θ
+
+Qqi=1 (1 + sia−1 
+
+> i
+
+) − θ
+
+λt 
+
+, ¯s > ¯0, t ≥ 0, (3.12) where ai > 0 and 0 < θ < 1. 
+
+Proof. By using (3.3), we have 
+
+E e−¯s· ¯G(t) = E e− Pqi=1 siGi(t)
+
+=
+
+Z ∞
+
+> 0
+
+Z ∞
+
+> 0
+
+· · · 
+
+Z ∞
+
+> 0
+
+e− Pqi=1 sixi g(¯ x, t ) d x1 dx2 . . . dxq
+
+= (1 − θ)λt 
+
+Γ( λt )
+
+> ∞
+
+X
+
+> n=0
+
+θn
+
+n!(Γ( n + λt )) q−1
+
+> q
+
+Y
+
+> i=1
+
+Z ∞
+
+> 0
+
+(aixi)n+λt 
+
+xi
+
+e−(ai+si)xi dxi
+
+= (1 − θ)λt 
+
+Γ( λt )
+
+> ∞
+
+X
+
+> n=0
+
+θn
+
+n!(Γ( n + λt )) q−1
+
+> q
+
+Y
+
+> i=1
+
+an+λt i Γ( n + λt )(ai + si)n+λt 
+
+6= (1 − θ)λt 
+
+> ∞
+
+X
+
+> n=0
+
+n + λt − 1
+
+n
+
+
+
+θnq
+
+Y
+
+> i=1
+
+ai + si
+
+ai
+
+−n−λt 
+
+.
+
+This completes the proof. □
+
+Remark 3.2. For q = 2 and a1 = a2 = a, the Laplace-Stieltjes transform in (3.12) reduces to that of bivariate gamma subordinator (see Meoli (2025), Eq. (3.3)). Also, for q = 1, it reduces to that of gamma subordinator (see Applebaum (2009), p. 55). 3.1. Governing differential equation of the pdf. Here, we obtain the system of differ-ential equations that governs the pdf of multivariate gamma subordinator for a particular case in which a1 = a2 = · · · = aq = a.Let F{ g(¯ x, t ); α1, α 2, . . . , α q} be the Fourier transform of g(¯ x, t ). Then, for a1 = a2 =
+
+· · · = aq = a, we have 
+
+F{ g(¯ x, t ); α1, α 2, . . . , α q} = Eeω Pqj=1 αj Gj (t) =
+
+ (1 − θ)aq
+
+  Q qj=1 (a − ωα j ) − θa q
+
+λt 
+
+. (3.13) In the next result, we will use the following shift operator (see Beghin (2014), Eq. (1.13)): 
+
+e−k∂ t f (t) := 
+
+> ∞
+
+X
+
+> n=0
+
+(−k∂ t)n
+
+n! f (t) = f (t − k), k ∈ R, (3.14) where f : R → R is an analytic function. 
+
+Theorem 3.1. Let ∥ · ∥ denote the Euclidean norm and e− 1  
+
+> λ∂t
+
+be a shift operator as defined in (3.14). Then, for a1 = a2 = · · · = aq = a, the pdf of the multivariate gamma subordinator satisfies the following differential equation: 
+
+ qX
+
+> m=1
+
+aq−m X
+
+> 1≤j1<j 2<··· <j m≤q
+
+∂m
+
+∂x j1 ∂x j2 . . . ∂x jm
+
+
+
+g(¯ x, t ) = −(1 −θ)aq
+
+1−e− 1 
+
+> λ∂t
+
+
+
+g(¯ x, t ), ¯x > ¯0, t ≥ 0,
+
+(3.15) 
+
+with initial and boundary conditions g(¯ x, 0) = δ(¯ x) and lim ∥¯x∥→∞ g(¯ x, t ) = 0, respectively. 
+
+Proof. By the definition of Dirac delta function, we have 
+
+δ(¯ x) = δ(x1, x 2, . . . , x q ) = 
+
+> q
+
+Y
+
+> j=1
+
+δ(xj ) = 
+
+> q
+
+Y
+
+> j=1
+
+12π
+
+Z
+
+> R
+
+e−ωθ j xj dθj = 1(2 π)q
+
+Z
+
+> Rq
+
+e−ω Pqj=1 θj xj dx1 dx2 . . . dxq .
+
+The initial condition follows from (3.13) and the definition of the Dirac delta function. Also, it can be shown that the pdf (3.3) of multivariate gamma subordinator satisfies the boundary condition. For q = 1, we have 
+
+F
+
+n ∂∂x 1
+
+g(x1, t ); α1
+
+o
+
+= ( −ωα 1)
+
+ (1 − θ)aa − ωα 1 − θa 
+
+λt 
+
+(3.16) 
+
+and 
+
+F
+
+n
+
+− (1 − θ)a
+
+
+
+1 − e− 1 
+
+> λ∂t
+
+
+
+g(x1, t ); α1
+
+o
+
+= −(1 − θ)a
+
+ (1 − θ)aa − ωα 1 − θa 
+
+λt 
+
+1 −
+
+ (1 − θ)aa − ωα 1 − θa 
+
+−1
+
+which coincides with (3.16). For q = 2, we have 
+
+F
+
+n ∂2
+
+∂x 1∂x 2
+
++ a
+
+ ∂∂x 1
+
++ ∂∂x 2
+
+ 
+
+g(¯ x, t ); α1, α 2
+
+o
+
+> 7
+
+=
+
+
+
+(−ωα 1)( −ωα 2) + a(−ωα 1 − ωα 2)
+
+ (1 − θ)a2
+
+(a − ωα 1)( a − ωα 2) − θa 2
+
+λt 
+
+, (3.17) and 
+
+F
+
+n
+
+− (1 − θ)a2
+
+1 − e− 1 
+
+> λ∂t
+
+
+
+g(¯ x, t ); α1, α 2
+
+o
+
+= −(1 − θ)a2 (1 − θ)a2
+
+(a − ωα 1)( a − ωα 2) − θa 2
+
+λt 
+
+1 −
+
+ (1 − θ)a2
+
+(a − ωα 1)( a − ωα 2) − θa 2
+
+−1
+
+,
+
+which coincides with (3.17). For q = 3, we have 
+
+F
+
+n ∂3
+
+∂x 1∂x 2∂x 3
+
++ a
+
+ ∂2
+
+∂x 1∂x 2
+
++ ∂2
+
+∂x 1∂x 3
+
++ ∂2
+
+∂x 2∂x 3
+
+
+
++ a2 ∂∂x 1
+
++ ∂∂x 2
+
++ ∂∂x 3
+
+ 
+
+g(¯ x, t ); α1, α 2, α 3
+
+o
+
+=
+
+
+
+(−ωα 1)( −ωα 2)( −ωα 3) + a(( −ωα 1)( −ωα 2) + ( −ωα 1)( −ωα 3) + ( −ωα 2)( −ωα 3)) + a2(−ωα 1 − ωα 2 − ωα 3)
+
+ (1 − θ)a3
+
+(a − ωα 1)( a − ωα 2)( a − ωα 3) − θa 3
+
+λt 
+
+, (3.18) 
+
+and 
+
+F
+
+n
+
+−(1 − θ)a3
+
+1 − e− 1 
+
+> λ∂t
+
+
+
+g(¯ x, t ); α1, α 2, α 3
+
+o
+
+= −(1 − θ)a3 (1 − θ)a3
+
+(a − ωα 1)( a − ωα 2)( a − ωα 3) − θa 3
+
+λt 
+
+1 −
+
+ (1 − θ)a3
+
+(a − ωα 1)( a − ωα 2)( a − ωα 3) − θa 3
+
+−1
+
+,
+
+which coincides with (3.18). Proceeding inductively, we get the required differential equation in the form of (3.15). By using Eq. (1.3.29) of Kilbas et al. (2006) and (3.13), we have 
+
+F
+
+n ∂q
+
+∂x 1 . . . ∂x q
+
+g(¯ x, t ); α1, . . . , α q
+
+o
+
+=
+
+ qY
+
+> j=1
+
+(−iα j )
+
+
+
+F{ g(¯ x, t ); α1, . . . , α q}
+
+=
+
+ qY
+
+> j=1
+
+(−iα j )
+
+ (1 − θ)aq
+
+  Q qj=1 (a − iα j ) − θa q
+
+λt 
+
+,
+
+F
+
+n ∂q−1
+
+∂x 1 . . . ∂x k−1∂x k+1 . . . ∂x q
+
+g(¯ x, t ); α1, . . . , α q
+
+o
+
+=
+
+ qY 
+
+> j=1
+> j̸=k
+
+(−iα j )
+
+ (1 − θ)aq
+
+  Q qj=1 (a − iα j ) − θa q
+
+λt 
+
+,
+
+...
+
+F
+
+n ∂2
+
+∂x k∂x l
+
+g(¯ x, t ); α1, . . . , α q
+
+o
+
+= ( −iα k)( −iα l)
+
+ (1 − θ)aq
+
+  Q qj=1 (a − iα j ) − θa q
+
+λt 
+
+,
+
+F
+
+n ∂∂x k
+
+g(¯ x, t ); α1, . . . , α q
+
+o
+
+= ( −iα k)
+
+ (1 − θ)aq
+
+  Q qj=1 (a − iα j ) − θa q
+
+λt 
+
+.
+
+Therefore, the Fourier transform of the left hand side of (3.15) is 
+
+F
+
+n qX
+
+> m=1
+
+aq−m X
+
+> 1≤j1<j 2<··· <j m≤q
+
+∂m
+
+∂x j1 ∂x j2 . . . ∂x jm
+
+
+
+g(¯ x, t ); α1, α 2, . . . , α q
+
+o
+
+=
+
+ (1 − θ)aq
+
+  Q qj=1 (a − iα j ) − θa q
+
+λt 
+
+8·
+
+ qY
+
+> j=1
+
+(−iα j ) + a
+
+> q
+
+X
+
+> k=1
+> q
+
+Y 
+
+> j=1
+> j̸=k
+
+(−iα j ) + · · · + aq−2 X
+
+> k<l
+> 1≤k≤q−1
+
+(−iα k)( −iα l) + aq−1
+
+> q
+
+X
+
+> k=1
+
+(−iα k)
+
+
+
+.
+
+(3.19) 
+
+Now, the Fourier transform of the right hand side of (3.15) is given by 
+
+F
+
+n
+
+−(1 − θ)aq
+
+
+
+1 − e− 1 
+
+> λ∂t
+
+
+
+g(¯ x, t ); α1, . . . , α q
+
+o
+
+= −(1 − θ)aq
+
+ (1 − θ)aq
+
+  Q qj=1 (a − iα j ) − θa q
+
+λt 
+
+−
+
+ (1 − θ)aq
+
+  Q qj=1 (a − iα j ) − θa q
+
+λt −1
+
+= −(1 − θ)aq
+
+ (1 − θ)aq
+
+  Q qj=1 (a − iα j ) − θa q
+
+λt 
+
+1 −
+
+  Q qj=1 (a − iα j ) − θa q
+
+(1 − θ)aq
+
+ 
+
+. (3.20) Note that on simplification (3.19) reduces to (3.20) which establishes the stated result. □
+
+In the next result, we obtain an alternate governing differential equation of the pdf of multivariate gamma subordinator. The following differential operator will be used: For parameters b1 > 0, b 2 > 0 and b3 > 0, we consider the following differential operator: 
+
+Db3 
+
+> b1,b 2
+
+:= 
+
+> ∞
+
+X
+
+> n=1
+
+(−1) n+1 
+
+n
+
+> n
+
+X
+
+> k=0
+
+nk
+
+ (−1) n−k
+
+bk
+
+> 1
+> k
+
+X
+
+> l=0
+
+kl
+
+
+
+(−b2)k−l qY
+
+> j=1
+> l
+
+X 
+
+> lj=0
+
+ llj
+
+
+
+blj
+
+> 3
+
+ ∂Pqj=1 (l−lj )
+
+∂x l−l1 
+
+> 1
+
+∂x l−l2 
+
+> 2
+
+. . . ∂x l−lq
+
+> q
+
+which acts on any function that is infinitely differentiable. 
+
+Theorem 3.2. For a1 = a2 = · · · = aq, the pdf of multivariate gamma subordinator solves the following differential equation: 
+
+∂∂t g(¯ x, t ) = −λDa  
+
+> (1 −θ)aq,θa q
+
+g(¯ x, t ), (3.21) with initial and boundary conditions 
+
+
+
+g(¯ x, 0) = δ(¯ x),
+
+lim ∥¯x∥→∞ ∂   
+
+> Pqj=1 (l−lj)
+> ∂x l−l11∂x l−l22...∂x l−lq q
+
+g(¯ x, t ) = 0 , (3.22) respectively. 
+
+Proof. On taking the Fourier transform of left hand side of (3.21) and by using (3.13), we have 
+
+F
+
+n ∂∂t g(¯ x, t ); α1, α 2, . . . , α q
+
+o
+
+= −λ
+
+   Q qj=1 (a − ωα j ) − θa q
+
+(1 − θ)aq
+
+−λt 
+
+ln 
+
+   Q qj=1 (a − ωα j ) − θa q
+
+(1 − θ)aq
+
+
+
+= −λ
+
+   Q qj=1 (a − ωα j ) − θa q
+
+(1 − θ)aq
+
+−λt ∞X
+
+> n=1
+
+(−1) n+1 
+
+n
+
+   Q qj=1 (a − ωα j ) − θa q
+
+(1 − θ)aq − 1
+
+n
+
+= −λ
+
+   Q qj=1 (a − ωα j ) − θa q
+
+(1 − θ)aq
+
+−λt ∞X
+
+> n=1
+
+(−1) n+1 
+
+n
+
+> n
+
+X
+
+> k=0
+
+nk
+
+
+
+(−1) n−k   Q qj=1 (a − ωα j ) − θa q
+
+(1 − θ)aq
+
+k
+
+= −λ
+
+   Q qj=1 (a − ωα j ) − θa q
+
+(1 − θ)aq
+
+−λt ∞X
+
+> n=1
+
+(−1) n+1 
+
+n
+
+> 9
+
+·
+
+> n
+
+X
+
+> k=0
+
+nk
+
+ (−1) n−k
+
+((1 − θ)aq)kkX
+
+> l=0
+
+kl
+
+
+
+(−θa q)k−lqY
+
+> j=1
+> l
+
+X 
+
+> lj=0
+
+ llj
+
+
+
+alj (−ωα j )l−lj
+
+= −λ
+
+> ∞
+
+X
+
+> n=1
+
+(−1) n+1 
+
+n
+
+> n
+
+X
+
+> k=0
+
+nk
+
+ (−1) n−k
+
+((1 − θ)aq)kkX
+
+> l=0
+
+kl
+
+
+
+(−θa q)k−l qY
+
+> j=1
+> l
+
+X 
+
+> lj=0
+
+ llj
+
+
+
+alj
+
+
+
+· F 
+
+n ∂ 
+
+> Pqj=1 (l−lj)
+
+∂x l−l1 
+
+> 1
+
+∂x l−l2 
+
+> 2
+
+. . . ∂x l−lq
+
+> q
+
+g(¯ x, t ); α1, α 2, . . . , α q
+
+o
+
+= −λDa  
+
+> (1 −θ)aq,θa q
+
+F{ g(¯ x, t ); α1, α 2, . . . , α q}.
+
+It can be established that the pdf g(¯ x, t ) satisfies (3.22). This completes the proof. □
+
+Remark 3.3. On substituting q = 2 in (3.21), it reduces to the governing differential equation of a bivariate gamma subordinator (see Meoli (2025), Eq. (3.9)). 4. Multivariate GCP time-changed by multivariate gamma subordinator 
+
+Kataria and Dhillon (2025) introduced a multivariate version of GCP and studied its various time-changed variants. Here, we study a multivariate GCP with independent com-ponents subordinated with an independent multivariate gamma subordinator. Let { ¯M (t)}t≥0 be a multivariate GCP whose component processes {Mi(t)}t≥0’s are in-dependent GCPs which perform independently ki kinds of jumps with positive rates λij i ,
+
+ji = 1, 2, . . . , ki. Also, let { ¯G(t)}t≥0 be a multivariate gamma subordinator whose com-ponent processes {Gi(t)}t≥0’s are conditionally independent as discussed in Section 3, and it is independent of { ¯M (t)}t≥0. For i = 1 , 2, . . . , q , let Mi(t) = Mi(Gi(t)). We define a time-changed process { ¯M(t)}t≥0 as follows: ¯M(t) := ( M1(t), M2(t), . . . , Mq(t)) . (4.1) From (3.1), recall that Gi(t) = Zi(t + λ−1B−(λt )), where {Zi(t)}t≥0 is a gamma process with distribution Γ( λt, a i) for all i = 1 , 2, . . . , q . To obtain the distributional properties of 
+
+{ ¯M(t)}t≥0, we consider the following subordinated L´ evy process: ¯M ( ¯Z(t)) := ( M1(Z1(t)) , M 2(Z2(t)) , . . . , M q(Zq(t))) , t ≥ 0,
+
+where {Mi(t)}t≥0’s are independent of {Zi(t)}t≥0’s. By using Theorem 6 of Kataria and Dhillon (2025), the state probabilities of { ¯M ( ¯Z(t)) }t≥0
+
+can be obtained in the following form: 
+
+h(¯ n, t ) = Pr { ¯M ( ¯Z(t)) = ¯ n} =
+
+> q
+
+Y
+
+> i=1
+
+ ai
+
+ai + λi
+
+λt X
+
+> Ω( ki,n i)
+
+Γ( ηi + λt )Γ( λt )
+
+> ki
+
+Y
+
+> ji=1
+
+ λij i
+
+ai + λi
+
+nij i 1
+
+nij i ! , ¯n ≥ ¯0, (4.2) 
+
+where λi = λi1 + λi2 + · · · + λik i and ηi = ni1 + ni2 + · · · + nik i .On applying Proposition 7 of Kataria and Khandakar (2022b) and by using the indepen-dence of component processes of { ¯M ( ¯Z(t)) }t≥0, its L´ evy measure is given by Π ¯M ( ¯Z(t)) (A1 × A2 × · · · × Aq) = λ
+
+> q
+
+X
+
+> i=1
+> ∞
+
+X
+
+> ni=1
+
+X
+
+> Ω( ki,n i)
+
+Γ( ηi)I{ni∈Ai}
+
+> ki
+
+Y
+
+> ji=1
+
+ λij i
+
+ai + λi
+
+nij i 1
+
+nij i !. (4.3) Now, let Y (t) = t + λ−1B−(λt ), where B−(λt ) is a negative binomial process with parameter 0 < θ < 1. For u ∈ R, its characteristic function is given by 
+
+E eωuY (t) =
+
+(1 − θ)eωuλ −1
+
+1 − θe ωuλ −1
+
+λt 
+
+> 10
+
+= exp 
+
+
+
+t
+
+
+
+ωu +
+
+> ∞
+
+X
+
+> k=1
+
+(eωuλ −1k − 1) λθ k
+
+k
+
+ 
+
+= exp 
+
+
+
+t
+
+
+
+ωu +
+
+Z
+
+> R\{ 0}
+
+(eωux − 1) 
+
+> ∞
+
+X
+
+> k=1
+
+λθ k
+
+k δk/λ (d x)
+
+ 
+
+. (4.4) On comparing (4.4) with (2.8), we conclude that {Y (t)}t≥0 is a L´ evy process with unit drift and L´ evy measure ΠY (t)(d x) = λ
+
+> ∞
+
+X
+
+> k=1
+
+θk
+
+k δk/λ (d x).
+
+Theorem 4.1. The L´ evy measure of { ¯M(t)}t≥0 is given by 
+
+Π ¯M(t)(A1 × A2 × · · · × Aq)= λ
+
+> q
+
+X
+
+> i=1
+> ∞
+
+X
+
+> ni=1
+
+X
+
+> Ω( ki,n i)
+
+Γ( ηi)I{ni∈Ai}
+
+> ki
+
+Y
+
+> ji=1
+
+ λij i
+
+ai + λi
+
+nij i 1
+
+nij i !+ λ X
+
+> ¯n≻¯0
+> ∞
+
+X
+
+> k=1
+
+θk
+
+k
+
+> q
+
+Y
+
+> i=1
+
+ ai
+
+ai + λi
+
+k
+
+(k)ηi
+
+X
+
+> Ω( ki,n i)
+
+I{ni∈Ai}
+
+> ki
+
+Y
+
+> ji=1
+
+ λij i
+
+ai + λi
+
+nij i 1
+
+nij i ! , (4.5) 
+
+where λi = λi1 + λi2 + · · · + λik i and ηi = ni1 + ni2 + · · · + nik i .
+
+Proof. By using (4.2), (4.3) and Theorem 30.1 of Sato (1999), the L´ evy measure of { ¯M(t)}t≥0
+
+can be obtained as follows: 
+
+Π ¯M(t)(A1 × A2 × · · · × Aq )= Π ¯M ( ¯Z(t)) (A1 × A2 × · · · × Aq ) + 
+
+Z ∞
+
+> 0
+
+X
+
+> ¯n≻¯0
+
+h(¯ n, x )
+
+ qY
+
+> i=1
+
+I{ni∈Ai}
+
+
+
+ΠY (t)(d x)= λ
+
+> q
+
+X
+
+> i=1
+> ∞
+
+X
+
+> ni=1
+
+X
+
+> Ω( ki,n i)
+
+Γ( ηi)I{ni∈Ai}
+
+> ki
+
+Y
+
+> ji=1
+
+ λij i
+
+ai + λi
+
+nij i 1
+
+nij i !+ λ X
+
+> ¯n≻¯0
+> ∞
+
+X
+
+> k=1
+
+θk
+
+k
+
+> q
+
+Y
+
+> i=1
+
+X
+
+> Ω( ki,n i)
+
+ ai
+
+ai + λi
+
+k Γ( ηi + k)Γ( k)
+
+ kiY
+
+> ji=1
+
+ λij i
+
+ai + λi
+
+nij i 1
+
+nij i !
+
+
+
+I{ni∈Ai},
+
+which reduces to the required result. □
+
+Remark 4.1. On substituting q = 1 in (4.5), we get the L´ evy measure of GCP time-changed with an independent gamma subordinator (see Kataria and Khandakar (2022b)). 
+
+Proposition 4.1. For i = 1, 2, . . . , q and l = 1, 2, . . . , q , the covariance and the codifference of {Mi(Gi(t)) }t≥0 and {Ml(Gl(t)) }t≥0 are given by 
+
+Cov( Mi(Gi(t)) , M l(Gl(t))) = 
+
+> ki
+
+X
+
+> ji=1
+
+j2 
+
+> i
+
+λij i
+
+λt ai(1 − θ) I{i=j} +
+
+> ki
+
+X
+
+> ji=1
+> kl
+
+X
+
+> jl=1
+
+jijl
+
+λij i λlj l λt aial(1 − θ)2 (θI{i̸=l} + I{i=l}) (4.6) 
+
+and 
+
+τ (Mi(Gi(t)) , M l(Gl(t))) = λt ln 
+
+ aial(1 − θ)(ai − ci)( al − cl) − θa ial
+
+
+
+I{i̸ =l} −λt ln 
+
+ aial(1 − θ)2
+
+(ai(1 − θ) − ci)( al(1 − θ) − cl)
+
+
+
+,
+
+respectively, where ci = − Pki 
+
+> ji=1
+
+λij i (1 − eωj i ) and cl = − Pkl 
+
+> jl=1
+
+λlj l (1 − e−ωj l ). 
+
+11 Proof. For i = l, by using (3.4) and (3.6), we get Cov( Mi(Gi(t)) , M l(Gl(t))) = 
+
+ kiX
+
+> ji=1
+
+jiλij i
+
+2 λt 
+
+(ai(1 − θ)) 2 +
+
+> ki
+
+X
+
+> ji=1
+
+j2 
+
+> i
+
+λij i
+
+λt ai(1 − θ). (4.7) For i̸ = l, we have 
+
+E(Mi(Gi(t)) Ml(Gl(t))) =
+
+> ∞
+
+X
+
+> n=0
+
+E Mi(Zi(t + λ−1B−(λt ))) Ml(Zl(t + λ−1B−(λt ))) (1 − θ)λt 
+
+n + λt − 1
+
+n
+
+
+
+θn
+
+= (1 − θ)λt 
+
+> ∞
+
+X
+
+> n=0
+
+n + λt − 1
+
+n
+
+
+
+θnE(Mi(1)) E(Ml(1)) E(Zi(t + λ−1n)) E(Zl(t + λ−1n)) = (1 − θ)λt 
+
+> ∞
+
+X
+
+> n=0
+
+n + λt − 1
+
+n
+
+
+
+θnkiX
+
+> ji=1
+
+jiλij i
+
+> kl
+
+X
+
+> jl=1
+
+jlλlj l
+
+(n + λt )2
+
+aial
+
+=
+
+> ki
+
+X
+
+> ji=1
+> kl
+
+X
+
+> jl=1
+
+jijlλij i λlj l
+
+λt (λt + θ)
+
+aial(1 − θ)2 . (4.8) 
+
+Also, from (3.6), it follows that 
+
+E(Mi(Gi(t))) = 
+
+> ki
+
+X
+
+> ji=1
+
+jiλij i
+
+λt ai(1 − θ). (4.9) Thus, for i̸ = l, from (4.8) and (4.9), we get Cov( Mi(Gi(t)) , M l(Gl(t))) = 
+
+> ki
+
+X
+
+> ji=1
+> kl
+
+X
+
+> jl=1
+
+jijlλij i λlj l
+
+λtθ aial(1 − θ)2 . (4.10) On combining (4.7) and (4.10), we get (4.6). From (2.9), we have 
+
+τ (Mi(Gi(t)) , M l(Gl(t))) := ln E(eω(Mi(Gi(t)) −Ml(Gl(t))) ) − ln E(eωM i(Gi(t)) ) − ln E(e−ωM l(Gl(t)) ).
+
+(4.11) Now, by using (1.1) and (2.4), we have 
+
+E
+
+
+
+eωM i(Gi(t)) 
+
+
+
+= E
+
+
+
+E
+
+
+
+eωM i(Zi(t+λ−1B−(λt ))) B−(λt )
+
+ 
+
+= E
+
+ 
+
+1 + 1
+
+aikiX
+
+> ji=1
+
+λij i (1 − eωj i )
+
+−B−(λt )−λt 
+
+=
+
+ ai(1 − θ)
+
+ai(1 − θ) + Pki 
+
+> ji=1
+
+λij i (1 − eωj i )
+
+λt 
+
+(4.12) where the last step follows from (2.7). Similarly, for i̸ = l, we get 
+
+E
+
+
+
+eω(Mi(Gi(t)) −Ml(Gl(t))) 
+
+
+
+= E
+
+
+
+E
+
+
+
+eω(Mi(Gi(t)) −Ml(Gl(t))) B−(λt )
+
+ 
+
+= E
+
+ aial
+
+(ai − ci)( al − cl)
+
+λt +B−(λt )
+
+=
+
+ aial(1 − θ)
+
+aial(1 − θ) − (aicl + alci) + cicl
+
+λt 
+
+.
+
+12 Finally, from (4.11), (4.12) and ( ?? ), we get the required codifference of {Mi(Gi(t)) }t≥0
+
+and {Ml(Gl(t)) }t≥0. □
+
+Proposition 4.2. Let |ui| ≤ 1 for all i = 1 , 2, . . . , q and ¯ u = ( u1, u 2, . . . , u q). Then, the pgf of { ¯M(t)}t≥0 is given by 
+
+G ¯M(t)(¯ u) = E
+
+ q
+
+Y
+
+> i=1
+
+uMi(Gi(t)) 
+
+> i
+
+
+
+= 1 − θ
+
+Qqi=1 
+
+ 1 + Pki 
+
+> ji=1
+> λij i
+> ai
+
+(1 − uji 
+
+> i
+
+) − θ
+
+!λt 
+
+.
+
+Proof. Note that 
+
+E
+
+ q
+
+Y
+
+> i=1
+
+uMi(Gi(t)) 
+
+> i
+
+
+
+= E
+
+
+
+E
+
+ q
+
+Y
+
+> i=1
+
+uMi(Gi(t))  
+
+> i
+
+B−(λt )
+
+ 
+
+= E
+
+ q
+
+Y
+
+> i=1
+
+E
+
+
+
+uMi(Zi(t+λ−1B−(λt )))  
+
+> i
+
+B−(λt )
+
+ 
+
+= E
+
+ q
+
+Y
+
+> i=1
+
+E
+
+
+
+exp 
+
+
+
+− Zi(t + λ−1B−(λt )) 
+
+> ki
+
+X
+
+> ji=1
+
+λij i (1 − uji 
+
+> i
+
+)
+
+
+
+B−(λt )
+
+ 
+
+= E
+
+ q
+
+Y
+
+> i=1
+
+
+
+1 + 
+
+Pki 
+
+> ji=1
+
+λij i (1 − uji 
+
+> i
+
+)
+
+ai
+
+−λt −B−(λt )
+
+,
+
+where the penultimate step follows on using (1.1), and in the last step we have used (2.4). Finally, the required result follows by using (2.7). □
+
+Remark 4.2. The pgf G ¯M(t)(¯ u) solves the following differential equation: 
+
+∂∂t G ¯M(t)(¯ u) = λG ¯M(t)(¯ u) ln 1 − θ
+
+Qqi=1 
+
+ 1 + Pki 
+
+> ji=1
+> λij i
+> ai
+
+(1 − uji 
+
+> i
+
+) − θ
+
+!
+
+with G ¯M(0) (¯ u) = 1. 
+
+Theorem 4.2. The state probabilities p ¯M(¯ n, t ) = Pr { ¯M(t) = ¯ n}, ¯ n ≥ ¯0 are given by 
+
+p ¯M(¯ n, t ) = (1 − θ)λt 
+
+> ∞
+
+X
+
+> h=0
+
+θh
+
+h!
+
+ λt 
+
+> hq
+
+Y
+
+> i=1
+
+ ai
+
+ai + λi
+
+h+λt X
+
+> Ω( ki,n i)
+
+ h + λt 
+
+> ηi
+> ki
+
+Y
+
+> ji=i
+
+ λij i
+
+ai + λi
+
+nij i 1
+
+nij i ! , (4.13) 
+
+where λi = λi1 + λi2 + · · · + λik i and ηi = ni1 + ni2 + · · · + nik i for all i = 1 , 2, . . . , q . Here, (x)k denotes the Pochhammer symbol as defined in (2.1). 
+
+Proof. For t ≥ 0, by using (2.10) and (3.3), we have 
+
+p ¯M(¯ n, t ) = 
+
+Z ∞
+
+> 0
+
+Z ∞
+
+> 0
+
+· · · 
+
+Z ∞
+
+> 0
+
+Pr {M1(x1) = n1, M 2(x2) = n2, . . . , M q (xq ) = nq }g(¯ x, t ) d x1 dx2 . . . dxq
+
+= (1 − θ)λt 
+
+Γ( λt )
+
+> ∞
+
+X
+
+> h=0
+
+θh
+
+h!(Γ( h + λt )) q−1
+
+> q
+
+Y
+
+> i=1
+
+ah+λt i
+
+X
+
+> Ω( ki,n i)
+
+ kiY
+
+> ji=i
+
+λnij i
+
+> ij i
+
+nij i !
+
+
+
+·
+
+Z ∞
+
+> 0
+
+xh+λt +Pkiji=1 nij i −1 
+
+> i
+
+e−(ai+Pkiji=1 λij i )xi dxi
+
+= (1 − θ)λt 
+
+Γ( λt )
+
+> ∞
+
+X
+
+> h=0
+
+θh
+
+h!(Γ( h + λt )) q−1
+
+> q
+
+Y
+
+> i=1
+
+ah+λt i
+
+X
+
+> Ω( ki,n i)
+
+ kiY
+
+> ji=i
+
+λnij i
+
+> ij i
+
+nij i !
+
+
+
+13 · (ai + λi)−h−λt −Pkiji=1 nij i Γ
+
+
+
+h + λt +
+
+> ki
+
+X
+
+> ji=1
+
+nij i
+
+
+
+= (1 − θ)λt 
+
+Γ( λt )
+
+> ∞
+
+X
+
+> h=0
+
+θh
+
+h!(Γ( h + λt )) q−1
+
+> q
+
+Y
+
+> i=1
+
+ah+λt i
+
+X
+
+> Ω( ki,n i)
+
+Γ( h + λt + Pki 
+
+> ji=1
+
+nij i )(ai + λi)h+λt kiY
+
+> ji=1
+
+ λij i
+
+ai + λi
+
+nij i 1
+
+nij i ! .
+
+This completes the proof. □
+
+Remark 4.3. On substituting k1 = k2 = 1, q = 2 and a1 = a2 = a in Theorem 4.2, it re-duces to the state probabilities of bivariate Poisson process time-changed by an independent bivariate gamma subordinator (see Meoli (2025), Theorem 3.4). Next, we discuss an application of the obtained results to a shock model. 4.1. An application to a shock model. Let us consider a system which is exposed to q
+
+distinct types of shocks. Its random failure time is denoted by a non-negative, absolutely continuous random variable T . The component processes of { ¯M(t)}t≥0 which is defined in (4.1) are used to model the arrival of shocks. Let S denote a random threshold which takes values in N, and is independent of the multivariate process { ¯M(t)}t≥0. We assume that the system fails once the total number of shocks reaches S. For i = 1 , 2, . . . , q , the cause of failure due to shock of type i is denoted by C = i, where C is an integer valued random variable. Thus, T is the first hitting time of M1(t) + M2(t) + · · · + Mq(t), that is, 
+
+T = inf {t ≥ 0 : M1(t) + M2(t) + · · · + Mq(t) ≥ S}.
+
+Its pdf is given by 
+
+fT (t) = 
+
+> q
+
+X
+
+> i=1
+
+fi(t), t ≥ 0,
+
+where fi(t) denotes the sub-density defined as 
+
+fi(t) = ddt Pr {T ≤ t, C = i}, i ∈ { 1, 2, . . . , q }.
+
+Thus, the pmf of C can be obtained as Pr {C = i} =
+
+Z ∞
+
+> 0
+
+fi(t) dt , i ∈ { 1, 2, . . . , q }.
+
+Also, the pmf and the survival function of random threshold S are given by 
+
+pS (k) = P {S = k}, k ∈ N
+
+and ¯FS (k) = P {S > k }, k ∈ N0,
+
+respectively. Note that the survival function of random failure time T is defined as ¯FT (t) = Pr {T > t }, t ≥ 0. It is given by ¯FT (t) = 
+
+> ∞
+
+X
+
+> k=0
+
+¯FS (k) X 
+
+> n1+n2+··· +nq=k
+
+p ¯M(¯ n, t ), t ≥ 0, (4.14) with ¯FS (0) = 1 .
+
+For ¯ n ≥ ¯0, the intensity of occurrence of shock of type r due to a jump of size lr is given by Rrl r . It is known as the hazard rate which is defined as 
+
+Rrl r (¯ n; t) = lim 
+
+> h→0+
+
+1
+
+h Pr 
+
+
+
+Mr (t + h) = nr + lr , ∩qk=1  
+
+> k̸=r
+
+{Mk(t + h) = nk} ∩qk=1 Mk(t) = nk
+
+
+
+, (4.15) 
+
+> 14
+
+where r = 1 , 2, . . . , q and lr = 1 , 2, . . . , k r.
+
+Theorem 4.3. For r = 1 , 2, . . . , q and lr = 1 , 2, . . . , k r, the hazard rate Rrl r (¯ n; t), ¯ n ≥ ¯0 is given by 
+
+Rrl r (¯ n; t) = A(θ, ¯a, t )
+
+p ¯M(¯ n, t ) , t ≥ 0. (4.16) Here, p ¯M(¯ n, t ) is the pmf of multivariate process { ¯M(t)}t≥0 and 
+
+A(θ, ¯a, t ) = (1 − θ)λt 
+
+> ∞
+
+X
+
+> h1=0
+> ∞
+
+X
+
+> h2=0
+
+λθ h1+h2
+
+h1!h2!
+
+X  
+
+> Ω( kr,l r)
+
+ krY 
+
+> jr=1
+
+λlrjr 
+
+> rj r
+
+lrj r !
+
+ q
+
+Y
+
+> i=1
+
+ah1+h2+λt i
+
+X
+
+> Ω( ki,n i)
+> ki
+
+Y
+
+> ji=1
+
+λnij i
+
+> ij i
+
+nij i !
+
+
+
+· (ar + λr )−h1−h2−λt −ηr −ξr (h1 + ξr − 1)!  λt 
+
+> h2+ηr
+> q
+
+Y 
+
+> i=1
+> i̸=r
+
+X
+
+> Ω( ki,n i)
+
+(ai + λi)−h1−h2−λt −ηi  h2 + λt  
+
+> ηi
+
+,
+
+where ξr = Pkr
+
+jr =1 lrj r , λi = Pki
+
+ji=1 λij i and ηi = Pki
+
+ji=1 nij i .
+
+Proof. For r = 1 , 2, . . . , q , we have the following equivalent form of (4.15): 
+
+Rrl r (¯ n; t) = lim 
+
+τ →t
+
+Pr 
+
+
+
+Mr (τ ) = nr + lr , ∩qk=1 
+
+k̸ =r
+
+{Mk(τ ) = nk}, ∩qk=1 {Mk(t) = nk}
+
+
+
+(τ − t)p ¯M(¯ n, t ) , (4.17) 
+
+where ¯ n ∈ Nq
+
+0.By using the independent and stationary increments property of the component processes of { ¯G(t)}t≥0 and { ¯M (t)}t≥0, we have 
+
+Pr 
+
+
+
+Mr (τ ) = nr + lr , ∩qk=1  
+
+> k̸=r
+
+{Mk (τ ) = nk }, ∩qk=1 {Mk (t) = nk }
+
+
+
+=
+
+Z ∞
+
+> x11 =0
+
+Z x11 
+
+> x12 =0
+
+· · · 
+
+Z ∞
+
+> xq1=0
+
+Z xq1
+
+> xq2=0
+
+Pr 
+
+
+
+Mr (xr1) = nr + lr , ∩qk=1  
+
+> k̸=r
+
+{Mk (xk1) = nk }, ∩qk=1 {Mk (xk2) = nk }
+
+
+
+· Pr 
+
+
+
+∩qk=1 {Gk (τ ) ∈ dxk1}, ∩qk=1 {Gk (t) ∈ dxk2}
+
+=
+
+Z ∞
+
+> x11 =0
+
+Z x11 
+
+> x12 =0
+
+· · · 
+
+Z ∞
+
+> xq1=0
+
+Z xq1
+
+> xq2=0
+
+Pr 
+
+
+
+Mr (xr1) = nr + lr , ∩qk=1  
+
+> k̸=r
+
+{Mk (xk1) = nk }, ∩qk=1 {Mk (xk2) = nk }
+
+
+
+· g(( x11 − x12 , x 21 − x22 , . . . , x q1 − xq2), τ − t) g(( x12 , x 22 , . . . , x q2), t ) d xq2 dxq1 . . . dx12 dx11 
+
+=
+
+Z ∞
+
+> x11 =0
+
+Z x11 
+
+> x12 =0
+
+· · · 
+
+Z ∞
+
+> xq1=0
+
+Z xq1
+
+> xq2=0
+
+Pr 
+
+
+
+Mr (xr1 − xr2) = lr , ∩qk=1  
+
+> k̸=r
+
+{Mk (xk1 − xk2) = 0 }
+
+
+
+Pr  ∩qk=1 Mk (xk2) = nk
+
+· g(( x11 − x12 , x 21 − x22 , . . . , x q1 − xq2), τ − t) g(( x12 , x 22 , . . . , x q2), t ) d xq2 dxq1 . . . dx12 dx11 ,
+
+where we have used the independence of the component processes of { ¯M (t)}t≥0.By using (2.10) and (3.3), we have 
+
+Pr 
+
+
+
+Mr (τ ) = nr + lr , ∩qk=1 
+
+k̸ =r
+
+{Mk(τ ) = nk}, ∩qk=1 {Mk(t) = nk}
+
+
+
+=
+
+Z ∞
+
+x11 =0 
+
+Z x11 
+
+x12 =0 
+
+· · · 
+
+Z ∞
+
+xq1=0 
+
+Z xq1
+
+xq2=0 
+
+ X
+
+Ω( kr ,l r )
+
+krY
+
+jr =1 
+
+(λrj r (xr1 − xr2)) lrjr 
+
+lrj r !
+
+
+
+·
+
+ qY
+
+i=1 
+
+X
+
+Ω( ki,n i)
+
+kiY
+
+ji=1 
+
+(λij i xi2)nij i
+
+nij i ! e−λij i xi1
+
+ (1 − θ)λτ 
+
+Γ( λ(τ − t))Γ( λt )
+
+∞X
+
+h1=0 
+
+∞X
+
+h2=0 
+
+θh1+h2
+
+h1!h2!(Γ( h1 + λ(τ − t))Γ( h2 + λt )) q−1
+
+·
+
+ qY
+
+i=1 
+
+ah1+h2+λτ i (xi1 − xi2)h1+λ(τ −t)−1xh2+λt −1
+
+i2 e−aixi1
+
+
+
+dxq2 dxq1 . . . dx12 dx11 
+
+= (1 − θ)λτ 
+
+Γ( λ(τ − t))Γ( λt )
+
+∞X
+
+h1=0 
+
+∞X
+
+h2=0 
+
+θh1+h2
+
+h1!h2!(Γ( h1 + λ(τ − t))Γ( h2 + λt )) q−1
+
+15 · X
+
+Ω( kr ,l r )
+
+ krY
+
+jr =1 
+
+λlrjr 
+
+rj r
+
+lrj r !
+
+ qY
+
+i=1 
+
+ah1+h2+λτ i
+
+X
+
+Ω( ki,n i)
+
+kiY
+
+ji=1 
+
+λnij i
+
+ij i
+
+nij i !
+
+ Z ∞
+
+x11 =0 
+
+Z x11 
+
+x12 =0 
+
+· · · 
+
+Z ∞
+
+xq1=0 
+
+Z xq1
+
+xq2=0 
+
+(xr1 − xr2)ξr
+
+·
+
+ qY
+
+i=1 
+
+xηi+h2+λt −1
+
+i2 (xi1 − xi2)h1+λ(τ −t)−1e−(ai+λi)xi1
+
+
+
+dxq2 dxq1 . . . dx12 dx11 
+
+= (1 − θ)λτ 
+
+Γ( λ(τ − t))Γ( λt )
+
+∞X
+
+h1=0 
+
+∞X
+
+h2=0 
+
+θh1+h2
+
+h1!h2!(Γ( h1 + λ(τ − t))Γ( h2 + λt )) q−1
+
+X
+
+Ω( kr ,l r )
+
+ krY
+
+jr =1 
+
+λlrjr 
+
+rj r
+
+lrj r !
+
+
+
+·
+
+ qY
+
+i=1 
+
+ah1+h2+λτ i
+
+X
+
+Ω( ki,n i)
+
+kiY
+
+ji=1 
+
+λnij i
+
+ij i
+
+nij i !
+
+
+
+(ar + λr )−h1−h2−λτ −ηr −ξr Γ( h1 + λ(τ − t) + ξr )Γ( h2 + λt + ηr )
+
+·
+
+qY
+
+i=1 
+
+i̸=r
+
+(ai + λi)−h1−h2−λτ −ηi Γ( h1 + λ(τ − t))Γ( h2 + λt + ηi)= (1 − θ)λτ 
+
+∞X
+
+h1=0 
+
+∞X
+
+h2=0 
+
+θh1+h2
+
+h1!h2!
+
+X
+
+Ω( kr ,l r )
+
+ krY
+
+jr =1 
+
+λlrjr 
+
+rj r
+
+lrj r !
+
+ qY
+
+i=1 
+
+ah1+h2+λτ i
+
+X
+
+Ω( ki,n i)
+
+kiY
+
+ji=1 
+
+λnij i
+
+ij i
+
+nij i !
+
+
+
+· (ar + λr )−h1−h2−λτ −ηr −ξr  λ(τ − t)
+
+h1+ξr
+
+ λt 
+
+h2+ηr
+
+qY
+
+i=1 
+
+i̸ =r
+
+X
+
+Ω( ki,n i)
+
+(ai + λi)−h1−h2−λτ −ηi  h2 + λt 
+
+ηi ,
+
+where the penultimate step follows on using formula 3.191.1 of Gradshteyn and Ryzhik (2014). Finally, on substituting (4.13) and ( ?? ) in (4.17), we get the required result. □
+
+Remark 4.4. For q = 2, k1 = k2 = 1 and a1 = a2 = a, (4.16) reduces to the hazard rates obtained in Theorem 3.5 of Meoli (2025). 
+
+Remark 4.5. For r = 1 , 2, . . . , q , lr = 1 , 2, . . . , k r and t ≥ 0, the failure sub-densities are given by (see Kataria and Dhillon (2025), Eq. (5.4)) 
+
+fr(t) = 
+
+∞X
+
+k=1 
+
+pS (k) X
+
+k−kr ≤Pqi=1 ni≤k−1
+
+Pr 
+
+
+
+∩qi=1 {Mi(t) = ni} krX
+
+lr =k−Pqi=1 ni
+
+Rrl r (¯ n; t). (4.18) Now, on substituting (4.16) in (4.18), we get 
+
+fr (t) = (1 − θ)λt 
+
+∞X
+
+k=1 
+
+pS (k) X
+
+k−kr ≤Pqi=1 ni≤k−1
+
+krX
+
+lr =k−Pqi=1 ni
+
+∞X
+
+h1=0 
+
+∞X
+
+h2=0 
+
+λθ h1+h2
+
+h1!h2!
+
+· X
+
+Ω( kr ,l r )
+
+ krY
+
+jr =1 
+
+λlrjr 
+
+rj r
+
+lrj r !
+
+ qY
+
+i=1 
+
+ah1+h2+λt i
+
+X
+
+Ω( ki,n i)
+
+kiY
+
+ji=1 
+
+λnij i
+
+ij i
+
+nij i !
+
+
+
+(ar + λr )−h1−h2−λt −ηr −ξr
+
+· (h1 + ξr − 1)!  λt 
+
+h2+ηr
+
+qY
+
+i=1 
+
+i̸ =r
+
+X
+
+Ω( ki,n i)
+
+(ai + λi)−h1−h2−λt −ηi  h2 + λt 
+
+ηi
+
+.
+
+Remark 4.6. The survival function of failure time T is given by 
+
+¯FT (t) = (1 − θ)λt 
+
+> ∞
+
+X
+
+> k=0
+
+¯FS (k) X 
+
+> n1+n2+··· +nq=k
+> ∞
+
+X
+
+> h=0
+
+θh
+
+h!
+
+ λt 
+
+> hq
+
+Y
+
+> i=1
+
+ ai
+
+ai + λi
+
+h+λt X
+
+> Ω( ki,n i)
+
+ h + λt 
+
+> ηi
+> ki
+
+Y
+
+> ji=i
+
+ λij i
+
+ai + λi
+
+nij i 1
+
+nij i ! ,
+
+(4.19) 
+
+where we have used (4.13) and (4.14). 16 4.1.1. Some particular cases for the survival function of random failure time. Here, we present two representative examples of the survival function of the random failure time T
+
+derived under specific assumptions on the survival distribution ¯FS (k) = Pr {S > k }, k ≥ 0of the random threshold S. Also, we plot the survival function for different choices of parameters corresponding to the following cases: I. Suppose the random threshold S follows Geometric( p) distribution, that is, ¯FS (k) = (1 − p)k, 0 < p ≤ 1. On substituting q = 2 , k 1 = 1 and k2 = 2 in (4.19), we get 
+
+¯FT (t) = (1 − θ)λt 
+
+> ∞
+
+X
+
+> k=0
+
+(1 − p)k X
+
+> n1+n21 +2 n22 =k
+> ∞
+
+X
+
+> h=0
+
+θh
+
+h!
+
+ λt 
+
+> h
+
+ h + λt 
+
+> n1
+
+ h + λt 
+
+> n21 +n22
+
+·
+
+ a1a2
+
+(a1 + λ1)( a2 + λ21 + λ22 )
+
+h+λt 1
+
+n1!n21 !n22 !
+
+λn1 
+
+> 1
+
+λn21  
+
+> 21
+
+λn22 
+
+> 22
+
+(a1 + λ1)n1 (a2 + λ21 + λ22 )n21 +n22 . (4.20) 
+
+II. Let S has Hypergeometric( N, K, n ) distribution, that is, 
+
+¯FS (k) = 
+
+  nk+1 
+
+  N −nK−k−1
+
+ NK
+
+ 3F2(1 , k + 1 − K, k + 1 − n; k + 2 , N + k + 2 − K − n; 1) , (4.21) 
+
+where N ∈ N0, K ∈ { 0, 1, 2, . . . , N } and n ∈ { 0, 1, 2, . . . , N }.Now, on substituting q = 2 , k 1 = 1 and k2 = 2 in (4.19), and using (4.21), we get 
+
+¯FT (t) = (1 − θ)λt 
+
+> ∞
+
+X
+
+> k=0
+
+  nk+1 
+
+  N −nK−k−1
+
+ NK
+
+ 3F2(1 , k + 1 − K, k + 1 − n; k + 2 , N + k + 2 − K − n; 1) 
+
+· X
+
+> n1+n21 +2 n22 =k
+> ∞
+
+X
+
+> h=0
+
+θh
+
+h!
+
+ λt 
+
+> h
+
+ h + λt 
+
+> n1
+
+ h + λt 
+
+> n21 +n22
+
+ a1a2
+
+(a1 + λ1)( a2 + λ21 + λ22 )
+
+h+λt 
+
+· 1
+
+n1!n21 !n22 !
+
+λn1 
+
+> 1
+
+λn21  
+
+> 21
+
+λn22 
+
+> 22
+
+(a1 + λ1)n1 (a2 + λ21 + λ22 )n21 +n22 . (4.22) 
+
+Figure 1. Plots 1(a), 1(b) represent the survival function (4.20) and (4.22) for the parameter values θ = 0 .5, a1 = a2 = 1, λ1 = 0 .5, λ21 = 0 .5, λ22 = 0 .5and: p = 0 .5 for 1(a) and N = 2, K = 1, n = 1 for 1(b) respectively. 
+
+17 Figure 2. Plots 2(a), 2(b) represent the survival function (4.20) and (4.22) for the parameter values θ = 0 .5, a1 = a2 = 1, λ1 = 1, λ21 = 1, λ22 = 1 and: 
+
+p = 0 .5 for 2(a) and N = 2, K = 1, n = 1 for 2(b) respectively. 
+
+Figure 3. Plots 3(a), 3(b) represents the survival function (4.20) and (4.22) for the parameter values θ = 0 .5, a1 = a2 = 1, λ = 1, λ1 = 0 .5, λ21 = 0 .5, 
+
+λ22 = 0 .5 and K = 1, n = 1 (for 3(b)) respectively. 
+
+Figure 4. Plots 4(a), 4(b) represents the survival function (4.20) and (4.22) for the parameter values θ = 0 .5, a1 = a2 = 1, λ = 1, λ1 = 1, λ21 = 1, λ22 = 1 and K = 1, n = 1 (for 4(b)) respectively. 
+
+> 18
+
+Remark 4.7. From the plots of the survival function corresponding to the two cases discussed above, we have the following observations: (i) From Figure 1 and Figure 2, it is observed that the survival function ¯FT (·) decreases with the increasing values of λ for Case I and Case II. (ii) From Figure 3 and Figure 4, it is observed that the survival function ¯FT (·) decreases with the increasing values of p in 3(a) and 4(a). Also, it decreases with with the increasing values of N in 3(b) and 4(b). 
+
+References 
+
+[1] Applebaum, D. (2009). L´ evy Processes and Stochastic Calculus. Cambridge University Press. [2] Barndorff-Nielsen, O., Pedersen, J., Sato, K. (2001). Multivariate subordination, self-decomposability and stability. Adv. Appl. Probab. 33 (1), 160–187. [3] Beghin, L. (2014). Geometric stable processes and related fractional differential equations. Electron. Commun. Probab. 19 (13), 14pp. DOI: 10.1214/ECP.v19-2771. [4] Beghin, L., Macci, C. (2016). Multivariate fractional Poisson processes and compound sums. Adv. in Appl. Probab. 48 (3), 691–711. [5] Beghin, L., Macci, C., Ricciuti, C. (2020). Random time-change with inverses of multivariate subor-dinators: governing equations and fractional dynamics. Stochastic Process. Appl. 10 , 6364-6387. [6] Bertoin, J. (1996). L´ evy Processes. Cambridge University Press. [7] Bertoin, J. (1999). Subordinators: examples and applications. In Lectures on Probability Theory and Statistics (Lecture Notes Math. 1717), ed. P. Bernard. Springer, Berlin. [8] Buchak, K., Sakhno, L. (2024). Generalized fractional calculus and some models of generalized counting processes. Modern Stoch. Theory Appl. 11 (4), 439-458. [9] Cha, J.H., Giorgio, M. (2018). Modelling of marginally regular bivariate counting process and its application to shock model. Methodol. Comput. Appl. Probab. 20 , 1137–1154. [10] Dhillon, M., Kataria, K.K. (2024). On martingale characterizations of generalized counting process and its time-changed variants. J. Math. Anal. Appl. 504 (2), 1–7. [11] Di Crescenzo, A., Martinucci, B., Meoli, A. (2016). A fractional counting process and its connection with the Poisson process. ALEA Lat. Am. J. Probab. Math. Stat. 13 (1), 291–307. [12] Di Crescenzo, A., Meoli, A. (2022). Competing risks and shock models governed by a generalized bivariate Poisson process. J. Appl. Probab. 60 (2), 709–722. [13] Gradshteyn, I.S., Ryzhik, I.M. (2014). Table of integrals, series, and products. Academic press, 8th edition. ISBN 0123849330. [14] Kataria, K.K., Khandakar, M. (2022a). Generalized fractional counting process. J. Theoret. Probab. 
+
+35 (4), 2784–2805. [15] Kataria, K.K., Khandakar, M. (2022b). Skellam and time-changed variants of the generalized frac-tional counting process. Fract. Calc. Appl. Anal. 25 (5), 1873–1907. https://doi.org/10.1007/s13540-022 00091-7. [16] Kataria, K.K., Dhillon, M. (2025). On the multivariate generalized counting process and its time-changed variants. Fract. Calc. Appl. Anal. 28 (3), 1404-1457. [17] Kataria, K.K., Khandakar, M., Vellaisamy, P. (2025). Non-homogeneous and time-changed versions of generalized counting processes. Adv. Appl. Probab. 58 (1), pp. 1-37. [18] Kilbas, A.A., Srivastava, H.M., Trujillo, J.J. (2006). Theory and Applications of Fractional Differential Equations. Elsevier Science B.V., Amsterdam. [19] Kokoszka, P.S., Taqqu, M.S. (1996). Infinite variance stable moving averages with long memory. J. Econom. 73 , 79–99. [20] Meoli, A. (2025). Bivariate gamma subordination for a Poisson shock model. ALEA, Lat. Am. J. Probab. Math. Stat. 22 , 73–91. DOI: 10.30757/ALEA.v22-02. [21] Sato, K. (1999). L´ evy Processes and Infinitely Divisible Distributions. Cambridge University Press. [22] Semeraro, P. (2022). Multivariate tempered stable additive subordination for financial models. Math. Financ. Econ. 16 (4), 685–712. 
+
+> 19
+
+Manisha Dhillon, Department of Mathematics, Indian Institute of Technology Bhilai, Durg, 491002, India. 
+
+Email address : manishadh@iitbhilai.ac.in 
+
+Kuldeep Kumar Kataria, Department of Mathematics, Indian Institute of Technology Bhilai, Durg, 491002, India. 
+
+Email address : kuldeepk@iitbhilai.ac.in 
+
+Shyan Ghosh, Department of Mathematics, Indian Institute of Technology Bhilai, Durg, 491002, India. 
+
+Email address : shyanghosh@iitbhilai.ac.in

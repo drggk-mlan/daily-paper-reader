@@ -1,0 +1,355 @@
+Title: Modeling Language as a Sequence of Thoughts
+
+URL Source: https://arxiv.org/pdf/2512.25026v1
+
+Published Time: Thu, 01 Jan 2026 02:48:19 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+# Modeling Language as a Sequence of Thoughts 
+
+Nasim Borazjanizadeh ∗
+
+Independent Researcher 
+
+nasim.borazjanizadeh@gmail.com 
+
+James L. McClelland ∗
+
+Stanford University 
+
+jlmcc@stanford.edu 
+
+# Abstract 
+
+Transformer language models can generate strikingly natural text by modeling language as a sequence of tokens. Yet, by relying primarily on surface-level co-occurrence statistics, they fail to form globally consistent latent representations of entities and events, lack of which contributes to brittleness in relational direction (e.g., reversal curse), contextualization errors, and data inefficiency. On the other hand, cognitive science shows that human comprehension involves converting the input linguistic stream into compact, event-like representations that persist in memory while verbatim form is short-lived. Motivated by this view, we introduce 
+
+Thought Gestalt (TG) model, a recurrent Transformer that models language at two levels of abstraction—tokens and sentence-level "thought" states. TG generates the tokens of one sentence at a time while cross-attending to a memory of prior sentence representations. In TG, token and sentence representations are generated using the same set of model parameters and trained with a single objective, the next-token cross-entropy: by retaining the computation graph of sentence representations written to memory, gradients from future token losses flow backward through cross-attention to optimize the parameters generating earlier sentence vectors. In scaling experiments, TG consistently improves efficiency over matched GPT-2 runs, among other baselines, with scaling fits indicating GPT-2 requires ~5–8% more data and ~33–42% more parameters to match TG’s loss. TG also reduces errors on relational direction generalization on a father-son reversal curse probe. 
+
+# 1 Introduction 
+
+Prior work in cognitive science suggests that in humans, language functions primarily as a transmis-sion system for expressing underlying thoughts, rather than as the constitutive medium of cognition itself [ 1 –3 ]. On this view, comprehension involves decoding the serial stream of language to construct mental models that encode temporal sequences, causal relations, and entity properties in a situation [ 4, 5]. These models organize information into coherent gestalts – latent representations whose properties are not reducible to the sum of their parts [ 6– 8]. From this perspective, linguistic input is a lossy, serial code for these underlying structures, not the format in which mental models are stored. Large language models (LLMs) have achieved remarkable capabilities by modeling language as a sequence of tokens and optimizing next-token prediction [ 9 –12 ]. However, standard Transformers represent context primarily as token embeddings tied to positional indices; consequently, the model’s internal state is inherently coupled to linear word order [ 13 –15 ]. Moreover, because training is driven by surface-level distributional statistics—estimating which token is likely to follow a local pattern of surrounding tokens—models can generate fluent text without constructing a coherent, globally consistent situation model, which leads to systematic failures on compositional, multi-step, and long-context tasks [16, 2, 17, 18]. Several phenomena highlight the fragility of this token-centric approach. Lepori et al. [19] describe 
+
+contextualization errors , where lower Transformer layers fail to resolve ambiguities because the 
+
+> ∗
+
+Authors contributed equally to this work. Preprint. Under review. 
+
+> arXiv:2512.25026v1 [cs.CL] 31 Dec 2025
+
+Figure 1: The Thought Gestalt (TG) model learns token and sentence representations jointly using a single next-token prediction objective; by retaining the computation graph at memory writes, token prediction loss from future sentences backpropagates through cross-attention to refine the parameters that generated earlier sentence representations. 
+
+representations of relevant prior context are not yet fully contextualized. Similarly, the reversal curse shows that models trained on "A is B" often fail to infer "B is A," treating the two directions of a relational fact as distinct statistical patterns rather than a unified semantic relation [ 20 , 21 ]. Furthermore, LLMs remain strikingly data-inefficient: state-of-the-art models are pretrained on trillions of tokens [ 9, 12 ], exceeding the linguistic input of a human child ( ∼30 million words) by five orders of magnitude [ 22 ]. Yet, humans can often infer the meaning of a new word from a single exposure by linking it to existing conceptual structures [ 23 , 24 ]. These limitations motivate architectures that build latent representations at a higher level of abstraction than tokens that encode knowledge and causal relations into robust "thought-level" states. In this work, we introduce the Thought Gestalt (TG) model, a recurrent Transformer architecture designed to model language at two levels of abstraction: tokens and sentence-level thoughts (Figure 1). Our approach is motivated by cognitive evidence that human perceivers segment continuous streams of information into discrete events to organize memory, where the exact verbatim form is short-lived and confined to a narrow span, while earlier content is retained as stable, high-level representations of events and relations [ 25 – 27 ]. To emulate this, TG predicts the tokens of one sentence at a time while updating and attending to an abstracted memory of sentence representations. Each sentence representation is a d_model vector that captures the sentence’s holistic meaning, or "gestalt," rather than merely summing its tokens. TG uses sentence boundaries as a structural proxy for thought boundaries. While not a one-to-one map to thought boundaries, sentence boundaries serve as natural cognitive junctures where background information is integrated and concepts are updated [ 28 , 29 ]. Learning sentence representations is thus a first step toward building generative systems that can learn situation models and latent thought representations. TG is inspired by the Sentence Gestalt model [ 30 ], a recurrent network that incrementally maps a sequence of words onto a single distributed event representation—the “gestalt”—from which role–filler propositions can be decoded. In TG, the holistic vector representation of each sentence is extracted from the contextualized hidden state at the end-of-sentence (<EOS>) position and written into a recurrent memory that conditions subsequent token predictions. Crucially, TG optimizes sentence representations by maintaining their computation graph across memory writes, allowing next-token prediction losses on later sentences to backpropagate through cross-attention into the parameters that produced earlier sentence gestalts. To keep backpropagation tractable, we control the computation depth of memory representations with a simple curriculum over the number of sentences processed continuously without resetting the memory. This design distinguishes TG from recent architectures that learn sentence embeddings via auxiliary objectives, such as next-sentence prediction, token reconstruction, sentence ordering, or contrastive alignment, on top of a language-modeling loss [ 31 –35 ]. Empirical analyses suggest such auxiliary losses can be brittle and even degrade downstream generalization [ 36 , 37 ]. In contrast, TG employs no separate encoder or auxiliary sentence-level loss: token and sentence representations are generated using the same set of model parameters and are supervised solely via their contribution to the next-token prediction objective. Furthermore, unlike standard Transformers and Gisting [ 38 ], where summary tokens are processed in parallel with lexical tokens via attention masks—forcing lower layers to attend to noisy, unrefined representations of prior context—TG enables even early layers to attend to a memory of fully contextualized gestalts, directly targeting the contextualization errors identified by Lepori et al. [19]. 2Figure 2: Kaplan-style scaling behavior. Panel (a) varies training data size D at fixed model size of 85M non-embedding parameters for TG and GPT-2; panel (b) varies model size N at fixed training dataset size of 50M tokens. 
+
+Empirically, TG yields systematic gains in both learning efficiency and representational robustness. TG is consistently more data and parameter efficient than matched GPT-2 baselines pretrained on WikiText-103. In dataset-scaling experiments ( 12 –50 M training tokens; N ≈ 85 M non-embedding parameters), TG achieves 2–4% lower test perplexity at every scale (e.g., 23 .2 vs. 24 .0 at 50 M), corresponding to an effective 5–8% reduction in the training tokens needed to reach the same loss (Figure 2a). In parameter scaling experiments at fixed D = 50 M tokens, TG preserves an advantage across a 0.34 M– 21 .3M model size range, where GPT-2 would require a 1.33 –1.42 × parameter increase to match TG (Figure 2b). Comparisons to alternative baselines—including adding sentence-boundary bias to GPT-2 via special tokens, replacing TG’s sentence-based recurrence with fixed token spans, and compression via attention masks (“gisting”)—show that TG’s gains hinge on conditioning token generation on semantically coherent, fully contextualized units which are diminished when replaced with arbitrary token chunks or context abstraction alone (Figure 5). Additionally, in a controlled father–son relation probe, TG improves relational direction generalization (measured by reversed-direction likelihood) substantially faster than GPT-2 (Figure 4). Finally, ablation experiments indicate that higher-capacity TG variants, with added self and cross attention within each layer, can further boost performance, and confirm that end-to-end training of sentence representations via retaining gradient flow through memory, is essential for the observed gains (Table 1). 
+
+# 2 Other Works 
+
+Learning sentence representations. Many models learn explicit sentence embeddings by adding extra training objectives on top of language modeling. BERT, for example, adds a Next Sentence Prediction (NSP) loss, where a classifier must decide whether a second sentence truly follows the first or is just a randomly sampled sentence [ 31 ]. Contrastive methods such as SimCSE [ 34 ] and related sentence-embedding models [ 39 –42 ] instead pull together different views of the same sentence and push apart embeddings of unrelated sentences. However, RoBERTa and a broader analysis of loss functions show that removing NSP and relying only on language modeling can improve performance, and that auxiliary sentence-level objectives are often brittle and can even hurt generalization if not tuned carefully [36, 43]. Large Concept Model (LCM) [ 44 ] similarly operates at the sentence level, but trains an autoregressive model to predict the next sentence embedding in a frozen SONAR representation space, which is then decoded into tokens, rather than directly predicting a token sequence. In contrast, the Thought Gestalt (TG) model does not use a frozen encoder or any separate sentence-level loss: token and sentence spaces are learned jointly using the same next-token prediction objective. This avoids brittle auxiliary losses while still yielding contextualized sentence embeddings that can be reused as high-level state of prior content. 
+
+Sequence compression and gisting. Several recent approaches compress long token sequences into a small set of learned vectors. Gisting for LLMs inserts special “gist" tokens in context after the prompt and modifies attention masks so that gist tokens attend to the full prompt, while later tokens attend only to the gists, forcing the model to compress the prompt into a few gist representations 3that can be cached and reused [ 38 ]. AutoCompressors [ 45 ] apply a similar idea at the document level, recursively summarizing segments into short vectors that are fed back to the model, enabling long-range conditioning with only a few learned summaries. In both of these works, summary tokens are trained only via the general next-token prediction loss, without an explicit reconstruction objective. Compressive Transformers, in contrast, build a two-tier memory of recent raw activations and older compressed activations, trained with auxiliary reconstruction losses [46]. In TG, sentence representations play the role of compression tokens: the model extracts a single gist vector per sentence from a mid–upper layer after full contextualization with within-sentence tokens and the sentence memory, and writes it into a recurrent memory without detaching computation graph. The only supervision for these gists comes from the same next-token losses on later sentences, back-propagated through the memory. Unlike Compressive Transformers, TG does not introduce a separate compression loss; and unlike standard gisting, the same fully contextualized sentence representation is reused in the cross-attention path at every layer (each Transformer layer applies its own learned projections to these vectors). Thus, even early layers can query a stable, contextualized summary of prior content rather than raw, noisy activations, helping alleviate long-range contextualization errors [19]. 
+
+Recurrence and memory in Transformers. Another design axis concerns extending Transformers to reuse past representations to enable accessing content beyond a fixed context window. Transformer-XL caches hidden states from previous segments and lets the current segment attend to them, providing segment-level recurrence but truncating gradients at the cached states [ 47 ]. Block-Recurrent Transformers apply a Transformer layer recurrently over blocks of tokens, with a recurrent state that each block attends to, combining local self-attention within a block with an RNN-like state that carries information across blocks [ 48 ]. Recurrent Memory Transformer adds dedicated memory tokens that are passed between segments and updated by self-attention, providing a differentiable memory channel across long sequences [ 49 ]. Memorizing Transformers, on the other hand, add an external key–value store of past activations that can be queried with kNN retrieval at inference time, extending the effective context while keeping the memory non-differentiable [50]. TG shares with these models the design principles of reusing past computation, but its recurrent state resides in an external differentiable memory of sentence-level gists rather than token-level caches or memory tokens encoding arbitrary token sequences, and these gists are trained only via next-token prediction loss at future sentence positions. This design ties recurrence, compression, and sentence structure together: long-range information is carried forward in compact sentence representations that are optimized end-to-end for generative performance. These semantically grounded units are natural candidates for storage and retrieval in a long-term memory system, in the spirit of the Memorizing Transformer but with sentence- or thought-aligned chunks that retrieval work suggests are more effective than arbitrary fixed-size token blocks [51, 52]. 
+
+# 3 Main Design Principles 
+
+The Thought Gestalt (TG) model learns language as a sequence of sentence-level thoughts using a single transformer stack that functions both as a token decoder and a sentence encoder (Figure 3). Concretely, TG processes a document as a sequence of sentence steps. At step t the model (i) predicts the tokens of sentence st by interleaving causal self-attention over that sentence and cross-attention to a memory of earlier contextualized sentence vectors; then (ii) compresses st into a single vector which is written to memory at the next iteration without detaching gradients. This section describes the TG architecture, its read/write interface to memory, and the training and data preparation pipelines that enable stable, scalable learning. 
+
+3.1 Data Preparation 
+
+Our data pipeline converts raw corpora into sentence-level training samples aligned with TG’s computation model. Specifically, we: (i) split datasets into document-level text units based on boundaries provided by the source (i.e., a single Wikipedia article); (ii) split documents into sentences; (iii) enclose each sentence with special boundary tokens; (iv) slice documents into continuous sentence streams to create training examples with bounded gradient-graph depth; and (v) construct batches 4Figure 3: TG model architecture. Alternating self-attention and cross-attention blocks compose the main model stack, which predicts tokens of one sentence at a time. EOS at layer 7 is projected by a small linear “sentence head” to produce the sentence vector. Computation graph of sentence vectors are retained on memory writes; memory keys/values are cached. by sampling uniformly from sentence streams, constrained by a target number of lexical tokens per batch, to stabilize GPU memory usage and optimization (detailed in Appendix C.1). 
+
+Sentence splitting. We preprocess the training corpora by first separating each document (a standalone Wikipedia article) based on title formatting, and then splitting text into sentences using the “SaT Capped” method. SaT Capped predicts sentence boundaries at the token level and is robust to imperfect punctuation; it enforces a maximum sentence length by applying punctuation-aware fallback rules to split sentences longer than a given maximum token length (set to L = 64 tokens in our experiments) into shorter, semantically coherent spans [ 53 – 55 ]. We selected this method as it achieves the highest AutoBLEU scores for sentence-level reconstruction in a similar architecture [ 55 ]. 
+
+Sentence tokenization. Following sentence splitting, each sentence is tokenized, padded to the set maximum length L, and enclosed by special boundary markers: a start-of-sentence token ( <BOS> )and an end-of-sentence token ( <EOS> ). The <BOS> token enables the TG model to predict the first lexical token of a new sentence; it sets the context to a non-empty state to enable cross-attending to the sentence memory. The <EOS> token marks the end of sentence generation and serves as the designated position for extracting the hidden state of sentence representation, mt (see §3.2). For the final sentence of a document, we append an additional <EOD> marker before the <EOS> to signal the end of text generation. The effective length of each input sentence tensor is thus fixed at 
+
+T = 1 + L + 2 = 67 (accounting for <BOS> , <EOD> , and <EOS> ). 
+
+Sentence streams as training examples and batch construction. TG retains the computation graph of sentence representations written to memory to learn sentence encodings via the next-token prediction loss. Although at any sentence step t, the model only attends directly to the most recent 
+
+M sentence representations (where M is the memory capacity), the computation graph for those 5stored representations includes their own cross-attention to earlier sentences. Consequently, the gradient dependency chain extends backwards recursively (e.g., t → t−M → t−2M . . . ) to the first sentence processed after resetting the memory. Therefore, to keep training tractable and avoid storing computation graphs of unbounded depth, we slice training documents (not validation or test documents) into contiguous sentence streams of at most S sentences. Each stream functions as an independent training example, and the memory is reset between streams. This strategy preserves long-range conditioning while capping the maximum depth of backpropagation. To maintain optimization stability given the variable number of lexical tokens per stream, batches are constructed by uniformly sampling streams until a target range of lexical tokens per batch is reached (details in Appendix C.1). 
+
+3.2 Model Sentence representation and memory. Let x1: T be the tokens of the current sentence ( T = 67 
+
+is the fixed length of each processed sentence tensor) and let H(ℓ) ∈ RT ×d denote the layer-ℓ
+
+hidden states in the shared stack (model dimension d = dmodel ). Let iEOS index the end-of-sentence (EOS) token in the context. At a fixed mid layer ℓs (we use ℓs = 7 ), we form the sentence vector mt = Wsent H(ℓs) 
+
+> iEOS
+
+∈ Rd. Here Wsent denotes the sentence head, which is a single linear layer Wsent ∈ Rd×d (depth 1). Choosing a mid layer for sentence representation extraction is motivated by prior evidence showing that intermediate transformer layers carry the most contextual and transferable features, whereas top layers increasingly specialize in token-level decisions (i.e., next-token lexicalization) [56, 18, 57]. TG maintains a rolling sentence memory of capacity M . In our experiments, we set M = 40 to approximate the 1024-token context window of the GPT-2 baseline (the average sentence length in our training corpus is ∼25 tokens). At step t, the memory contains the K = min( t − 1, M ) most recent sentence vectors, ordered from oldest to most recent. At the end of step t, the computed mt is appended to this memory, and if full, the oldest entry is removed. 
+
+Cross-attention to sentence memory. Let K = min( t − 1, M ) and let the memory contain the K
+
+most recent sentence vectors {mt−K , . . . , mt−1}. We form cached key/value matrices 
+
+KM = mt−K , . . . , mt−1
+
+ + P (sent )1: K ∈ RK×d, VM = mt−K , . . . , mt−1
+
+ ∈ RK×d,
+
+where P (sent )1: K denotes sinusoidal positional encodings (sentence-index positions) added to the keys only. At a cross-attention block ℓ, the queries are the layer-ℓ token hidden states projected as Q(ℓ) =
+
+H(ℓ)W (ℓ) 
+
+> Q
+
+∈ RT ×d. The block forms projected keys/values K(ℓ) 
+
+> M
+
+= KM W (ℓ) 
+
+> K
+
+and V (ℓ) 
+
+> M
+
+= VM W (ℓ)
+
+> V
+
+and computes 
+
+Attn  Q(ℓ), K (ℓ) 
+
+> M
+
+, V (ℓ)
+
+> M
+
+ = softmax Q(ℓ) K(ℓ)
+
+> M
+
+⊤
+
+√dh
+
+!
+
+V (ℓ) 
+
+> M
+
+,
+
+with per-head dimension dh. (KM , V M ) are computed once per sentence step and reused by all cross-attention layers when processing st, while each block applies its own W (ℓ) 
+
+> {·}
+
+.Injecting position information into keys—rather than values—decouples sequence order from se-mantic content. Prior work shows that this design improves robustness to sequence length variations by encoding position directly into attention scores [ 58 – 60 ]. In TG, token queries already carry token -level positions from the input, and we inject sentence -index positions only into the memory keys. 
+
+Token embeddings and self-attention. We use a standard token embedding matrix E ∈ R|V|× d
+
+and learned token positional embeddings P(tok ) ∈ RT ×d; the input to the model stack is X(0) =
+
+E[x1: T ] + P(tok ). Each self-attention block is pre-norm, causal multi-head attention with residual connections. Within a block ℓ, token self-attention uses its own projections W (ℓ) 
+
+> Q
+
+, W (ℓ) 
+
+> K
+
+, W (ℓ) 
+
+> V
+
+and standard scaled dot-product attention. (Regularization details are in Appendix C.2.) 
+
+Learnable memory gates. Each cross-attention block has a scalar, learnable memory gate g(ℓ)
+
+> mem
+
+that scales the cross-attention increment before it is added back via the residual path. These gates let the model modulate reliance on the memory pathway over training (e.g., up-weighting memory once sentence representations stabilize). See Appendix A for more detail. 6Context seeding. In standard Transformers, the prediction of the first token relies on a static <BOS> 
+
+embedding, lacking local context. Because TG resets the self-attention window at every sentence boundary, this issue is exacerbated. To address this, we replace the static <BOS> embedding for sentence st with the preceding sentence representation mt−1: et, 0 ← mt−1. This transforms the start token into a contextualized state. Consequently, the first lexical token of a new sentence can access prior context via two complementary pathways: (1) cross-attention to the memory, and (2) local self-attention to the 0-th position, which now explicitly encodes the previous sentence representation. 
+
+3.3 Training schedules Sentence-stream curriculum (chunk-size curriculum). Retaining computation graphs through memory writes causes the effective backpropagation depth to grow with the number of sentences processed continuously. Early in training, sentence representations are largely uninformative; long sentence streams therefore increase compute and optimization difficulty without providing useful long-range credit assignment. We address this with a curriculum over the maximum sentence-stream length S used to slice training documents: we begin with shorter streams and periodically increase 
+
+S and re-chunk the training split (validation and test sets are never split into sentence streams). In our experiments with memory capacity M =40 , we start at S=30 sentences and increase by +12 
+
+every 5 epochs. This expands the effective dependency span of optimization from ∼750 (average sentence length of ∼ 25 ×30 ≈ 750 ) to ∼2000 tokens over the course of training, while keeping early optimization focused on within-sentence token modeling and short-range memory use. 
+
+Down-weighting frequent boundary token (EOS). In TG, end-of-sentence markers ( <EOS> )are more frequent than lexical tokens, as they appear at the end of every sentence and are often comparatively easy to predict (strongly signaled by punctuation and syntax). To mitigate this frequency and easy-label imbalance, we apply a frequency-aware reweighting of the token-level loss that down-weights <EOS> targets after an initial warm-up epoch (weight 1.0 for epoch 1, then 0.05 thereafter) [ 61 , 62 ]. This affects the training loss the model receives; separately, special-token targets (<EOS> /<EOD> ) are excluded from reported perplexities and checkpoint selection, as described in §4. We also use a warm-in schedule for stochastic regularization detailed in Appendix C.2. 
+
+# 4 Results 
+
+We evaluate Thought Gestalt (TG) through a series of experiments designed to measure data efficiency and representational robustness. First, we analyze TG’s scaling behavior by measuring how loss improves with training data and model size relative to a standard GPT-2 baseline, following the empirical scaling-law framework of Kaplan et al. [63] . Second, we benchmark TG’s data scaling against three architectural baselines that isolate key design concepts: (1) GPT-2 with Sentence Boundary Bias , which induces structural bias by retaining sentence start/end tokens ( <BOS> , <EOS> )in the token stream; (2) Fixed Token-Span Recurrence , which replaces TG’s sentence-level processing with fixed-length token windows similar to prior recurrent work [ 49 , 48 ]; and (3) GPT-2 + Gist Masking , where tokens pay causal attention to prior tokens only within a sentence and to preceding sentences through compressed "gist" tokens [ 38 ]. This attention mechanism is similar to TG but utilizes only in-context attention masks without recurrence or external memory. Third, we assess 
+
+relational direction generalization , which evaluates robustness to the in-context reversal curse given a controlled father–son probe [ 20 , 21 ]. Finally, we conduct design ablations to identify how specific components, such as gradient flow through memory, drive performance gains. 
+
+Experimental setup. All models are pre-trained on fixed subsets of the WikiText-103 training split, holding the validation and test sets fixed across experiments [ 64 ]. All reported losses and perplexities are computed only over lexical tokens: we exclude special-token label positions (e.g., the position predicting frequent end-of-sentence and end-of-document tokens, <EOS> and <EOD> 
+
+respectively) from both reporting and checkpoint selection. We optimize with AdamW ( β1=0 .9,
+
+β2=0 .999 , weight decay 0.01 ) using a peak learning rate of 2.5 × 10 −4 and a cosine schedule with 2% warmup. The best model checkpoints with lowest validation perplexity are selected and reported. During training, we early-stop based on validation perplexity with minimum ∆ of = 0 .1 perplexity and patience of = 3 epochs. 7Figure 4: Father–son reversal-curse: We report mean NLL (lower is better) of the gold single-token answer under normal (direction-matched) and reversed (direction-inverted) queries. Markers distinguish TG (circles) from GPT-2 baselines (squares); filled vs. hollow markers indicate whether the top-1 prediction matches the gold answer. Pretrained GPT-2 and Mistral 7B are included as web-scale reference points. 
+
+4.1 Scaling Efficiency 
+
+We quantify the data and parameter efficiency of Thought Gestalt (TG) using the empirical scaling-law framework of Kaplan et al. [63] . Following this work, we treat L as the held-out cross-entropy loss in nats/token and N as the number of non-embedding model parameters. When other factors are not the limiting bottleneck, Kaplan et al. observed approximate power-law relationships L(N ) ≈ (Nc/N )αN
+
+and L(D) ≈ (Dc/D )αD , which appear as straight lines in log–log space. In this regime, architectural improvements typically manifest as a downward shift of the curve (lower loss at fixed resources). We first fit these laws to TG and a matched GPT-2 baseline trained under identical optimization and evaluation protocols described in sec. 4 to compare their data and parameter efficiency. 
+
+Training dataset scaling. We measure scaling with dataset size by training TG and GPT-2 on WikiText-103 subsets ranging from 12 M to 50 M tokens while holding model capacity fixed at 
+
+N ≈ 85 M non-embedding parameters (12 layers, dmodel =768 ) for both models. Using a relatively large fixed-N model helps isolate how performance changes with D before capacity limitations dominate, analogous to the dataset-scaling analyses in Kaplan et al. [63]. Figure 2(a) shows that TG achieves lower test perplexity at every dataset size. Fitting a power law to the test loss yields similar scaling exponents for the two models (TG: α ≈ 0.152 ; GPT-2: α ≈ 0.149 ), suggesting that over this range the gain is primarily due to an intercept shift. Across our tested range this corresponds to a 2–4% reduction in perplexity (e.g., at D=50 M tokens, TG reaches 23.2 test perplexity versus 24.0 for GPT-2; see Appendix B.1 for other perplexities). To express the improvement as data efficiency, we compute an effective data multiplier mD = DGPT-2 (LTG (D)) /D ,where LTG (D) is TG’s achieved test loss at dataset size D, and DGPT-2 (L) is the number of training tokens GPT-2 would need to reach loss L according to the fitted GPT-2 scaling curve. We find 
+
+mD ≈ 1.05 –1.08 , meaning GPT-2 requires about 5–8% more training tokens to match TG’s loss; supporting the hypotheses that learning latent representations at more abstract levels than tokens can lead to more sample efficient learning. 
+
+Model size scaling. To assess parameter efficiency, we fix the training set at D=50 M tokens and vary model size from N ≈ 0.34 M to 21 .3M non-embedding parameters. We hold depth fixed at 12 layers and scale width ( dmodel ∈ { 48 , 96 , 192 , 384 }), which provides a controlled logarithmic sweep over N . This choice follows Kaplan et al. [63] , who observed that Transformer loss depends primarily on total non-embedding parameter count and only weakly on the model depth or width within a broad, non-extreme range. Figure 2(b) shows that TG attains lower perplexity than GPT-2 at 8Figure 5: Other baseline data-scaling comparisons. All panels report validation cross-entropy loss (nats/token; lexical tokens only) vs. training tokens at D ∈ { 20M , 30M , 50M } under identical splits and early stopping. Panel (a) isolates the effect of explicit sentence boundary markers in the token stream of a standard decoder model (GPT-2); panel (b) replaces each sentence input with fixed-size token-span in TG, disregarding sentence boundaries; panel (c) compares to a gist-based attention-masking baseline [38]. 
+
+every model size. Power-law fits to test loss yield nearly identical exponents (TG α ≈ 0.081 ; GPT-2 
+
+α ≈ 0.080 ), again consistent with an intercept shift. Interpreted as an effective parameter multiplier, 
+
+mN = NGPT-2 (LTG (N )) /N , the fitted curves imply that matching TG’s loss would require roughly 
+
+1.33 –1.42 × more GPT-2 parameters over the tested range. For example, under the fit, matching TG at N ≈ 21 M would require ≈ 30 M GPT-2 non-embedding parameters. 
+
+4.2 Other Baselines GPT-2 with sentence boundary bias. TG leverages sentence boundaries as a structural bias to process information in semantically coherent units. Here, we evaluate whether a standard Transformer benefits simply from making this structure explicit in the token stream. To do this, we take the sentence-segmented output of the TG data pipeline (§3.1) and flatten it into a continuous sequence for a standard GPT-2 model. Crucially, we retain the <BOS> and <EOS> markers to explicitly delimit boundaries, while removing the padding tokens required for TG’s fixed-size sentence tensors. In this setup, <BOS> predicts the sentence’s first lexical token, the last lexical token predicts <EOS> ,and <EOS> predicts the <BOS> of the subsequent sentence. The model architecture and attention mechanism remain identical to the GPT-2 baseline. To avoid making the comparison hinge on predicting frequent boundary events, we compute validation loss for checkpoint selection and report perplexity over lexical tokens only, excluding special-token label positions, matching the TG evaluation protocol (§4). Figure 5(left) shows that inducing sentence boundary bias improves GPT-2 performance across all dataset sizes, with the most significant gains in the low-data regime (test PPL decreases 38 .1 → 36 .6 at 20M; see Table 3). However, the improvement shrinks with scale (e.g., 
+
+24 .0 → 23 .7 at 50M), and TG surpasses this baseline once more data is available (TG: 23 .2 vs. 23 .7
+
+at 50M). This indicates that boundary tokens alone provide a helpful structural inductive bias for token LMs, but this is not sufficient to replicate the efficiency gains derived from TG’s learning and reuse of contextualized sentence-level latent states. 
+
+Fixed token-span recurrence. Many recurrent and memory-based Transformers propagate infor-mation by processing fixed-length token blocks and caching hidden states without aligning blocks to linguistically meaningful units (e.g., Transformer-XL, block-recurrent Transformers, and recurrent memory-token schemes; [ 47 , 48 , 50 ]). To determine if TG’s performance gains are attributable specif-ically to using semantically coherent text segments for recurrence/compression, here we evaluate TG with an identical architecture and training procedure, but replace sentence segmentation with fixed token spans of length N ∈ { 25 , 50 , 75 } lexical tokens (with N =25 chosen to match the average sentence length in our corpus). Each span is treated as a TG “sentence step”: it is wrapped with boundary tokens and compressed into one memory vector. The only difference is that memory entries now summarize arbitrary token windows rather than syntactically/semantically coherent sentences. As shown in Figure 5 (middle) and Appendix Table 4, fixed-span recurrence underperforms sentence-based TG across all data sizes; for example, at 50 M training tokens TG reaches 23 .2 test PPL, while the 25 /50 /75 -span variants reach 24 .7/24 .5/24 .2, respectively. Increasing the span length helps, but does not close the gap to TG: even the best model ( 75 tokens) remains worse than TG at every scale and performs more comparably to standard GPT-2. This suggests that TG’s advantage is driven by compressing semantically coherent units: sentence boundaries provide superior targets for event 9segmentation and stable memory organization compared to arbitrary blocks, a finding consistent with cognitive theories of comprehension and memory [25, 26, 5]. 
+
+GPT-2 + gist masking. TG’s attention pattern—full causal token interaction within a sentence, and access to earlier content only through compact summary vectors—is similar to gisting: tokens attend to their current segment, and later tokens can only access prior segments through a small set of “gist” representations learned via attention masking in a standard Transformer [ 38 ]. To test whether this attention-distribution mechanism can reproduce TG’s gains without recurrence or an external memory, we implement a GPT-2 baseline that (i) inserts <BOS> /<EOS> boundaries in the token stream and (ii) applies an additive attention-bias mask that restricts each token to attend causally within its own sentence, while accessing previous sentences only via each sentence’s last token, <EOS> ,acting as a “gist” token. This matches TG’s high-level attention connectivity, but removes recurrence, which has a key stabilizing effect: TG exposes fully contextualized sentence vectors (extracted after within-sentence processing and memory reads) to every layer via cross-attention, whereas GPT-2 + gist masking forces layers to read from in-context compression tokens whose representations are being formed in parallel with all other tokens (The effect of placing compression vectors in-context (as in gisting) versus in an external memory is detailed in §4.4). Empirically, the gist-masking baseline performs worse across all data scales (test PPL 31.9 at 50M; Table 5), far behind both GPT-2 (24.0 at 50M) and TG (23.2 at 50M), as seen in Figure 5 (right). These results show that when compressed states are not reliably contextualized, restricting direct access to prior tokens can amplify errors rather than improve abstraction. 
+
+4.3 Reversal curse evaluation (Father–Son completion). 
+
+We evaluate the robustness of TG and GPT-2 to the in-context reversal curse using a controlled Father– Son relation probe in completion mode. Each example consists of a context sentence establishing a relationship, followed by a query prefix. In the Normal condition, the query is a copy-paste repetition of the relational statement up to the answer position (e.g., context: “The son of Michael is John.”; query: “The son of Michael is”). In the Reversed condition, the query inverts the relation direction (e.g., context: “The son of Michael is John.”; query: “The father of John is”). We evaluate the model distribution at the first answer position and report the negative log-likelihood (NLL; in nats) of two candidates: the target token (the correct answer) and the distractor token (the other name present in the prompt). Figure 4 plots the resulting NLL for the target (green) and distractor (red) at the first predicted position, averaged over 1000 samples per condition. For readability, the y-axis is inverted so that higher (lower NLL) is better. Because lower NLL implies higher confidence, an error corresponds to the distractor having lower NLL than the target (red marker above green). In these figures, dashed lines are least-squares fits of the target NLL trend across the 12-50M token training runs (using the same checkpoints as in the data-scaling experiments). We also include pretrained GPT-2 and Mistral-7B as reference points to illustrate behavior at substantially larger pretraining scale. 
+
+Reversed condition. In the reversed condition, TG improves the probability of target token substan-tially faster than GPT-2 (target-NLL trend slope 0.263 vs. 0.127 ) and achieves lower target NLL in the reversed condition at 30M and 50M training dataset sizes. To summarize directional bias, we plot the reverse-direction margin ∆ = log p(target )−log p(distractor ) = NLL( distractor )−NLL( target ),
+
+where ∆ > 0 indicates a preference for the correct answer and ∆ < 0 indicates a distractor prefer-ence (a reversal error). In the reversed condition, ∆ improves monotonically for TG (approximately 
+
+−2.5 → − 1.1 nats from 12M →50M), indicating steadily reduced bias toward the distractor. In contrast, GPT-2’s margin becomes more negative through 30M and only slightly recovers at 50M, with a strong distractor preference persisting even for pretrained GPT-2 trained on web-scale data.This pattern suggests that for a standard token-stream Transformer, additional data may even amplify an order-bound shortcut (copying the wrong entity at a similar position) rather than capturing the underlying relationship. TG’s sentence-level contextualization reduces this shortcut pressure and moves the margin toward zero, with trends pointing toward a resolution of the in-context reversal curse (similar to that observed in Mistral) at a much lower pretraining scale. 
+
+Normal condition. In the normal (copy-paste) completion, both models improve at nearly the same rate (slopes 0.357 for GPT-2 vs. 0.347 for TG). GPT-2 is more confident in absolute terms (lower 10 Table 1: Ablation study on 30M -token pretraining. We select checkpoints by validation perplexity (lexical tokens only) and report the corresponding test perplexity. N denotes the non-embedding parameter count. Throughput is measured during training (sent./sec) on a single NVIDIA A40 GPU with no model or data parallelism.                                      
+
+> Ablation Test PPL Throughput
+> (sent./sec)
+> Model Size
+> N
+> TG (Baseline) 29.8 21 85.6M
+> Layer type: Self →Cross 29.4 17 114M Layer type: Parallel Self & Cross 29.7 17 114M Detach sentence reps at memory write 35.0 24 85.6M In-context Sentence Memory 30.2 19 85.6M Sentence rep from last layer (12) 30.3 21 85.6M No Context Seeding (Static <BOS> )30.2 21 85.6M No EOS Down-weighting 30.4 21 85.6M No Stream Curriculum (Fixed S=40 sentences) 30.5 21 85.6M Max Sentence Length = 32 30.4 22 85.6M
+
+target NLL), while TG shows a consistent offset that shrinks with additional training data. This is expected, as the normal condition represents a trivial in-context token sequence copying task; GPT-2 has direct access to the exact token sequence, while TG must infer the sequence from a compressed sentence state. Critically, TG matches GPT-2’s improvement trend in the normal condition while exhibiting a much higher improvement rate in the inverse condition. This supports our hypothesis that conditioning on fully contextualized latent states, rather than solely on position-tied token sequences, can mitigate the reliance on surface word order that causes the reversal curse. 
+
+4.4 Ablations 
+
+Table 1 reports ablations designed to isolate which TG components drive the gains observed in §4. All ablation models are trained on the same 30M -token pretraining subset using the protocol in §4. For each run we report: (i) test perplexity (computed over lexical tokens only, matching §4); (ii) the number of non-embedding parameters N ; and (iii) training throughput measured as sentence steps per second. Throughput is measured on a single NVIDIA A40 GPU with no model or data parallelism. 
+
+Increasing per-layer capacity. The baseline TG stack alternates within-sentence self-attention and memory cross-attention layers. We evaluate higher-capacity variants in which each layer contains both mechanisms: a serial Self →Cross ordering and a Parallel Self&Cross ordering. Self →Cross 
+
+improves test perplexity from 29 .8 → 29 .4, but increases model size from 85M → 114M non-embedding parameters ( +34% ) and reduces throughput from 21 → 17 sent./sec. The Parallel variant matches the same parameter and throughput cost but yields a smaller gain (29.7 PPL), suggesting that the serial ordering is a more effective way to scale TG under this design. Overall, these results show that allocating additional parameters to TG can yield further gains and that adding per-layer cross and self attention is an effective route to scale TG. 
+
+Gradient flow through memory is essential. The most consequential ablation detaches sentence representations at memory write time, which substantially worsens test perplexity ( 29 .8 → 35 .0); however, this increases the throughput ( 21 → 24 ) due to the reduced backpropagation depth. This sharp degradation indicates that TG’s gains do not come merely from introducing a recurrent state, 11 but from training that state end-to-end: next-token losses on later sentences backpropagate through memory reads to optimize the parameters that produced earlier sentence gestalts. 
+
+External vs. in-context memory. Placing sentence vectors in context as a prefix and relying on self-attention across the extended sequence (while preserving gradient flow through the memory vectors) largely retains TG’s modeling benefits (test PPL 30 .2), but is slower (throughput 19 vs. 21 
+
+sent./sec). This is consistent with the quadratic cost of self-attention: for sentence length T and memory size M , TG decouples processing into O(T 2) self-attention and O(T · M ) cross-attention, while the in-context approach self-attends to the concatenated sequence in O(( T + M )2).
+
+Other design choices. The remaining ablations yield smaller but systematic degradations: ex-tracting sentence representations from the last layer, removing context seeding, disabling EOS down-weighting, disabling the stream-length curriculum, and halving the maximum sentence length all increase test perplexity by 0.4–0.7 PPL (about 1–2.4% ) relative to baseline. Among these, remov-ing the stream curriculum produces the largest drop (PPL 30 .5), supporting the role of controlling backpropagation depth for stable optimization. Overall, among the components tested here, the dominant driver of performance is end-to-end training of sentence gestalts through differentiable memory, with the remaining components providing incremental improvements. 
+
+# 5 Conclusion 
+
+Future work. Next steps are to scale TG along several axes and characterize emerging capabilities. This includes increasing model capacity (e.g., widen dmodel and/or add per-layer self →cross capacity), extending the backpropagation dependency chain via longer sentence streams, increasing memory capacity, and training on larger, more diverse corpora. Because TG improves faster on relational-direction generalization, an interesting question is whether scaling translates into gains on reasoning and mathematical benchmarks where robust relational representations are critical. Finally, extending beyond two abstraction levels to a hierarchy of learned abstractions, paired with long-term memory for concepts at multiple granularities, are other future directions of this work to enable building situation models and continual learning. 
+
+Limitations. We study TG in a low-compute regime (up to 50M training tokens and ∼85M non-embedding parameters), which enables scaling sweeps and extensive ablations but is far below industry-scale LLM training. Demonstrating practical impact in real-world settings will require training larger TG models on bigger datasets, which is the next step of this work. 
+
+# References 
+
+[1] Evelina Fedorenko. Language is primarily a tool for communication rather than thought. Nature ,2024. [2] Emily M Bender and Alexander Koller. Climbing towards nlu: On meaning, form, and understanding in the age of data. In Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics , 2020. [3] Steven Pinker and Paul Bloom. Natural language and natural selection. Behavioral and Brain Sciences , 1990. [4] Walter Kintsch. Comprehension: A Paradigm for Cognition . Cambridge University Press, 1998. [5] Rolf A Zwaan and Gabriel A Radvansky. Situation models in language comprehension and memory. Psychological Bulletin , 1998. [6] John D Bransford, John R Barclay, and Jeffrey J Franks. Sentence memory: A constructive versus interpretive approach. Cognitive Psychology , 1972. [7] Arthur M Glenberg, Matthew Meyer, and Karen Lindem. Mental models contribute to text comprehension. Journal of Memory and Language , 1987. [8] Max Wertheimer. Laws of organization in perceptual forms. In A Source Book of Gestalt Psychology . Routledge & Kegan Paul, 1938. 12 [9] DeepSeek-AI. Deepseek-v3: Technical report. arXiv preprint arXiv:2412.19437 , 2024. [10] OpenAI. Gpt-4 technical report. arXiv preprint arXiv:2303.08774 , 2023. [11] Gemini Team and Google. Gemini: A family of highly capable multimodal models. arXiv preprint arXiv:2312.11805 , 2023. [12] AI@Meta. The llama 3 herd of models. arXiv preprint arXiv:2407.21783 , 2024. [13] Ashish Vaswani et al. Attention is all you need. In Proceedings of the 31st International Conference on Neural Information Processing Systems , NIPS’17, page 6000–6010, Red Hook, NY, USA, 2017. Curran Associates Inc. ISBN 9781510860964. [14] Philipp Dufter, Martin Schmitt, and Hinrich Schütze. Position information in transformers: An overview. Computational Linguistics , 48(3):733–763, 2022. [15] Amirhossein Kazemnejad, Inkit Padhi, Karthikeyan Ramamurthy, Payel Das, and Siva Reddy. The impact of positional encoding on length generalization in transformers. arXiv preprint arXiv:2305.19466 , 2023. [16] Nouha Dziri et al. Faith and fate: Limits of transformers on compositionality. NeurIPS , 2023. [17] Iman Mirzadeh, Keivan Alizadeh-Vahid, Hooman Shahrokhi, Oncel Tuzel, Samy Bengio, and Mehrdad Farajtabar. Gsm-symbolic: Understanding the limitations of mathematical reasoning in large language models. arXiv preprint arXiv:2410.05229 , 2024. [18] Nelson F. Liu, Kevin Lin, John Hewitt, Ashwin Paranjape, Michele Bevilacqua, Fabio Petroni, and Percy Liang. Lost in the middle: How language models use long contexts. Transactions of the ACL , 2024. [19] Michael Lepori, Michael Mozer, and Asma Ghandeharioun. Racing thoughts: Explaining large language model contextualization errors. In Proceedings of the 2025 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies , 2025. URL https://arxiv.org/abs/2410.02102 .[20] Lukas Berglund, Meg Tong, Max Kaufmann, Mikita Balesni, Asa Cooper Stickland, Tomasz Korbak, and Owain Evans. The reversal curse: Llms trained on "a is b" fail to learn "b is a". In 
+
+International Conference on Learning Representations (ICLR) , 2024. [21] Yuhui Lin et al. Delving into the reversal curse: How far can large language models generalize? 
+
+arXiv preprint arXiv:2402.12365 , 2024. [22] Betty Hart and Todd R Risley. Meaningful differences in the everyday experience of young American children . Paul H Brookes Publishing, 1995. [23] Carmel Houston-Price. Fast mapping in lexical development. In Encyclopedia of Language Development . Sage, 2014. [24] Lori Markson and Paul Bloom. Evidence against a dedicated system for word learning in children. Nature , 1997. [25] Gabriel A Radvansky and Jeffrey M Zacks. Event perception. Wiley Interdisciplinary Reviews: Cognitive Science , 2011. [26] Robert J Jarvella. Syntactic processing of connected speech. Journal of Verbal Learning and Verbal Behavior , 1971. [27] Rolf Zwaan. Situation models, mental simulations, and abstract concepts in discourse compre-hension. Psychonomic Bulletin & Review , 2016. [28] Alexandria E Guzmán and Celia M Klin. Maintaining global coherence in reading: The role of sentence boundaries. Memory & Cognition , 2000. [29] Joseph P Magliano, Gabriel A Radvansky, David E Copeland, Franz Schmalhofer, and Charles Perfetti. Beyond language comprehension: Situation models as a form of autobiographical memory. In Higher Level Language Processes in the Brain . Psychology Press, 2007. 13 [30] Mark F St John and James L McClelland. Learning and applying contextual constraints in sentence comprehension. Artificial Intelligence , 1990. [31] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: Pre-training of deep bidirectional transformers for language understanding. In Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies , 2019. URL https://arxiv.org/abs/1810.04805 .[32] Paul-Ambroise Duquenne, Holger Schwenk, and Benoît Sagot. Sonar: sentence-level multi-modal and language-agnostic representations. arXiv preprint arXiv:2308.11466 , 2023. [33] Zhenzhong Lan, Mingda Chen, Sebastian Goodman, Kevin Gimpel, Piyush Sharma, and Radu Soricut. Albert: A lite bert for self-supervised learning of language representations. In 
+
+International Conference on Learning Representations , 2020. [34] Tianyu Gao, Xingcheng Yao, and Danqi Chen. SimCSE: Simple contrastive learning of sentence embeddings. In Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing , 2021. URL https://aclanthology.org/2021.emnlp-main.552/ .[35] Abhinav Ramesh Kashyap, Thanh-Tung Nguyen, Viktor Schlegel, Stefan Winkler, See-Kiong Ng, and Soujanya Poria. A comprehensive survey of sentence representations: From the bert epoch to the chatgpt era and beyond. In Proceedings of the 18th Conference of the European Chapter of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 1738–1751, 2024. [36] Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. RoBERTa: A robustly optimized BERT pretraining approach. arXiv , 2019. URL https://arxiv.org/abs/1907.11692 .[37] Stéphane Aroca-Ouellette and Frank Rudzicz. On losses for modern language models. arXiv preprint arXiv:2010.01694 , 2020. [38] Jesse Mu, Xiang Lisa Li, and Noah Goodman. Learning to compress prompts with gist tokens. 
+
+arXiv , 2023. URL https://arxiv.org/abs/2304.08467 .[39] Nils Reimers and Iryna Gurevych. Sentence-BERT: Sentence embeddings using siamese BERT-networks. In Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing , 2019. URL https://aclanthology.org/D19-1410/ .[40] Daniel Cer, Yinfei Yang, Sheng-yi Kong, Nan Hua, Nicole Limtiaco, Rhomni St. John, Noah Constant, Mario Guajardo-Cespedes, Steve Yuan, Chris Tar, Brian Strope, and Ray Kurzweil. Universal sentence encoder. arXiv , 2018. URL https://arxiv.org/abs/1803.11175 .[41] Ryan Kiros, Yukun Zhu, Ruslan Salakhutdinov, Richard S. Zemel, Raquel Urtasun, Antonio Tor-ralba, and Sanja Fidler. Skip-thought vectors. In Advances in Neural Information Processing Sys-tems 28 , 2015. URL https://papers.nips.cc/paper/5950-skip-thought-vectors .[42] Lajanugen Logeswaran and Honglak Lee. An efficient framework for learning sentence representations. In International Conference on Learning Representations , 2018. URL 
+
+https://arxiv.org/abs/1803.02893 .[43] Stéphane Aroca-Ouellette and Frank Rudzicz. On losses for modern language models. In 
+
+Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing ,2020. URL https://aclanthology.org/2020.emnlp-main.403/ .[44] LCM team, Loïc Barrault, Paul-Ambroise Duquenne, Maha Elbayad, Artyom Kozhevnikov, Belen Alastruey, Pierre Andrews, Mariano Coria, Guillaume Couairon, Marta R. Costa-jussà, David Dale, Hady Elsahar, Kevin Heffernan, João Maria Janeiro, Tuan Tran, Christophe Ropers, Eduardo Sánchez, Robin San Roman, Alexandre Mourachko, Safiyyah Saleem, and Holger Schwenk. Large concept models: Language modeling in a sentence representation space. arXiv ,2024. URL https://arxiv.org/abs/2412.08821 .14 [45] Alexis Chevalier, Alexander Wettig, Anirudh Ajith, and Danqi Chen. Adapting language models to compress contexts. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing , 2023. URL https://aclanthology.org/2023.emnlp-main.232/ .[46] Jack W. Rae, Anna Potapenko, Siddhant M. Jayakumar, and Timothy P. Lillicrap. Compressive transformers for long-range sequence modelling. arXiv , 2019. URL https://arxiv.org/ abs/1911.05507 .[47] Zihang Dai, Zhilin Yang, Yiming Yang, Jaime Carbonell, Quoc V. Le, and Ruslan Salakhutdinov. Transformer-XL: Attentive language models beyond a fixed-length context. In Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics , 2019. URL 
+
+https://arxiv.org/abs/1901.02860 .[48] DeLesley Hutchins, Imanol Schlag, Yuhuai Wu, Ethan Dyer, and Behnam Neyshabur. Block-recurrent transformers. arXiv , 2022. URL https://arxiv.org/abs/2203.07852 .[49] Aydar Bulatov, Yuri Kuratov, and Mikhail Burtsev. Recurrent memory transformer. arXiv , 2022. URL https://arxiv.org/abs/2207.06881 .[50] Yuhuai Wu, Markus N. Rabe, DeLesley Hutchins, and Christian Szegedy. Memorizing trans-formers. arXiv , 2022. URL https://arxiv.org/abs/2203.08913 .[51] Guillaume Laforge. Advanced RAG — sentence window retrieval. Blog post, 2025. URL https://glaforge.dev/posts/2025/02/25/ advanced-rag-sentence-window-retrieval/ .[52] Sinchana Ramakanth Bhat, Max Rudat, Jannis Spiekermann, and Nicolas Flores-Herr. Re-thinking chunk size for long-document retrieval: A multi-dataset analysis. arXiv , 2025. URL 
+
+https://arxiv.org/abs/2505.21700 .[53] Markus Frohmann, Igor Sterner, Ivan Vuli´ c, Benjamin Minixhofer, and Markus Schedl. Segment any text: A universal approach for robust, efficient and adaptable sentence segmentation. In 
+
+EMNLP , 2024. URL https://aclanthology.org/2024.emnlp-main.665/ .[54] Benjamin Minixhofer, Jonas Pfeiffer, and Ivan Vuli´ c. Where’s the point? self-supervised multilingual punctuation-agnostic sentence segmentation. In ACL , 2023. URL https:// aclanthology.org/2023.acl-long.398/ .[55] Loïc Barrault, Paul-Ambroise Duquenne, Maha Elbayad, Artyom Kozhevnikov, Holger Schwenk, et al. Large concept models: Language modeling in a sentence representation space, 2024. URL https://arxiv.org/abs/2412.08821 . arXiv:2412.08821. [56] Mor Geva, Roei Schuster, Jonathan Berant, and Omer Levy. Transformer feed-forward layers are key-value memories. In EMNLP , 2021. [57] Anna Rogers, Olga Kovaleva, and Anna Rumshisky. A primer in bertology: What we know about how bert works. Transactions of the ACL , 2020. URL https://aclanthology.org/ 2020.tacl-1.54 .[58] Ofir Press, Noah A. Smith, and Mike Lewis. Shortformer: Better language modeling using shorter inputs. In ACL (Long Papers) , pages 5493–5505, 2021. [59] Ofir Press, Noah A. Smith, and Mike Lewis. Train short, test long: Attention with linear biases enables input length extrapolation. In ICLR , 2022. [60] Taro Miyazaki, Hideya Mino, and Hiroyuki Kaneko. Understanding how positional encodings work in transformer model. In Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024) , pages 17011–17018, Torino, Italia, 2024. ELRA and ICCL. URL https://aclanthology.org/ 2024.lrec-main.1478/ .[61] Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, and Piotr Dollár. Focal loss for dense object detection. In Proceedings of the IEEE International Conference on Computer Vision (ICCV) , 2017. 15 (a) 85M TG, 50M-token pretraining. (b) 85M TG, 30M-token pretraining. (c) 21M TG ( dmodel =384 ), 50M-token pretraining. 
+
+Figure 6: Learned memory-gate values over training. Each curve shows the scalar gate g(ℓ)mem for one cross-attention layer ℓ as a function of sentence steps. Gates grow over training and are larger in deeper layers. [62] Yin Cui, Menglin Jia, Tsung-Yi Lin, Yang Song, and Serge Belongie. Class-balanced loss based on effective number of samples. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2019. [63] Jared Kaplan, Sam McCandlish, Tom Henighan, et al. Scaling laws for neural language models. 
+
+arXiv preprint arXiv:2001.08361 , 2020. [64] Stephen Merity, Caiming Xiong, James Bradbury, and Richard Socher. Pointer sentinel mixture models. arXiv preprint arXiv:1609.07843 , 2016. 
+
+# A Memory Gate Dynamics Over Training 
+
+Each TG cross-attention block (i.e., the layers that read from the sentence-memory) includes a learnable scalar memory gate g(ℓ)mem for ℓ ∈ { 2, 4, 6, 8, 10 , 12 } that scales the memory cross-attention update before it is added through the residual path. Thus, g(ℓ)mem =1 corresponds to an unscaled memory contribution, while g(ℓ)mem >1 amplifies the influence of the memory pathway relative to the rest of the layer’s residual computation. Because the self-attention residual branch is not scaled by this parameter, the gate provides a direct readout of the model’s relative weighting of sentence-memory content at each depth. Figure 6 plots g(ℓ)mem as training progresses (x-axis is the cumulative sentence steps) up to the best validation checkpoint for three representative runs discussed in §4.1: the N ≈85 M baseline trained on D=50 M tokens, the N ≈85 M model trained on D=30 M tokens, and the parameter-scaling checkpoint with dmodel =384 (N ≈21 M) trained on D=50 M tokens. Across all three settings we observe two consistent patterns: (i) gates increase early and then rise more gradually, indicating that the model learns to up-weight the memory pathway once sentence representations become informative for next-token loss; and (ii) gates are larger in higher layers (e.g., layers 9–11) than in lower layers. This depth-wise stratification suggests higher layers rely more strongly on memory-based information integration while lower layers remain comparatively closer to local, within-sentence processing. The fact that gates grow steadily supports the important role of memory in next token prediction, consistent with the strong performance drop when gradient flow through memory is removed (§4.4). 16 B Numerical Results 
+
+B.1 Scaling Efficiency Results 
+
+Table 2: Test perplexity values corresponding to the scaling plots in Section 4.1. Top: Dataset scaling with fixed model size (85M non-embedding parameters). Bottom: Parameter scaling with fixed dataset size (50M tokens). Lower perplexity indicates better performance. 
+
+(a) Dataset Scaling Training Tokens GPT-2 PPL TG PPL 
+
+12,000,000 50.9 49.5 20,000,000 38.1 37.1 30,000,000 30.9 29.8 50,000,000 24.0 23.2 
+
+(b) Parameter Scaling Params ( N ) GPT-2 PPL TG PPL 
+
+≈ 340K 104.8 97.7 
+
+≈ 1.3M 68.7 59.8 
+
+≈ 5.4M 42.4 37.8 
+
+≈ 21.3M 28.8 26.8 
+
+B.2 GPT-2 with Sentence Boundary Bias Results 
+
+Table 3: Test perplexity (lower is better) for models trained on 20M, 30M, and 50M tokens. We compare standard GPT-2 and Thought Gestalt (TG) against a GPT-2 baseline that retains explicit sentence boundary tokens in the input stream. 
+
+Training Tokens Standard GPT-2 GPT-2 + Sent. Boundary Standard TG 
+
+20,000,000 38.1 36.6 37.1 30,000,000 30.9 30.3 29.8 50,000,000 24.0 23.7 23.2 
+
+B.3 TG with Fixed Token-Span Recurrence Results 
+
+Table 4: Test perplexity comparing the semantic sentence segmentation of Standard TG against fixed-length token chunking strategies ( N = 25 , 50 , 75 ) and the non-recurrent Standard GPT-2 baseline. 
+
+Training Tokens Standard TG TG + 25-Span TG + 50-Span TG + 75-Span Standard GPT-2 
+
+20,000,000 37.1 38.9 38.4 37.8 38.1 30,000,000 29.8 32.0 31.6 31.5 30.9 50,000,000 23.2 24.7 24.5 24.2 24.0 17 B.4 GPT-2 + Gist Masking Results 
+
+Table 5: Test perplexity comparing Standard TG and GPT-2 against a GPT-2 baseline utilizing Gist tokens and attention masking [38] to compress prior context. 
+
+Training Tokens Standard GPT-2 GPT-2 + Gist Masking Standard TG 
+
+20,000,000 38.1 48.3 37.1 30,000,000 30.9 40.6 29.8 50,000,000 24.0 31.9 23.2 
+
+# C Other TG Design Principles 
+
+C.1 Batch construction: Uniform Token-Budget Bucketing 
+
+TG processes batches of document streams sentence-by-sentence, where parallelization occurs in sentence steps: at step t, the t-th sentence from every active sentence stream in the batch is stacked and run in a single forward pass in parallel. Because document lengths and by extension sentence stream lengths vary, standard random batch construction from a fixed number of examples (i.e., sentence streams) causes two critical issues: (1) GPU memory volatility : an optimizer step is taken after processing one batch; therefore, as all computations graphs are stored within a batch for backpropagation and longer streams require storing a higher number of deeper computation graphs, GPU memory usage spikes when long streams cluster in a batch; and (2) unstable optimization ,where the number of supervised tokens fluctuates between batches, due to the variable number of lexical tokens per sentence and variable number of sentences per document, which would destabilize gradient updates. We mitigate this with a sampling strategy for batch construction. This method involves: (i) Bucketing :We group sentence streams by sentence count into buckets of fixed width (e.g., 5 sentences) to create groups of sentence streams with similar lengths and thus computation graph depths, allowing for shuffling and batching randomization within these buckets. (ii) Allocation : We pre-allocate a fixed number of batches estimated by the total lexical tokens in the corpus and a given target token budget per batch. (iii) Distribution : We iterate through buckets from longest to shortest and distribute streams into the pre-allocated batches uniformly, using a first-fit strategy. A stream is added to a batch only if the batch remains within two constraints: a target lexical token budget (ensuring consistent optimizer step magnitude) and a maximum stream count (bounding the memory overhead of maintaining parallel sentence memories during forward pass). This ensures that memory-intensive long streams are distributed uniformly rather than clustered, while every optimizer step is based on a consistent amount of training signal. 
+
+C.2 Scheduled Dropouts 
+
+In TG apply stochastic regularization in several places. 
+
+Token dropout. To encourage reliance on the sentence-memory pathway (rather than only short-range token context), we apply token dropout: during training, a fraction of content token embeddings within each sentence is randomly zeroed. Token dropout is warmed in over the global sentence-step counter. The default token-dropout rate is 0.15; this dropout is disabled for the smallest models in the parameter-scaling experiments due to instability early in training. 
+
+Sentence-representation dropout. To regularize the sentence vectors written to memory, we apply dropout to the hidden state at the <EOS> position before the sentence head. This dropout follows the same warm-in schedule as token dropout (0 / 50% / 100% over 2000/7000 sentence steps) with default rate 0.15. 
+
+Attention dropout. We use standard dropout on attention weights in both self-attention and cross-attention modules (default 0.2). 
+
+Sentence-head internal dropout. When the sentence head is an MLP (depth > 1), intermedi-ate layers include standard dropout blocks (fixed rate), following common SimCLR-style MLP regularization. 18

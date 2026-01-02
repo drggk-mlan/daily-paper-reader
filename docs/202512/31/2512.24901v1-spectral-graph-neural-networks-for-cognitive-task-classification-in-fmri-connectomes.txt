@@ -1,0 +1,208 @@
+Title: Spectral Graph Neural Networks for Cognitive Task Classification in fMRI Connectomes
+
+URL Source: https://arxiv.org/pdf/2512.24901v1
+
+Published Time: Thu, 01 Jan 2026 02:27:39 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# SPECTRAL GRAPH NEURAL NETWORKS FOR COGNITIVE TASK 
+
+# CLASSIFICATION IN F MRI C ONNECTOMES 
+
+Debasis Maji 
+
+Department of Computer & System Sciences Visva-Bharati India, 731235 
+
+youdebasis@gmail.com 
+
+Arghya Banerjee 
+
+Department of Computer Science & Engineering(AIML) Institute of Engineering & Management India, 700091 
+
+banerjeearghya2004@gmail.com 
+
+Debaditya Barman 
+
+Department of Computer & System Sciences Visva-Bharati India, 731235 
+
+debadityabarman@gmail.com 
+
+January 1, 2026 
+
+Abstract 
+
+Cognitive task classification using machine learning plays a central role in decoding brain states from neu-roimaging data. By integrating machine learning with brain network analysis, complex connectivity patterns can be extracted from functional magnetic resonance imaging connectomes. This process transforms raw blood-oxygen-level-dependent (BOLD) signals into interpretable representations of cognitive processes. Graph neural networks (GNNs) further advance this paradigm by modeling brain regions as nodes and functional connections as edges, capturing topological dependencies and multi-scale interactions that are often missed by conventional approaches. Our proposed SpectralBrainGNN model, a spectral convolution framework based on graph Fourier transforms (GFT) computed via normalized Laplacian eigendecomposition. Experi-ments on the Human Connectome Project-Task (HCPTask) dataset demonstrate the effectiveness of the pro-posed approach, achieving a classification accuracy of 96.25%. The implementation is publicly available at 
+
+https://github.com/gnnplayground/SpectralBrainGNN to support reproducibility and future research. 
+
+Keywords fMRI · functional connectivity · Brain networks · Graph Neural Network · classification 
+
+# 1 Introduction 
+
+One of the central objectives of modern multidisciplinary science is to figure out how the human brain works. A lot of research is currently focused on figuring out how to decode complex patterns in brain activity to help with things like figuring out cognitive processes and diagnosing mental health disorders[ 14 , 9 ]. This research heavily depends on neuroimaging techniques including electroencephalography (EEG), magnetoencephalography (MEG), and functional magnetic resonance imaging (fMRI). These techniques are used to map brain activity and identify the functional networks that support various cognitive functions[ 10 , 48 ]. Among these fMRI has emerged as a potential candidate due to its unique spatial and temporal resolution, measuring blood-oxygen-level-dependent (BOLD) responses that indicate changes in neural activity[ 19 , 8 ]. This capability allows researchers to explore cognitive complexities and identify biomarkers for neurological disorders[ 2, 46 ]. BOLD signals are commonly used to construct functional connectivity (FC) networks from fMRI data, in which brain regions are connected by correlations associated with either normal or pathological conditions[16, 25]. The choice of data representation significantly impacts brain-state classification outcomes across modalities[ 5 , 33 , 36 ], which results in the utilization of network-based approaches to capture both local and global connectivity patterns. [ 41 , 28 , 35 ]. To model these FC features effectively, brain networks are typically represented as graphs, with nodes as 
+
+> arXiv:2512.24901v1 [cs.LG] 31 Dec 2025
+
+A PREPRINT - J ANUARY 1, 2026 regions of interest (ROIs) and edges as functional connections, often computed via metrics like Pearson’s correlation coefficients[7, 30, 29, 11, 20]. This graph architecture facilitates the explicit representation of inter-region correlations. This allows the implementation of graph machine learning (GML) techniques, particularly graph neural networks (GNNs), which incorporate local information to identify patterns in functional connectivity[ 42 , 20 , 29 ]. Recent advancements include ensemble learning for constructing “synolitic" graphs that combine multiple connectivity metrics to handle noise, inter-subject variability, and multimodal data, reducing computational demands while enhancing classification accuracy[ 39 , 24 ]. However, existing GNN-based approaches[ 20 , 39 ] often overlook inherent activation pathways in brain networks—sequences of neural signal transmissions that form paths across functional connectivity (FC) graphs [ 31 , 17 ]. These pathways capture how brain regions organize into functional modules and coordinate during tasks and ignoring them may miss complex interactions beyond pairwise correlations. Inspired by this, we propose SpectralBrainGNN, a spectral graph neural network that uses exact graph Fourier transforms (GFT) via Laplacian eigendecomposition to operate in the frequency domain. Unlike spatial GNNs that aggregate local neighborhoods, SpectralBrainGNN captures frequency-specific motifs, that provides sharper selectivity and improved interpretability for fMRI-derived connectomes. Our contributions in this paper are as follows: • A novel exact spectral convolution layer with learnable frequency filters and attention readout for graph-level predictions. • Empirical validation on HCP-derived dataset, achieving superior performance (e.g., 96.25% accuracy on HCPTask) over modern baselines. 
+
+# 2 Related Works 
+
+Brain network analysis, which consists of complex connectivity patterns within the brain, originates from the initial studies of motor pathways, demonstrated by Keller et al.[ 17 ], who illustrated task-dependent activation of quick and slow motor routes during imagery, reflecting actual movements and establishing a foundation for pathway-specific modeling. In 2020, predictive applications appeared, with He et al.[ 13 ] enhancing connectome-based forecasting of cognitive actions through graph convolutional networks, focusing individual diversity in functional connections. The field accelerated in 2021 with Li et al.’s BrainGNN[ 20 ], an interpretable ROI-aware framework for fMRI that fused local and global features to enhance disorder detection. In the following year, the field gained momentum through several influential contributions. These included BrainGB by Cui et al.[ 6], which standardized GNN evaluation benchmarks; the transformer-based modeling of global node interactions proposed by Kan et al.[ 15 ]; sparsity-guided connectivity analysis for mild cognitive impairment biomarkers introduced by Zhang et al.[ 47 ]; adversarial learning for dynamic brain networks by Yang et al.[ 46 ]; self-supervised pre-training strategies developed by Li et al.[ 21 ]; and novel spatiotemporal GNN architectures proposed by Wang, Chen, and Li et al. [ 42 ]. Together, these advances substantially expanded the application of GNNs in disease identification and cognitive mapping. More recently, research attention shifted toward incorporating node attributes and data augmentation strategies. Repre-sentative works include temporal pattern detection for anomaly identification by Said et al.[ 30 ] and data-augmented analysis for brain disorder classification by Liu et al.[ 23 ], both of which improved robustness in sparse data settings. More recent studies in 2024 further advanced GNNs by emphasizing interpretability and topological structure, such as semantic bridging between brain and machine representations by Chen et al.[ 4], permutation-invariant encoders for neuronal circuits proposed by Liao, Wan, and Du [ 22 ], and logits-constrained attention mechanisms for accurate age and intelligence prediction introduced by Xu et al.[ 44 ]. Unlike spatial GNNs that aggregate local features in the vertex domain and risk over smoothing, SpectralBrainGNN uses exact graph Fourier transforms with learnable frequency filters to capture global frequency patterns and improve cognitive task classification. 
+
+# 3 Proposed method 
+
+3.1 Brain Image to Graph formulation 
+
+For brain fMRI image to graph formulation, the preprocessing and graph construction pipeline proposed by Said et al.[ 30 ] has been adopted for this paper. fMRI provides a sequence of volumetric images that capture blood-oxygen-level-dependent (BOLD) signals over time. Mathematically, an fMRI scan for a given subject can be represented as a 2A PREPRINT - J ANUARY 1, 2026 four-dimensional tensor 
+
+F ∈ RX×Y ×Z×T ,
+
+where (X, Y, Z ) denote the spatial dimensions of the brain volume and T denotes the number of acquired time points during the scanning session. Each volumetric image encodes the intensity of the BOLD signal at different spatial locations in the brain. Direct analysis of F is challenging due to its high dimensionality, noise, and strong inter-voxel correlations. Moreover, brain activity is known to exhibit coherent patterns across spatially distributed regions rather than at the level of individual voxels. So the BOLD signal is commonly summarized into a collection of spatially extended functional units, referred to as brain parcels or regions of interest (ROIs). Each ROI consists of a group of voxels whose time-series exhibit temporally correlated activity. To obtain these ROIs, data from the Human Connectome Project (HCP), a publicly available neuroimaging dataset 1
+
+containing high-quality fMRI recordings, has been utilized for benchmarking. The group-level Schaefer atlas has been employed to parcellate the cerebral cortex into a predefined number of ROIs. This atlas provides a hierarchical organization of cortical regions at multiple spatial resolutions which supports consistent and reproducible region definitions across subjects. Brain connectivity networks are then constructed to provide a compact and structured representation of functional interactions. In this graph-based abstraction, ROIs are modeled as nodes, while statistical dependencies between ROI time-series are modeled as edges. Such representations have been shown to effectively capture functional relationships relevant to neurological and neurodevelopmental disorders. Let the set of ROI coordinates defined by the Schaefer atlas be denoted as 
+
+C = {c1, c 2, . . . , c N }, ci ∈ R3,
+
+where N is the number of regions. Around each coordinate ci, a spherical mask of radius r = 5 mm is defined. The BOLD signals are then extracted from these spheres using a masker function, which returns the mean time-series for each ROI. Thus, each node vi ∈ V is associated with a time-series 
+
+xi = ( x1 
+
+> i
+
+, x 2 
+
+> i
+
+, . . . , x Ti ), xi ∈ RT .
+
+Functional connectivity between pairs of ROIs is quantified using correlation analysis. Given two ROI time-series xi
+
+and xj , their Pearson correlation coefficient is computed as 
+
+ρij = Cov (xi, x j )
+
+σ(xi) σ(xj ) ,
+
+where Cov (·, ·) denotes covariance and σ(·) the standard deviation. Collecting all pairwise correlations yields a symmetric connectivity matrix 
+
+C ∈ RN ×N , Cij = ρij .
+
+To construct the graph topology, a threshold τ is applied such that an edge (vi, v j ) ∈ E exists if Cij > τ . This thresholding operation enforces sparsity while preserving the strongest functional connections. Finally, each subject is represented as a weighted, undirected graph 
+
+G = ( V, E, X ),
+
+where V denotes the set of ROIs, E the functional connections, and X ∈ RN ×T the node features derived from the BOLD time-series. Each graph is paired with a subject-level label y ∈ { 0, 1, · · · } , indicating diagnostic group. 
+
+3.2 Spectral Graph Neural Network (SpectralBrainGNN) 
+
+After constructing subject-specific brain graphs G = ( V, E, X ), we employ a spectral graph neural network for brain image (SpectralBrainGNN) as illustrated in Fig. 1, to learn discriminative representations for classification. Our proposed model, SpectralBrainGNN, consists of L layers. Each layer takes the node embeddings generated by the previous layer as input and outputs the updated node embeddings, progressively refining the representation through spectral-domain filtering at each layer. The method begins with computing the normalized Laplacian of the input graph and proceeds through exact eigendecomposition, graph Fourier transform, learnable frequency filtering, inverse GFT, and channel-wise linear projection. 
+
+> 1https://www.humanconnectome.org/study/hcp-young-adult
+
+3A PREPRINT - J ANUARY 1, 2026 
+
+Figure 1: Schematic diagram of SpectralBrainGNN model for Cognitive Task Classification. 
+
+3.2.1 Spectral Convolution Layer: 
+
+Given an input graph with node features H(l) ∈ RN ×Fin at layer l where N is the number of nodes and Fin is the input feature dimension, we first compute the normalized Laplacian matrix 
+
+L = IN − D−1/2AD −1/2, (1) where A ∈ RN ×N is the adjacency matrix, D = diag( A1) is the degree matrix, and IN is the identity matrix. The symmetric positive semi-definite matrix L admits an eigendecomposition 
+
+L = U ΛU T , (2) with orthogonal Fourier basis U ∈ RN ×N i.e. eigenvectors and eigenvalues Λ = diag( λ1, . . . , λ N ) where 0 ≤ λi ≤ 2.For moderate sized graphs, the eigenvectors U and eigenvalues λ are computed only once during the initial forward pass and subsequently cached, thereby distributing the O(N 3) computational cost of the eigendecomposition over multiple iterations. The exact graph Fourier transform projects the node features into the frequency domain: 
+
+ˆH(l) = U T H(l) ∈ RN ×Fin , (3) where ˆH(l) represents the frequency-domain signal. A learnable filter g(λ) ∈ RN is then applied element-wise: 
+
+ˆH(l+1) = g(λ) ⊙ ˆH(l), (4) with ⊙ denoting Hadamard (element-wise) multiplication broadcast over feature channels. The filter values g(λi) are parameterized e through a multilayer perceptron MLP( λi; ϕ) that maps each eigenvalue to a scalar. The filtered signal is transformed back to the node domain via the inverse GFT: 
+
+˜H(l+1) = U ˆH(l+1) ∈ RN ×Fin , (5) followed by a linear channel mixing: 
+
+H(l+1) = ˜H(l+1) W + b ∈ RN ×Fout , (6) where W ∈ RFin ×Fout and b ∈ RFout are learnable parameters. A ReLU nonlinearity is applied after each convolution layer to introduce non-linearity: 
+
+H(l+1) = ReLU( H(l+1) ). (7) 4A PREPRINT - J ANUARY 1, 2026 
+
+3.2.2 Attention-Based Readout: 
+
+After the final convolution layer, the refined node embeddings H(L) ∈ RN ×Fh are aggregated into a single graph-level representation using an attention mechanism. Per-node attention scores are computed as 
+
+ai = σ
+
+
+
+H(2)  
+
+> i
+
+Γ
+
+
+
+∈ R, (8) where Γ ∈ RFh is a learnable projection vector and σ is the sigmoid function. The scores are normalized to obtain attention weights: 
+
+˜ai = ai
+
+PNj=1 aj + ϵ , ϵ = 10 −8. (9) The graph embedding is then formed by the weighted sum: 
+
+hg =
+
+> N
+
+X
+
+> i=1
+
+˜aiH(2)  
+
+> i
+
+∈ RFh . (10) This adaptive pooling assigns higher importance to salient nodes i.e. functional hubs in brain connectomes, outperform-ing uniform pooling strategies like mean or max pooling in distinguishing complex graph structures. 
+
+3.2.3 Final Prediction Layer: 
+
+The graph-level embedding hg is passed through a fully connected layer to produce the final output: 
+
+ˆy = hg Wout + bout ∈ RC , (11) where Wout ∈ RFh×C and bout ∈ RC are learnable parameters. The entire model is trained end-to-end using cross-entropy loss function for classification. 
+
+# 4 Result & Discussion 
+
+4.1 Implementation Details 
+
+The implementation of the SpectralBrainGNN model involves PyTorch and leverages an Apple M4 chip with 16 GB unified memory to enhance computational efficiency for spectral operations. The SpectralBrainGNN framework comprises 2 spectral convolution modules, each performing exact graph Fourier transforms with learnable frequency filters, followed by an attention-based readout layer. These modules are stacked with ReLU nonlinear activations and incorporated into the framework, which also consists of 1 fully connected layer for final prediction. Both the spectral convolution and fully connected layers employ the ReLU nonlinear activation function. The number of neurons in each spectral convolution layer is specified as 64. For the fully connected layer, we have chosen to use 64 neurons. To address the issue of overfitting, a dropout rate of 0.5 has been implemented for these layers. The optimization process involves utilizing the Adaptive Moment Estimation (Adam) optimizer with a learning rate set at 0.001 and a regularization parameter of 0.0001. The model is trained for 200 epochs, and this training process is repeated for 10 times to achieve better result stability. 
+
+4.2 Evaluation metrics 
+
+Given the limited sample size, we employed random selection to allocate 60% of samples to training, 20% to validation, and 20% to testing. During training, we performed validation at each iteration and saved parameters yielding the highest validation performance, which were then used for testing. This procedure was repeated 30 times, with average results and standard deviations recorded for each method. For fair comparison, identical data splits and training strategies were applied across our SpectralBrainGNN and competing methods. Model efficacy was assessed using five metrics: accuracy, precision, recall and F1-score. These provide a comprehensive performance evaluation, where true positives (TP), true negatives (TN), false positives (FP), and false negatives (FN) denote correctly/erroneously classified 5A PREPRINT - J ANUARY 1, 2026 positive/negative samples, respectively. The four metrics are defined as: Accuracy = TP + TN TP + TN + FP + FN , (12) Precision = TP TP + FP , (13) Recall = TP TP + FN , (14) F1-score = 2 · Precision × Recall Precision + Recall . (15) 
+
+4.3 Dataset 
+
+The Human Connectome Project (HCP) Young Adult dataset [ 37 ] forms the basis of our experimental benchmarks and provides high-quality multimodal neuroimaging data from over 1,200 healthy adults aged 22 to 35 years. This dataset is used to model functional connectivity patterns associated with cognitive traits. The task-based classification benchmarks are derived from the NeuroGraph framework [ 30 ], which supports standardized evaluation of SpectralBrainGNN against baseline graph classification methods. The resulting HCPTask dataset consists of 7,443 graphs constructed from task-evoked fMRI recordings across seven cognitive paradigms: emotion processing, gambling, language comprehension, motor execution, relational processing, social cognition, and working memory [ 1 ]. Each graph contains 400 regions of interest (ROIs) and is used in a multi-class classification setting to identify the underlying task state from functional connectivity patterns. This experimental setup evaluates the model’s ability to capture dynamic neural activations under balanced class distributions, supporting robust training and evaluation. 
+
+4.4 Classification Result 
+
+Table 1: Classification performance on the HCPTask dataset. Results are reported as mean ± standard deviation over 30 runs. 
+
+Model Accuracy (%) Precision (%) Recall (%) F1-Score (%) 
+
+GCN[18] 86.29 ± 0.98 85.12 ± 1.05 86.45 ± 0.92 85.78 ± 0.97 GAT[38] 85.60 ± 1.26 84.78 ± 1.31 85.92 ± 1.18 85.35 ± 1.24 SAGE[12] 84.49 ± 0.57 83.67 ± 0.63 84.81 ± 0.55 84.24 ± 0.59 ResGCN[26] 93.75 ± 0.35 93.02 ± 0.41 93.89 ± 0.33 93.45 ± 0.38 GraphGPS[27] 92.13 ± 2.00 91.45 ± 2.12 92.28 ± 1.95 91.86 ± 2.04 Graph-Mamba[40] 94.17 ± 0.86 93.56 ± 0.90 94.03 ± 0.84 93.79 ± 0.88 BrainMAP[43] 94.74 ± 0.07 94.12 ± 0.10 94.68 ± 0.06 94.40 ± 0.08 
+
+SpectralBrainGNN 96.25 ± 1.37 95.46 ± 1.42 94.32 ± 1.51 95.58 ± 1.39 
+
+The classification results on the HCPTask dataset demonstrate the strong performance of the proposed SpectralBrainGNN in decoding cognitive task states from functional connectomes. As summarized in Table 1, SpectralBrainGNN achieves the highest accuracy of 96.25%, surpassing competitive baselines such as BrainMAP (94.74%) and Graph-Mamba (94.17%) by margins of 1.51% and 2.08%, respectively. This improvement is consistently reflected in precision (95.46%) and F1-score (95.58%), indicating reliable discrimination across the seven task conditions, including emotion and motor processing. Although the recall (94.32%) is slightly lower than that of BrainMAP (94.68%), this difference suggests a modest trade-off that favors higher precision for certain classes. In contrast, earlier architectures such as GCN and GAT achieve accuracies around 85–86%, revealing limitations in modeling frequency-specific connectivity patterns. More recent methods, including ResGCN and GraphGPS, improve representational capacity but remain less effective than the proposed exact Fourier-based filtering approach. The consistently low standard deviations across runs further confirm the stability and robustness of SpectralBrainGNN, highlighting its suitability for neuroimaging classification tasks. A paired t-test have been conducted on the accuracy scores across 30 runs, yielding a p-value of 0.028, showing that the improvement over the best baseline is statistically significant The confusion matrix for the HCPTask classification task, shown in Fig. 2, indicates strong overall performance, with diagonal dominance reflecting accurate predictions across the seven cognitive paradigms i.e. Emotion, Gambling, Motor, Language, Relational, Social, and Working Memory. Out of 1,489 total samples, 1,444 are correctly classified, 6A PREPRINT - J ANUARY 1, 2026 
+
+Figure 2: Confusion matrix of HCPTask classification task corresponding to an overall accuracy of approximately 97%. This high accuracy suggests that the model effectively distinguishes among task states by capturing task-specific functional connectivity patterns in fMRI-derived brain graphs. Minor confusions are evident in off-diagonal elements, such as 4 instances of true Emotion misclassified as Gambling, and 3 Gambling as Emotion, which may reflect overlapping neural circuits in reward and emotional processing (e.g., involving amygdala and ventral striatum). Similarly, Motor tasks show 4 misclassifications to Social, potentially due to shared action-observation networks in mirror neuron systems; Relational tasks have 4 to Working Memory and 2 to Motor, aligning with common frontoparietal involvement in executive functions. Language (3 to Motor) and Working Memory (3 to Relational) exhibit low errors, while Social is nearly perfect (209/209 correct), indicating robust separation for theory-of-mind processes. Minor misclassifications appear in the off-diagonal entries and are limited in number. For example, four Emotion samples are misclassified as Gambling and three Gambling samples as Emotion, which may reflect shared neural substrates involved in affective and reward processing, such as the amygdala and ventral striatum[ 32 ]. Motor tasks exhibit four misclassifications as Social, potentially due to overlap in action-observation and mirror neuron networks[ 45 ]. Similarly, Relational tasks show a small number of confusions with Working Memory (four cases) and Motor tasks (two cases), consistent with the involvement of common frontoparietal circuits supporting executive functions[ 1 , 3]. Errors in Language (three misclassified as Motor) and Working Memory (three misclassified as Relational) remain minimal, while the Social task is classified perfectly (209/209), indicating strong separability of theory-of-mind-related activity[34]. 7A PREPRINT - J ANUARY 1, 2026 Overall, these patterns highlight the model’s sensitivity to task-specific brain dynamics, with errors confined to biologically plausible overlaps between cognitive processes. This behavior supports the model’s applicability to neuroimaging classification tasks and motivates future analyses of region-wise contributions to further enhance interpretability. 
+
+# 5 Conclusion 
+
+In conclusion, SpectralBrainGNN represents a significant advancement in spectral graph neural networks for neu-roimaging applications, achieving state of the art performance on HCP-derived benchmarks. In particular, it attains an accuracy of 96.25% on the HCPTask dataset, outperforming strong baselines such as BrainMAP by 1.51%. By using exact graph Fourier transforms with learnable frequency filters, the model captures multi-scale brain connectivity patterns, including task-specific activation pathways. The attention-based readout further improves interpretability by through sparse and biologically meaningful regions of interests. Analysis of the confusion matrix confirms robust discrimination among cognitive states, with only minor misclassifi-cations that align with known overlaps in neural circuitry, such as between emotion and gambling tasks. While the reliance on Laplacian eigendecomposition introduces scalability challenges for very large graphs, the model remains efficient for moderate sized connectomes through eigenvector caching strategies. Together with its strong generalization capability, these properties position SpectralBrainGNN as a promising framework for clinical applications, including brain disorder diagnosis. Future work will explore extensions to dynamic fMRI analysis and multimodal data fusion to further broaden its neuroscientific impact. 
+
+# References 
+
+[1] Barch, D.M., Burgess, G.C., Harms, M.P., Petersen, S.E., Schlaggar, B.L., Corbetta, M., Glasser, M.F., Curtiss, S., Dixit, S., Feldt, C., et al.: Function in the human connectome: task-fmri and individual differences in behavior. Neuroimage 80 , 169–189 (2013) [2] Bassett, D.S., Sporns, O.: Network neuroscience. Nature neuroscience 20 (3), 353–364 (2017) [3] Cai, W., Taghia, J., Menon, V.: A multi-demand operating system underlying diverse cognitive tasks. Nature Communications 15 (1), 2185 (2024) [4] Chen, J., Qi, Y., Wang, Y., Pan, G.: Bridging the semantic latent space between brain and machine: Similarity is all you need. In: Proceedings of the AAAI conference on artificial intelligence. vol. 38, pp. 11302–11310 (2024) [5] Craik, A., He, Y., Contreras-Vidal, J.L.: Deep learning for electroencephalogram (eeg) classification tasks: a review. Journal of neural engineering 16 (3), 031001 (2019) [6] Cui, H., Dai, W., Zhu, Y., Kan, X., Gu, A.A.C., Lukemire, J., Zhan, L., He, L., Guo, Y., Yang, C.: Braingb: a benchmark for brain network analysis with graph neural networks. IEEE transactions on medical imaging 42 (2), 493–506 (2022) [7] Cui, H., Lu, Z., Li, P., Yang, C.: On positional and structural node features for graph neural networks on non-attributed graphs. In: Proceedings of the 31st ACM International Conference on Information & Knowledge Management. pp. 3898–3902 (2022) [8] Davis, K.D., Aghaeepour, N., Ahn, A.H., Angst, M.S., Borsook, D., Brenton, A., Burczynski, M.E., Crean, C., Edwards, R., Gaudilliere, B., et al.: Discovery and validation of biomarkers to aid the development of safe and effective pain therapeutics: challenges and opportunities. Nature Reviews Neurology 16 (7), 381–400 (2020) [9] Eslami, T., Mirjalili, V., Fong, A., Laird, A.R., Saeed, F.: Asd-diagnet: a hybrid learning approach for detection of autism spectrum disorder using fmri data. Frontiers in neuroinformatics 13 , 70 (2019) [10] Fox, M.D., Raichle, M.E.: Spontaneous fluctuations in brain activity observed with functional magnetic resonance imaging. Nature reviews neuroscience 8(9), 700–711 (2007) [11] Gorban, A., Tyukina, T., Pokidysheva, L., Smirnova, E.: Dynamic and thermodynamic models of adaptation. Physics of life reviews 37 , 17–64 (2021) [12] Hamilton, W., Ying, Z., Leskovec, J.: Inductive representation learning on large graphs. Advances in neural information processing systems 30 (2017) [13] He, T., Kong, R., Holmes, A.J., Nguyen, M., Sabuncu, M.R., Eickhoff, S.B., Bzdok, D., Feng, J., Yeo, B.T.: Deep neural networks and kernel regression achieve comparable accuracies for functional connectivity prediction of behavior and demographics. NeuroImage 206 , 116276 (2020) 8A PREPRINT - J ANUARY 1, 2026 [14] Jo, T., Nho, K., Saykin, A.J.: Deep learning in alzheimer’s disease: diagnostic classification and prognostic prediction using neuroimaging data. Frontiers in aging neuroscience 11 , 220 (2019) [15] Kan, X., Dai, W., Cui, H., Zhang, Z., Guo, Y., Yang, C.: Brain network transformer. Advances in Neural Information Processing Systems 35 , 25586–25599 (2022) [16] Kawahara, J., Brown, C.J., Miller, S.P., Booth, B.G., Chau, V., Grunau, R.E., Zwicker, J.G., Hamarneh, G.: Brain-netcnn: Convolutional neural networks for brain networks; towards predicting neurodevelopment. NeuroImage 
+
+146 , 1038–1049 (2017) [17] Keller, M., Taube, W., Lauber, B.: Task-dependent activation of distinct fast and slow (er) motor pathways during motor imagery. Brain stimulation 11 (4), 782–788 (2018) [18] Kipf, T.: Semi-supervised classification with graph convolutional networks. arXiv preprint arXiv:1609.02907 (2016) [19] Kohoutová, L., Heo, J., Cha, S., Lee, S., Moon, T., Wager, T.D., Woo, C.W.: Toward a unified framework for interpreting machine-learning models in neuroimaging. Nature protocols 15 (4), 1399–1435 (2020) [20] Li, X., Zhou, Y., Dvornek, N., Zhang, M., Gao, S., Zhuang, J., Scheinost, D., Staib, L.H., Ventola, P., Duncan, J.S.: Braingnn: Interpretable brain graph neural network for fmri analysis. Medical Image Analysis 74 , 102233 (2021) [21] Li, Y., Zhang, X., Nie, J., Zhang, G., Fang, R., Xu, X., Wu, Z., Hu, D., Wang, L., Zhang, H., et al.: Brain connectivity based graph convolutional networks and its application to infant age prediction. IEEE transactions on medical imaging 41 (10), 2764–2776 (2022) [22] Liao, M., Wan, G., Du, B.: Joint learning neuronal skeleton and brain circuit topology with permutation invariant encoders for neuron classification. In: Proceedings of the AAAI Conference on Artificial Intelligence. vol. 38, pp. 197–205 (2024) [23] Liu, X., Zhou, M., Shi, G., Du, Y., Zhao, L., Wu, Z., Liu, D., Liu, T., Hu, X.: Coupling artificial neurons in bert and biological neurons in the human brain. In: Proceedings of the AAAI Conference on Artificial Intelligence. vol. 37, pp. 8888–8896 (2023) [24] Mohammed, A., Kora, R.: A comprehensive review on ensemble deep learning: Opportunities and challenges. Journal of King Saud University-Computer and Information Sciences 35 (2), 757–774 (2023) [25] Morris, C., Ritzert, M., Fey, M., Hamilton, W.L., Lenssen, J.E., Rattan, G., Grohe, M.: Weisfeiler and leman go neural: Higher-order graph neural networks. In: Proceedings of the AAAI conference on artificial intelligence. vol. 33, pp. 4602–4609 (2019) [26] Pei, Y., Huang, T., Van Ipenburg, W., Pechenizkiy, M.: Resgcn: attention-based deep residual modeling for anomaly detection on attributed networks. Machine Learning 111 (2), 519–541 (2022) [27] Rampášek, L., Galkin, M., Dwivedi, V.P., Luu, A.T., Wolf, G., Beaini, D.: Recipe for a general, powerful, scalable graph transformer. Advances in Neural Information Processing Systems 35 , 14501–14515 (2022) [28] Richiardi, J., Eryilmaz, H., Schwartz, S., Vuilleumier, P., Van De Ville, D.: Decoding brain states from fmri connectivity graphs. Neuroimage 56 (2), 616–626 (2011) [29] Saeidi, M., Karwowski, W., Farahani, F.V., Fiok, K., Hancock, P., Sawyer, B.D., Christov-Moore, L., Douglas, P.K.: Decoding task-based fmri data with graph neural networks, considering individual differences. Brain Sciences 
+
+12 (8), 1094 (2022) [30] Said, A., Bayrak, R., Derr, T., Shabbir, M., Moyer, D., Chang, C., Koutsoukos, X.: Neurograph: Benchmarks for graph machine learning in brain connectomics. Advances in Neural Information Processing Systems 36 ,6509–6531 (2023) [31] Sankar, A., Wu, Y., Gou, L., Zhang, W., Yang, H.: Dynamic graph representation learning via self-attention networks. arXiv preprint arXiv:1812.09430 (2018) [32] Santoro, A., Battiston, F., Lucas, M., Petri, G., Amico, E.: Higher-order connectomics of human brain function re-veals local topological signatures of task decoding, individual identification, and behavior. Nature Communications 
+
+15 (1), 10244 (2024) [33] Saranskaia, I., Gutkin, B., Zakharov, D.: Aim-based choice of strategy for meg-based brain state classification. The European Physical Journal Special Topics pp. 1–19 (2025) [34] Schurz, M., Maliske, L., Kanske, P.: Cross-network interactions in social cognition: a review of findings on task related brain activation and connectivity. cortex 130 , 142–157 (2020) [35] Takerkart, S., Auzias, G., Thirion, B., Ralaivola, L.: Graph-based inter-subject pattern analysis of fmri data. PloS one 9(8), e104586 (2014) 9A PREPRINT - J ANUARY 1, 2026 [36] Vaghari, D., Kabir, E., Henson, R.N.: Late combination shows that meg adds to mri in classifying mci versus controls. Neuroimage 252 , 119054 (2022) [37] Van Essen, D.C., Smith, S.M., Barch, D.M., Behrens, T.E., Yacoub, E., Ugurbil, K., Consortium, W.M.H., et al.: The wu-minn human connectome project: an overview. Neuroimage 80 , 62–79 (2013) [38] Veliˇ ckovi´ c, P., Cucurull, G., Casanova, A., Romero, A., Lio, P., Bengio, Y.: Graph attention networks. arXiv preprint arXiv:1710.10903 (2017) [39] Vlasenko, D., Zaikin, A., Zakharov, D.: Ensemble methods for representation of fmri, eeg/meg data in graph form for classification of brain states. In: 2024 8th Scientific School Dynamics of Complex Networks and their Applications (DCNA). pp. 258–261. IEEE (2024) [40] Wang, C., Tsepa, O., Ma, J., Wang, B.: Graph-mamba: Towards long-range graph sequence modeling with selective state spaces. arXiv preprint arXiv:2402.00789 (2024) [41] Wang, J., Zuo, X., He, Y.: Graph-based network analysis of resting-state functional mri. Frontiers in systems neuroscience 4, 1419 (2010) [42] Wang, S., Chen, C., Li, J.: Graph few-shot learning with task-specific structures. Advances in Neural Information Processing Systems 35 , 38925–38936 (2022) [43] Wang, S., Lei, Z., Tan, Z., Ding, J., Zhao, X., Dong, Y., Wu, G., Chen, T., Chen, C., Zhang, A., et al.: Brainmap: Learning multiple activation pathways in brain networks. In: Proceedings of the AAAI Conference on Artificial Intelligence. vol. 39, pp. 14432–14440 (2025) [44] Xu, Y., Peng, Z., Shi, B., Hua, X., Dong, B.: Learning dynamic graph representations through timespan view contrasts. Neural Networks 176 , 106384 (2024) [45] Yang, D.Y.J., Rosenblau, G., Keifer, C., Pelphrey, K.A.: An integrative neural model of social perception, action observation, and theory of mind. Neuroscience & Biobehavioral Reviews 51 , 263–275 (2015) [46] Yang, Y., Zhu, Y., Cui, H., Kan, X., He, L., Guo, Y., Yang, C.: Data-efficient brain connectome analysis via multi-task meta-learning. In: Proceedings of the 28th ACM SIGKDD Conference on Knowledge Discovery and Data Mining. pp. 4743–4751 (2022) [47] Zhang, X., Wang, S., Lin, N., Zhang, J., Zong, C.: Probing word syntactic representations in the brain by a feature elimination method. In: Proceedings of the AAAI Conference on Artificial Intelligence. vol. 36, pp. 11721–11729 (2022) [48] Zhang, Z., Ji, J., Liu, J.: Metarlec: Meta-reinforcement learning for discovery of brain effective connectivity. In: Proceedings of the AAAI Conference on Artificial Intelligence. vol. 38, pp. 10261–10269 (2024) 10

@@ -1,0 +1,308 @@
+Title: Many Minds from One Model: Bayesian Transformers for Population Intelligence
+
+URL Source: https://arxiv.org/pdf/2512.25063v1
+
+Published Time: Thu, 01 Jan 2026 02:48:44 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+# Many Minds from One Model: Bayesian Transformers for Population Intelligence 
+
+Diji Yang and Yi Zhang 
+
+University of California Santa Cruz 
+
+{dyang39, yiz}@ucsc.edu 
+
+Abstract 
+
+Despite their scale and success, modern trans-formers are almost universally trained as single-minded systems: optimization produces one deterministic set of parameters, representing a single functional hypothesis about the data. Motivated by the idea that intelligence emerge from many minds, we propose Population Bayesian Transformers (B-Trans) , which transform a standard Large Language Model into a Bayesian Transformer model to supports sampling diverse yet coherent model instances from a single set of pre-trained weights. B-Trans introduces a Bayesian-motivated pos-terior proxy by treating the bias-like offsets in normalization layers as stochastic variables with a Gaussian variational approximation, in-ducing a distribution over model behavior with-out the cost of training full Bayesian neural networks. Sampling from this proxy yields a set of model instances with diverse behaviors while maintaining general competence. To pre-serve coherence within each generation, we freeze the sampled noise at the sequence level, enforcing temporal consistency across tokens. B-Trans allows for population-level decision-making, where aggregating predictions across sampled individuals significantly enhances ex-ploration. Experiments across zero-shot gener-ation, Reinforcement Learning with Verifiable Rewards (RLVR), and RL without explicit la-bels demonstrate that B-Trans effectively lever-age the wisdom of crowds , yielding superior semantic diversity while achieving better task performance compared to deterministic base-lines. 
+
+1 Introduction 
+
+The predominant paradigm in Large Language Model (LLM) (Yang et al., 2025; Liu et al., 2025) deployment treats model weights as static, deter-ministic point estimates. While this approach ef-fectively leverages the knowledge acquired during pre-training (Wang et al., 2024), it inherently limits the model’s ability to represent uncertainty. Recent studies further suggest that well-aligned models suffer from severe structural homogenization (Jiang et al., 2025). Under the convergence pressures of post-training alignment, such as Supervised Fine-Tuning (SFT) and Reinforcement Learning from Human Feedback (RLHF), models tend to collapse onto a narrow set of reasoning patterns. This rigid-ity becomes a fundamental bottleneck in complex reasoning tasks: the model struggles to explore al-ternative reasoning paths, locking itself into local optima (Yue et al., 2025). Current attempts to reintroduce diversity often operate at decoding time through randomness in the action space, for example via temperature-based sampling or similar entropy-promoting strategies. While increasing temperature can prevent verbatim repetition, it often acts as a surface-level perturba-tion. As noted by Yue et al. (2025), in reasoning tasks such sampling can lead to incoherent degen-eration, yielding statistical variation without mean-ingful semantic progress, rather than systematically discovering novel solution paths. The core issue is that manipulating the output tokens does not al-ter the underlying deterministic reasoning engine. To recover diversity of thought, we argue that we must step back from a collapsed point estimate and allow the model to explore a local proxy of the posterior neighborhood around θMAP , instead of relying solely on output-token randomization. Can we achieve meaningful population diver-sity without abandoning the efficiency of a single model? In this work, we demonstrate the feasibility by generating many minds that can emerge from a single model. Our key insight is that normalization layers (Ba et al., 2016; Zhang and Sennrich, 2019) modulate representation geometry, and that small shifts in their bias-like offsets can induce mean-ingfully different functional behaviors while pre-serving architectural stability. We therefore replace point-estimated normalization biases with a Gaus-1
+
+> arXiv:2512.25063v1 [cs.LG] 31 Dec 2025
+
+sian distribution, transforming a single transformer into a compact generator of a diverse population of model instances. Each draw from this distribu-tion corresponds to a distinct “mind” that shares the same weights and structure, yet processes infor-mation through a different normalization regime. This targeted population modeling yields diversity where it is influential, without incurring the cost of maintaining multiple full models. To maintain logical coherence, we enforce tem-poral consistency by freezing the sampled offsets for the duration of each sequence. Unlike per-token noise injection (e.g., standard Dropout), which can lead to disjointed logic, our approach ensures that each generation is produced by a single, logi-cally consistent “persona” sampled from the popu-lation. We present B-Trans as a general population formulation (Section 3) and instantiate it through normalization-layer perturbations (Section 4); this instantiation is deliberately minimal and can be extended in future work. We validate B-Trans through three distinct ex-perimental lenses, each probing a different facet of population intelligence. First, in zero-shot generation, we demonstrate that B-Trans effec-tively breaks structural homogenization, produc-ing functionally heterogeneous outputs. Second, in Reinforcement Learning with Verifiable Re-wards (RLVR) (Guo et al., 2025), we show that the parameter-space diversity of B-Trans enables deep exploration, traversing sparse reward landscapes more effectively than action-space baselines. Fi-nally, in a label-free Test-Time RL (TTRL) setting, we reveal that the implicit population utilizes the wisdom of crowds. Even without ground-truth su-pervision, aggregating the diverse reasoning paths of the B-Trans population outperforms determinis-tic baselines, showing that uncertainty can act not as noise, but as a generative engine for exploration. Collectively, these results confirm that B-Trans fun-damentally alters the exploratory dynamics of the model, enabling deep and population-driven rea-soning at negligible computational cost. We sum-marize our contribution as: 
+
+2 Related Works 
+
+Bayesian Neural Networks and Ensembles. 
+
+Bayesian methods provide a principled framework for modeling weight uncertainty (Blundell et al., 2015). Prior work has adapted Bayesian prin-ciples to neural networks for specific pragmatic objectives. For instance, Kristiadi et al. (2020) demonstrated that being “a bit Bayesian” (e.g., applying Laplace approximation only to the last layer) can improve calibration and reduce overcon-fidence (“knowing what you don’t know”). Sim-ilarly, Jing et al. (2025) introduced the Kalman Bayesian Transformer to support stable sequen-tial learning and mitigate catastrophic forgetting by treating pre-trained weights as priors. While these works primarily use Bayesian tools for cali-bration, robustness, uncertainty quantification, or model averaging for prediction quality, B-Trans tar-gets a generation-centric goal: we use lightweight parameter-space stochasticity to promote explo-ration and semantic diversity during generation. Compared to Deep Ensembles (Lakshminarayanan et al., 2017) which scale linearly in cost, or full BNNs which are computationally intractable, B-Trans induces this population diversity solely through stochastic perturbations of normalization biases, offering a negligible alternative specifically optimized for the autoregressive nature of Trans-formers. 
+
+Diversity and Mode Collapse in LLMs. Stan-dard decoding strategies, such as Top-k and Nu-cleus Sampling, primarily manipulate the tail of the token distribution to mitigate degeneration, but they do not address convergence in the un-derlying model. Recent work points out that modern instruction-tuned models exhibit severe structural homogenization, where the probability mass over-concentrates on a narrow set of reason-ing patterns (Jiang et al., 2025). Consequently, purely stochastic decoding methods often yield variations of a single persona rather than distinct cognitive perspectives. Methods such as Self-Consistency (Wang et al., 2022) aggregate multiple sampled outputs, but remain constrained by the same model-level collapse. B-Trans instead diver-sifies behavior by sampling model instances via parameter-space perturbations, turning a single set of weights into a population that can produce more functionally diverse generations. 
+
+Exploration in Reinforcement Learning. Effi-cient exploration is critical for policy improvement, especially in reasoning tasks with sparse rewards. However, the efficacy of standard action-space en-tropy regularization (e.g., temperature sampling) is severely compromised by the aforementioned structural homogenization. Recent RLVR studies observe that simply in-2creasing output entropy often forces the model into incoherent degeneration (statistical noise) rather than systematically discovering alternative solu-tion paths (Yue et al., 2025). To address this, we revisit the concept of Parameter Space Noise (Plap-pert et al., 2018), originally proposed for contin-uous control, and adapt it to modern LLMs. By perturbing a lightweight posterior proxy through B-Trans, we encourage deep exploration over rea-soning trajectories beyond surface-level token ran-domization. 
+
+3 Bayesian Transformer 
+
+This section formalizes a population view of a sin-gle pre-trained model via Bayesian hypothesis sam-pling: we draw a sequence-level parameter sam-ple to obtain one coherent model instance, and aggregate multiple individual for population-level thinking. 1 Section 4 then presents a minimal in-stantiation that perturbs normalization offsets as a computationally negligible proxy for posterior sampling. 
+
+3.1 Local Geometry and the Laplace Approximation 
+
+Let D be the training dataset and θ ∈ Rd be the pa-rameters of a Transformer. We view the pre-trained parameters θMAP as the Maximum A Posteriori (MAP) estimate of the posterior p(θ|D ). While 
+
+θMAP captures a high-probability configuration, it collapses the rich information contained in the ge-ometry of the loss landscape into a single point. To recover uncertainty, we employ the Laplace Ap-proximation, modeling the posterior neighborhood around the mode as a Gaussian: 
+
+p(θ|D ) ≈ N (θ; θMAP , Σ) . (1) Computing the exact covariance Σ (the inverse Hessian) is not feasible for billion-parameter mod-els. Furthermore, the true posterior landscape of LLMs is highly non-isotropic (Li et al., 2018), and estimating its anisotropy at inference time without training data or gradients is not well-posed. How-ever, explicitly modeling this anisotropy without access to the full training data or gradients during inference is ill-posed. For tractability, we adopt an isotropic covariance structure Σ = σ2I. From an 
+
+> 1Throughout, “Bayesian” is used as a principled motivation for structured uncertainty and sampling, rather than a claim of exact posterior inference for billion-parameter LLMs.
+
+information-theoretic perspective, this choice rep-resents the Maximum Entropy distribution given a constraint on the expected Euclidean distance from the θMAP estimate. Rather than risking a mis-specified diagonal approximation that might bias the model into degenerate subspaces, the isotropic assumption effectively defines a spherical trust re-gion for exploration. Importantly, our goal is not exact Bayesian inference, but as efficient sampling from a locally valid proxy posterior, but a practical balancing theoretical motivation with engineering feasibility. 
+
+3.2 Temporal Consistency: Token-wise vs. Hypothesis Sampling 
+
+A key challenge for Bayesian sampling in autore-gressive generation is handling the time dimension. Standard stochastic regularizers, such as Dropout (Srivastava et al., 2014), are typically applied in-dependently at each forward pass. For a sequence 
+
+y1: T , this implies integrating over the parameters at every token step: 
+
+p(y1: T |x) ≈
+
+> T
+
+Y
+
+> t=1
+
+Z
+
+p(yt|y<t , x, θ t)p(θt|D ) dθ t.
+
+(2) We argue that Eq. (2) is misaligned with coher-ent multi-step reasoning: it re-samples θt at each token, which can disrupt cross-token logical consis-tency by changing the underlying computation mid-generation. Instead, we adopt hypothesis sampling .In the Bayesian view, a single sample θ ∼ p(θ|D )
+
+corresponds to one coherent hypothesis. Once sam-pled, this hypothesis should remain fixed for the entire sequence. The predictive distribution is: 
+
+p(y1: T |x) = 
+
+Z TY
+
+> t=1
+
+p(yt|y<t , x, θ )
+
+!
+
+p(θ|D ) dθ. 
+
+(3) We approximate Eq. (3) using Monte Carlo inte-gration with K samples. For each sample k, we draw a noise vector ϵ(k) once and freeze it, obtain-ing a specific model member θ(k) = θMAP + ϵ(k).This ensures that the entire sequence y1: T is gener-ated by a single consistent instance, while enabling population-level aggregation without storing multi-ple full sets of weights. 31 class BayesianBiasWrapper ( nn . Module ):                                                                                                             
+
+> 2""" Augments normalization with aBayesian latent bias ."""
+> 3def __init__ ( self , base_norm , prior_mu , prior_std ):
+> 4self . norm =base_norm
+> 5self .mu , self . sigma =prior_mu , prior_std #z~N(mu , sigma )
+> 6self . z_instance =None #cached per sequence
+> 78def forward ( self , x): #x: [B , T , D]
+> 9if self .z is None :
+> 10 B , T , D=x. shape
+> 11 self .z =sample_normal ( self .mu , self . sigma , shape =(B , 1, D) , device = x. device )
+> 12 return self . norm (x) +self .z #broadcast along T
+> 13 14 def reset_posterior ( self ):
+> 15 """ Resamples the model instance (e.g., for anew prompt )."""
+> 16 self .z =None
+> 17 18 def apply_bayesian_transform ( model , prior_mu , prior_std ):
+> 19 """ Converts standard RMSNorm into Bayesian layers ."""
+> 20 for each normalization module to target : #locate layer by model . named_modules
+> 21 replace it with BayesianNorm ( module , mu , sigma )
+> 22 return model
+
+Figure 1: B-Trans implementation (abstracted). B-Trans operates as a plug-and-play replacement for normaliza-tion layers. For each response, it caches a latent offset per sequence and reuse it across autoregressive steps. This approximates drawing a single coherent model instance for each generation pass, enabling diverse yet temporally consistent outputs from one set of weights. 
+
+4 Implementation 
+
+Our approach is a surgical architectural modifi-cation rather than an external sampling proce-dure. We align with the pragmatist view that par-tial Bayesian structure in carefully chosen compo-nents can already induce useful functional proper-ties (Kristiadi et al., 2020), we implement B-Trans by wrapping RMSNorm layers with a Bayesian post-normalization offset. The modified backbone remains differentiable and compatible with stan-dard training pipelines. B-Trans operates as a plug-and-play replacement for normalization layers, en-suring that the backbone differentiable and compat-ible with standard training pipelines. Consequently, our method can be seamlessly integrated with ex-isting training workflows. 
+
+4.1 Bayesian Bias Norm Wrapper 
+
+Recent LLMs typically employ RMSNorm, which is often implemented without an explicit additive bias. In B-Trans, we treat the post-normalization additive shift as a bias-like offset and inject a sequence-level latent variable z after normaliza-tion. Our decision to target bias-like offsets is moti-vated by prior findings (Elhage et al., 2021; Dong et al., 2021) that biases encode “default” priors and are crucial for rank restoration, allowing us to shift reasoning dispositions without corrupting the semantic correlations stored in weights (see more discussion in Section 4.2). Concretely, for a hidden state x, we implement: 
+
+y = Norm (x)·w +( b+z), z ∼ N (μ, σ 2) (4) Here, μ and σ are hyperparameters controlling the center and spread of the population diversity, and 
+
+b can be 0 in RMSNorm. For normalization vari-ants that include a learned scale (and optionally a bias), these parameters remain part of the deter-ministic backbone, while z provides a stochastic post-normalization offset. Sampling z therefore yields multiple model instances that share the same pre-trained weights but differ in their normalization regime. 
+
+4.2 Biases as Dispositional Priors. 
+
+B-Trans introduces stochasticity through additive offsets rather than through full weight perturba-tions. This choice is grounded in the functional role of additive shifts in Transformer mechanics. First, additive components act as input-independent defaults: while weight matrices encode correla-tions between features, additive shifts set baseline writes to the residual stream and influence acti-vation thresholds before input-specific computa-4tion (Elhage et al., 2021). Second, additive vectors are a practical handle for semantic steering. Work on activation engineering shows that adding vectors in the residual stream can steer high-level behav-iors without broadly degrading capabilities (Turner et al., 2023; Zou et al., 2023). Third, bias-like shifts can be important for defining operating points. Re-cent evidence on massive activations suggests that when explicit biases are absent, models may simu-late similar effects through outlier activations (Sun et al., 2024). By sampling z, B-Trans creates a population of dispositions that explore different reasoning trajectories while sharing the same un-derlying knowledge in the backbone weights. 
+
+4.3 Temporal Consistency via Noise Caching 
+
+A requirement for valid variational approximation in sequential models is maintaining a consistent stochastic mask across time steps, as established in prior work on Recurrent Neural Networks (Gal and Ghahramani, 2016). Naively sampling z at every token step violates this principle, resulting in a temporally incoherent model that effectively shifts its functional hypothesis mid-sentence. To adhere to this theoretical constraint within our framework, we implement a sequence-level 
+
+noise caching mechanism (see Figure 1). As de-tailed in the BayesianBiasWrapper , the process ensures that the stochastic perturbation defines a stable reasoning persona for the duration of the generation: (1) Initialization: Upon receiving the prompt, we sample the latent variable z once and cache it, effectively drawing a single sample θ(k)
+
+from the approximate posterior. (2) Generation: For all subsequent autoregressive steps within the same sequence, the model applies this frozen z to the normalization layers. This design ensures that the stochasticity is strictly inter-sequence rather than intra-sequence. Crucially, unlike full weight-masking methods (e.g., MC Dropout), our implementation is com-putationally negligible, requiring only an element-wise addition of a cached tensor without the over-head of generating large binary masks. Specifi-cally, implementing theoretically correct (frozen) MC Dropout on a 7B model would require caching around 14GB of masks per user instance, assuming pre-expand the binary masks to FP16 to align with weight precision to avoid prohibitive on-the-fly de-compression overheads. In contrast, B-Trans only caches the bias noise vectors (<1MB), reducing the memory footprint by orders of magnitude while maintaining temporal consistency. 
+
+5 Experiments 
+
+Our evaluation probes B-Trans from three com-plementary angles. First, we test whether sam-pling model instances produces functional diver-sity in zero-shot generation rather than surface-level randomness. Second, we study exploration in Reinforcement Learning with Verifiable Rewards (RLVR), asking whether parameter-space sampling improves search under sparse rewards. Third, we examine population aggregation in a label-free Test-Time RL (TTRL) setting, where the learning signal is induced from model outputs rather than ground-truth supervision. Across all settings, our goal is to provide a minimal proof-of-concept for population-based exploration under controlled, standard pro-tocols, rather than an exhaustive benchmark. Ac-cordingly, we keep training and decoding setups aligned with established baselines and focus on whether B-Trans yields consistent improvements in exploration and semantic diversity. It is important to note that while B-Trans mod-ifies the architecture’s normalization layers, the modified backbone remains differentiable and train-able via standard backpropagation pipelines. From the efficiency and computing concern, we follow Low-Rank Adaptation (LoRA) (Hu et al., 2022) training for the RLVR and TTRL tasks. In all train-ing settings, we inject stochasticity only during rollout for exploration, while keeping the update phase deterministic by using the mean shift only, matching standard optimization stability require-ments. 
+
+5.1 Zero-Shot Diversity and Creativity 
+
+The premise of B-Trans is that different instance samples correspond to distinct functional behav-iors. We evaluate whether B-Trans yields mean-ingful heterogeneity compared to high-temperature decoding. 
+
+Setting. We study intrinsic population behavior on two benchmarks with different measurement goals. On MMLU-Pro (Wang et al., 2024) (rea-soning), we use Pass@K to test whether addi-tional sampled individuals provide functional and valid reasoning paths: for each question we sam-ple K independent sequence-level personas and count the answer as correct if any sample is correct. Thus, improved scaling with larger K indicates that the induced diversity is not mere noise but 51 2 4 8 16  
+
+> Pass@ K(K)
+> 10
+> 20
+> 30
+> 40
+> 50
+> 60
+> 70
+> 80
+> MMLU-Pro Accuracy (%)
+> Llama-3.1-8B (Base)
+> Llama-3.1-8B + B-Trans
+> Qwen3-1.8B (Base)
+> Qwen3-1.8B + B-Trans
+> Qwen3-8B (Base)
+> Qwen3-8B + B-Trans
+
+Figure 2: Pass@ K performance on MMLU-Pro across Llama-3.1 and Qwen3 families. Solid lines denote B-Trans, while dashed lines represent deterministic base-lines with high-temperature sampling. While perfor-mance at K = 1 is comparable, B-Trans exhibits supe-rior scaling at higher K values. This widening gap indi-cates that the induced parameter-space diversity yields valid, functional reasoning paths rather than random noise. Qwen3-1.7B Qwen3-8B Llama3.1-8B 
+
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> Embedding Distance
+> Base Model
+> B-Trans
+
+Figure 3: Semantic diversity on INFINITY-CHAT. B-Trans (solid) consistently yields higher embedding dis-tances than baselines (hatched), confirming better output heterogeneity on creativity writing. 
+
+yields additional correct solutions. On INFINITY-CHAT (Jiang et al., 2025) (open-ended creativity), where there is no ground-truth correctness, we mea-sure semantic diversity using average pairwise em-bedding cosine distance (Reimers and Gurevych, 2019; Song et al., 2020) and visualize the embed-ding geometry with PCA following Artificial Hive-mind (Jiang et al., 2025). The goal is to quan-tify and visualize semantic heterogeneity under the same generation setup as generating answer for MMLU-Pro. For both tasks, we contrast B-Trans against two distinct base models, Qwen3 (Yang et al., 2025) and Llama-3.1 (Grattafiori et al., 2024), using high-temperature sampling ( T = 1 ). This setup allows us to observe whether the models can escape their default semantic modes through B-Trans versus Temperature stochasticity. 
+
+Results. On MMLU-Pro (Figure 2), while B-Trans matches the baseline at K = 1 , it demon-strates significantly stronger scaling behavior as the sample budget increases. This trend confirms that the diversity introduced by B-Trans is semantically meaningful: rather than generating random noise (which would yield diminishing returns), the im-plicit population successfully explores valid reason-ing trajectories that are inaccessible to the determin-istic model. Complementing this, the embedding distance analysis on INFINITY-CHAT (Figure 3) further quantifies this behavior, confirming superior output heterogeneity. Qualitatively, Figure 4 visualizes the semantic landscape. Under standard sampling, Qwen3 and Llama-3.1 occupy disjoint, narrow regions in the semantic space, reflecting their distinct pre-trained biases. While high temperature slightly expands these clusters, it fails to alter their fundamental topology. In contrast, B-Trans generates a signifi-cantly broader distribution, forming distinct clus-ters that explore diverse reasoning paths. 
+
+Analysis. The visualization in Figure 4 reveals a critical insight into the nature of the generated diversity. Standard temperature sampling is con-fined to local perturbations; it cannot push a model out of its inherent “personality,” leaving Qwen3 and Llama-3.1 isolated in their respective semantic territories. Conversely, B-Trans enables the models to transcend these native constraints. The visualiza-tion shows that B-Trans samples not only cover a wider area but also begin to bridge the gap between the two models, with samples from one model oc-casionally reaching the semantic territory typically occupied by the other. This suggests that perturb-ing normalization biases can shift the model’s gen-eration distribution in embedding space beyond local temperature-based perturbations. Meanwhile, the overlap indicates that B-Trans can occasionally reach semantic regions that are atypical for the orig-inal base model under the same decoding budget, thus overlapping with the reasoning styles of dif-ferent model families, rather than merely adding noise to a single persona. 6Qwen3-8B-btrans : What is the 
+
+nature of reality? 
+
+Qwen3-8B-temp-0.1 : What is 
+
+the answer to this question? 
+
+Qwen3-8B-temp-0.5 : Does this 
+
+question have an answer? 
+
+Llama-3.1-8B-btrans : What is 
+
+the nature of consciousness 
+
+Llama-3.1-8B-temp-1 : What is 
+
+the meaning of life? 
+
+Llama-3.1-8B-temp-0.5 : What 
+
+is the most important question 
+
+to humanity? Figure 4: PCA visualization of response embeddings from Qwen3 and Llama-3.1 models. The query is “ Output a hard question to humanity (super concise and short), independent of theme. ” Standard sampling confines models to disjoint semantic regions (their respective “territories”). B-Trans significantly expands this scope, allowing the model to escape its default mode and even explore semantic regions typically associated with the opposing model (highlighted in red box).                                         
+
+> Model GSM8K MATH-500 Minerva Math Average
+> Qwen3-1.7B 86.3 47.0 21.3 51.5
+> ,→B-Trans 86.8 54.4 26.1 55.7 Qwen3-8B 90.0 60.6 40.4 63.7
+> ,→B-Trans 90.7 61.4 42.6 64.9 Qwen2.5-Math-7B 83.6 71.2 30.5 61.8
+> ,→B-Trans 88.1 76.0 32.7 65.6 Llama3.1-8B 73.8 20.8 7.4 34.0
+> ,→B-Trans 78.6 23.7 9.9 37.4
+
+Table 1: Performance on RLVR tasks using GRPO. B-Trans consistently outperforms the baseline, particularly on smaller models and harder datasets. 
+
+5.2 Exploration in Reinforcement Learning with Verifiable Rewards (RLVR) 
+
+In Reinforcement Learning, the critical bottleneck is often the exploration-exploitation trade-off. Stan-dard LLM policies rely on action-space noise (sam-pling tokens) to explore. We hypothesize that parameter-space noise (sampling models) provides a more consistent and deeper form of exploration. By solving mathematical problems where the solu-tion space is sparse, we test the competency of the implicit B-Trans population. If B-Trans achieves higher rewards under Group Relative Policy Opti-mization (GRPO) (Guo et al., 2025), it indicates that the diverse rollout candidates are not just dif-ferent, but are hitting the correct solution regions more frequently than the baseline. 
+
+Setting. To demonstrate the impact of B-Trans on exploration and exploitation trade-offs, we uti-lize the standard RLVR setting, following the SimpleRL-Zoo framework 2. To save computing, we use LoRA instead of full-parameter fine-tuning (less than 1% trainable parameters), and we train on 400 examples sampled from the same distribution of SimpleRL-Zoo dataset via difficulty-stratified sampling. In GRPO, a group of outputs is sampled for each input, and the policy is updated based on their rela-tive rewards. We test on four standard mathemati-cal reasoning datasets, i.e., GSM8K (Lewkowycz et al., 2022), MATH-500 (Lightman et al., 2023), 
+
+> 2
+
+We follow the default configuration as-is; the only change is apply BayesianBiasWrapper during the rollout, as we do not introduce any additional modifications beyond B-Trans. 
+
+7and Minerva Math (Lewkowycz et al., 2022), where the ground truth is verifiable. 
+
+Results. We compare GRPO training with stan-dard decoding against GRPO training where B-Trans instance sampling is enabled during rollout, under the same protocol. As shown in Table 1, B-Trans achieves consistent gains across all four benchmarks. GRPO relies on informative relative compar-isons within each sampled group. When the rollout group is homogeneous, relative advantages become less informative and updates can stagnate. By pro-ducing group members from distinct parameter-space instances, B-Trans increases the chance that at least one candidate reaches a higher-reward re-gion, strengthening the learning signal available to GRPO under the same group size. 
+
+5.3 Test-Time RL without Labels 
+
+This experiment represents the most challenging scenario: learning without ground-truth labels. We employ Test-Time RL (TTRL), a setting where the model must self-improve by generating candidate solutions and filtering them via consistency checks. Specifically, we follow the established TTRL pro-tocols (Zuo et al., 2025; Yu et al., 2025) to utilize majority voting as the reward proxy. It is worth not-ing that the majority voting inherently rewards con-sensus, seemingly contrasting with B-Trans’s phi-losophy of encouraging diverse exploration (“The truth is often with the few”). However, our con-tribution focuses on the quality of the exploration rather than the selection mechanism. We argue that a superior learning signal should emerge from di-verse independent reasoning paths rather than sim-ple outcome consensus from mode collapse. Under the GRPO framework, standard models often gen-erate homogeneous samples, providing redundant gradient information even when the reward is posi-tive. Conversely, B-Trans injects parameter-space diversity, ensuring that the high-reward trajectories (those aligning with the majority) exhibit varied rea-soning paths. This semantic diversity maximizes the information gain per update step, allowing the model to explore diverse reasoning patterns rather than overfitting to a single, narrow solution path. 
+
+Setting. We investigate the efficacy of B-Trans in scenarios characterized by sparse signals and chal-lenging search spaces using the AIME24 dataset. Unlike standard RLHF, TTRL adapts the model using only unlabeled test prompts. To synthesize a reward signal without ground truth, we utilize an outcome-based Majority Voting mechanism. For each input, we sample N candidate responses and extract the final numerical answer. A consensus la-bel is determined solely by the most frequent final answer. Trajectories leading to this consensus an-swer are assigned a positive reward ( r = 1 ), while others receive zero. Crucially, this reward ignores the semantic diversity or logical validity of the in-termediate reasoning steps (Rationale), making it a coarse signal that relies heavily on the diversity of the generated candidates to be effective. All parameter updates are applied via LoRA for com-putational efficiency. 
+
+Results. Figure 5 illustrates the reward curves evaluated every 5 steps. We compare the standard Qwen3-1.7B model using high-temperature sam-pling (temp=1.0) against B-Trans. The B-Trans exhibits high variance and oscillation but achieves significantly higher peak accuracy compared to the baseline. 0 5 10 15 20 25 30 35 40 45 
+
+> Training Step
+> 0
+> 5
+> 10
+> 15
+> 20
+> 25
+> Accuracy on AIME2024 (%)
+> B-Trans
+> Deterministic Model
+> Figure 5: Accuracy curve during training. Reported at every five training steps.
+
+Analysis. Two key insights emerge from this experiment. First, the hyperparameter σ serves as an effective control for exploration intensity. Higher values allow the model to escape local op-tima through aggressive exploration, akin to brain-storming wild ideas, which is necessary for the challenging AIME24 problems. Second, the suc-cess of B-Trans in the TTRL setting suggests an emergent self-correction capability. This parallels human cognitive processes, where internal delib-eration and re-evaluation can refine understand-ing even without external feedback. Even with a coarse consensus-based reward, B-Trans effec-tively filters out homogeneous cognition common 8to single-model instances by providing a broader set of rationales for the vote. 
+
+6 Ablation Study and Discussion 
+
+In this section, we dissect the architectural choices of B-Trans to validate our core design principles. We systematically investigate the necessity of tem-poral consistency in noise injection, justify the de-cision to perturb biases over weights, and verify the robustness of our approach across different post-training frameworks. 
+
+6.1 Temporal Consistency: Sequence-wise vs. Token-wise Noise 
+
+To validate the necessity of hypothesis sampling (Section 3.2), we compare B-Trans against a Token-wise Noise baseline on MATH-500 using Qwen3-1.8B. While B-Trans samples a single latent z per sequence, the baseline resamples zt ∼ N (0 , σ 2I)
+
+at every forward pass. Crucially, we fix an identical noise magnitude ( σ = 0 .02 ) for both settings to isolate the impact of temporal inconsistency. We use the Step-wise Consistency Score (SCS) to quantify the logical stability of the reasoning chain. We segment each Chain-of-Thought Y into discrete steps S = {s1, . . . , s m} based on newline delimiters. The SCS is defined as the average co-sine similarity between embeddings of consecutive steps (Encoded via all-MiniLM-L6-v2 ): SCS (Y ) = 1
+
+m − 1
+
+> m−1
+
+X
+
+> i=1
+
+cos( Enc (si), Enc (si+1 )) 
+
+(5) 
+
+Results & Analysis. The Token-wise baseline suffers catastrophic degradation. Despite identi-cal noise levels, its SCS drops to 0.42 (vs. 0.58 
+
+for B-Trans), correlating with a decrease in accu-racy (40.2% vs. 46.4%). This empirical failure corroborates the theoretical insight established by Gal and Ghahramani (2016) at RNNs/LSTMs age: valid variational inference requires the stochastic mask to remain invariant across time steps to rep-resent a single coherent hypothesis. B-Trans satis-fies this “Temporal Consistency” requisite through lightweight bias perturbation, effectively captur-ing the benefits of weight uncertainty without the memory overhead of full ensemble masks. 
+
+6.2 Post-training Infrastructure Agnosticism 
+
+To validate that B-Trans serves as a "plug-and-play" module—agnostic not just to the model ar-chitecture but also to the training infrastructure, we repeat our TRL-based (von Werra et al., 2020) RLVR experiments (Section 5.2) using another widely adopted RL engine, namely VeRL (Sheng et al., 2024) (Volcano Engine Reinforcement Learn-ing). We observed no statistically significant differ-ence in the final convergence performance or learn-ing dynamics between the two implementations. While the VeRL implementation exhibited faster wall-clock training speeds in our environment, we attribute this to differences in rollout acceleration libraries rather than the B-Trans mechanism itself. We expect B-Trans to be agnostic to the underlying base LLMs and training infrastructure, supporting its potential as a surgical plug-and-play approach for diverse use cases. 
+
+7 Future Work 
+
+Our current implementation models the prior distri-bution as a simple isotropic Gaussian with a scalar hyperparameter σ. While this serves as an effective proof-of-concept, the assumption of uniform uncer-tainty across all layers and dimensions is a strong simplification. A natural progression for this line of research is to develop a learnable or hierarchical prior. In this initial exploration, we adhered to a fixed prior to mitigate the risks associated with post-training opti-mization. Learning variance parameters on limited downstream datasets can lead to overfitting, where the induced population loses its general compe-tence. We anticipate that future efforts, particularly those with sufficient computational resources to train on large-scale general corpora, could success-fully learn these uncertainty parameters. Such a data-driven prior would likely act as a more robust “population,” capturing layer-specific sensitivities that a scalar σ cannot. Furthermore, the scalar σ presents an oppor-tunity for adaptive inference. The hyperparame-ter could be meta-learned or dynamically adjusted based on input complexity, e.g., allowing the model to be confident (low variance) on rote tasks and imaginative (high variance) on open-ended prob-lems. Ultimately, we envision a paradigm shift where LLMs are no longer delivered as static ar-tifacts, but as probabilistic distributions capable of adapting their internal state to the nature of the query. 98 Conclusion 
+
+We revisit the prevailing view of Large Language Models as static point estimates and argue that lightweight parameter-space uncertainty can be practically useful for exploration and diversity. We introduce B-Trans, a population-based framework that samples diverse yet coherent model instances from a single Transformer backbone using a vari-ationally motivated Gaussian posterior proxy. By applying temporally consistent perturbations to nor-malization biases, B-Trans simulates the wisdom of crowds at negligible cost, yielding significant gains in zero-shot diversity and sparse-reward reinforce-ment learning. Our results suggest that representing uncertainty as a sampleable local proxy, even in a simple form, can enable population-driven reason-ing within a single pre-trained model. 
+
+Limitations 
+
+While B-Trans demonstrates a promising direction for inducing implicit ensembles, our current study is intentionally scoped as a minimal, representative proof-of-concept centered on architectural simplic-ity and controlled comparisons. We do not perform extensive hyperparameter sweeps, broad architec-ture coverage, or large scale benchmarking beyond validating the key design principles. Our interven-tion is restricted to the bias terms of normalization layers, which is a simplified proxy rather than a full Bayesian neural network. While this surgical approach is computationally negligible, it is a sim-plified approximation of a full Bayesian Neural Network. The weights in the attention and feed-forward layers remain deterministic, potentially limiting the expressivity of the induced posterior. 
+
+References 
+
+Jimmy Lei Ba, Jamie Ryan Kiros, and Geoffrey E Hin-ton. 2016. Layer normalization. arXiv preprint arXiv:1607.06450 .Charles Blundell, Julien Cornebise, Koray Kavukcuoglu, and Daan Wierstra. 2015. Weight uncertainty in neural network. In International conference on machine learning , pages 1613–1622. PMLR. Yihe Dong, Jean-Baptiste Cordonnier, and Andreas Loukas. 2021. Attention is not all you need: Pure attention loses rank doubly exponentially with depth. In International conference on machine learning ,pages 2793–2803. PMLR. Nelson Elhage, Neel Nanda, Catherine Olsson, Tom Henighan, Nicholas Joseph, Ben Mann, Amanda Askell, Yuntao Bai, Anna Chen, Tom Conerly, and 1 others. 2021. A mathematical framework for transformer circuits. Transformer Circuits Thread ,1(1):12. Yarin Gal and Zoubin Ghahramani. 2016. Dropout as a bayesian approximation: Representing model uncer-tainty in deep learning. In international conference on machine learning , pages 1050–1059. PMLR. Aaron Grattafiori, Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Alex Vaughan, and 1 others. 2024. The llama 3 herd of models. arXiv preprint arXiv:2407.21783 .Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Ruoyu Zhang, Runxin Xu, Qihao Zhu, Shi-rong Ma, Peiyi Wang, Xiao Bi, and 1 others. 2025. Deepseek-r1: Incentivizing reasoning capability in llms via reinforcement learning. arXiv preprint arXiv:2501.12948 .Edward J Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, Weizhu Chen, and 1 others. 2022. Lora: Low-rank adaptation of large language models. ICLR , 1(2):3. Liwei Jiang, Yuanjun Chai, Margaret Li, Mickel Liu, Raymond Fok, Nouha Dziri, Yulia Tsvetkov, Maarten Sap, Alon Albalak, and Yejin Choi. 2025. Arti-ficial hivemind: The open-ended homogeneity of language models (and beyond). arXiv preprint arXiv:2510.22954 .Haoming Jing, Oren Wright, José MF Moura, and Yorie Nakahira. 2025. Kalman bayesian transformer. 
+
+arXiv preprint arXiv:2509.10695 .Agustinus Kristiadi, Matthias Hein, and Philipp Hennig. 2020. Being bayesian, even just a bit, fixes overcon-fidence in relu networks. In International conference on machine learning , pages 5436–5446. PMLR. Balaji Lakshminarayanan, Alexander Pritzel, and Charles Blundell. 2017. Simple and scalable pre-dictive uncertainty estimation using deep ensembles. 
+
+Advances in neural information processing systems ,30. Aitor Lewkowycz, Anders Andreassen, David Dohan, Ethan Dyer, Henryk Michalewski, Vinay Ramasesh, Ambrose Slone, Cem Anil, Imanol Schlag, Theo Gutman-Solo, and 1 others. 2022. Solving quan-titative reasoning problems with language models. 
+
+Advances in neural information processing systems ,35:3843–3857. Hao Li, Zheng Xu, Gavin Taylor, Christoph Studer, and Tom Goldstein. 2018. Visualizing the loss landscape of neural nets. Advances in neural information pro-cessing systems , 31. 
+
+10 Hunter Lightman, Vineet Kosaraju, Yura Burda, Harri Edwards, Bowen Baker, Teddy Lee, Jan Leike, John Schulman, Ilya Sutskever, and Karl Cobbe. 2023. Let’s verify step by step. arXiv preprint arXiv:2305.20050 .Aixin Liu, Aoxue Mei, Bangcai Lin, Bing Xue, Bingx-uan Wang, Bingzheng Xu, Bochao Wu, Bowei Zhang, Chaofan Lin, Chen Dong, and 1 others. 2025. Deepseek-v3. 2: Pushing the frontier of open large language models. arXiv preprint arXiv:2512.02556 .Matthias Plappert, Rein Houthooft, Prafulla Dhariwal, Szymon Sidor, Richard Y Chen, Xi Chen, Tamim Asfour, Pieter Abbeel, and Marcin Andrychowicz. 2018. Parameter space noise for exploration. In In-ternational Conference on Learning Representations .Nils Reimers and Iryna Gurevych. 2019. Sentence-bert: Sentence embeddings using siamese bert-networks. 
+
+arXiv preprint arXiv:1908.10084 .Guangming Sheng, Chi Zhang, Zilingfeng Ye, Xibin Wu, Wang Zhang, Ru Zhang, Yanghua Peng, Haibin Lin, and Chuan Wu. 2024. Hybridflow: A flexible and efficient rlhf framework. arXiv preprint arXiv: 2409.19256 .Kaitao Song, Xu Tan, Tao Qin, Jianfeng Lu, and Tie-Yan Liu. 2020. Mpnet: Masked and permuted pre-training for language understanding. Advances in neural information processing systems , 33:16857– 16867. Nitish Srivastava, Geoffrey Hinton, Alex Krizhevsky, Ilya Sutskever, and Ruslan Salakhutdinov. 2014. Dropout: a simple way to prevent neural networks from overfitting. The journal of machine learning research , 15(1):1929–1958. Mingjie Sun, Xinlei Chen, J Zico Kolter, and Zhuang Liu. 2024. Massive activations in large language models. arXiv preprint arXiv:2402.17762 .Alexander Matt Turner, Lisa Thiergart, Gavin Leech, David Udell, Juan J Vazquez, Ulisse Mini, and Monte MacDiarmid. 2023. Steering language mod-els with activation engineering. arXiv preprint arXiv:2308.10248 .Leandro von Werra, Younes Belkada, Lewis Tunstall, Edward Beeching, Tristan Thrush, Nathan Lambert, Shengyi Huang, Kashif Rasul, and Quentin Gal-louédec. 2020. Trl: Transformer reinforcement learn-ing. https://github.com/huggingface/trl .Xuezhi Wang, Jason Wei, Dale Schuurmans, Quoc Le, Ed Chi, Sharan Narang, Aakanksha Chowdhery, and Denny Zhou. 2022. Self-consistency improves chain of thought reasoning in language models. arXiv preprint arXiv:2203.11171 .Yubo Wang, Xueguang Ma, Ge Zhang, Yuansheng Ni, Abhranil Chandra, Shiguang Guo, Weiming Ren, Aaran Arulraj, Xuan He, Ziyan Jiang, and 1 others. 2024. Mmlu-pro: A more robust and challenging multi-task language understanding benchmark. Ad-vances in Neural Information Processing Systems ,37:95266–95290. An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, and 1 others. 2025. Qwen3 technical report. arXiv preprint arXiv:2505.09388 .Zhaoning Yu, Will Su, Leitian Tao, Haozhu Wang, Aashu Singh, Hanchao Yu, Jianyu Wang, Hongyang Gao, Weizhe Yuan, Jason Weston, and 1 others. 2025. Restrain: From spurious votes to signals– self-driven rl with self-penalization. arXiv preprint arXiv:2510.02172 .Yang Yue, Zhiqi Chen, Rui Lu, Andrew Zhao, Zhaokai Wang, Shiji Song, and Gao Huang. 2025. Does re-inforcement learning really incentivize reasoning ca-pacity in llms beyond the base model? arXiv preprint arXiv:2504.13837 .Biao Zhang and Rico Sennrich. 2019. Root mean square layer normalization. Advances in neural information processing systems , 32. Andy Zou, Long Phan, Sarah Chen, James Campbell, Phillip Guo, Richard Ren, Alexander Pan, Xuwang Yin, Mantas Mazeika, Ann-Kathrin Dombrowski, and 1 others. 2023. Representation engineering: A top-down approach to ai transparency. arXiv preprint arXiv:2310.01405 .Yuxin Zuo, Kaiyan Zhang, Li Sheng, Shang Qu, Ganqu Cui, Xuekai Zhu, Haozhan Li, Yuchen Zhang, Xin-wei Long, Ermo Hua, and 1 others. 2025. Ttrl: Test-time reinforcement learning. arXiv preprint arXiv:2504.16084 .
+
+11

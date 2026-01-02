@@ -575,6 +575,87 @@ def generate_paper_summary(paper_id: str, md_file_path: str, txt_file_path: str,
     return None
 
 
+def translate_title_and_abstract_to_zh(title: str, abstract: str) -> tuple[str, str]:
+    """
+    使用已配置的大模型，将英文标题和摘要翻译为中文。
+    - 保留英文原文，仅在可用时追加中文翻译；
+    - 若未配置 LLM_API_KEY 或调用失败，则返回空字符串，不影响主流程。
+    """
+    if LLM_CLIENT is None:
+        return "", ""
+
+    title = title.strip() if title else ""
+    abstract = abstract.strip() if abstract else ""
+    if not title and not abstract:
+        return "", ""
+
+    system_prompt = (
+        "你是一名熟悉机器学习与自然科学论文的专业翻译，请将英文标题和摘要翻译为自然、准确的中文。"
+        "保持学术风格，尽量保留专有名词，不要额外添加评论。"
+    )
+
+    user_parts: list[str] = []
+    if title:
+        user_parts.append(f"【标题 Title】\n{title}")
+    if abstract:
+        user_parts.append(f"【摘要 Abstract】\n{abstract}")
+    user_text = "\n\n".join(user_parts)
+
+    user_prompt = (
+        "请将上面的英文标题和摘要分别翻译成中文，并严格使用下面的输出格式：\n"
+        "【标题（中文）】\n<中文标题>\n\n"
+        "【摘要（中文）】\n<中文摘要>\n"
+        "不要输出任何其它说明文字。"
+    )
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_text},
+        {"role": "user", "content": user_prompt},
+    ]
+
+    try:
+        resp = LLM_CLIENT.chat.completions.create(
+            model=LLM_MODEL,
+            messages=messages,
+            temperature=0.2,
+            stream=False,
+        )
+        content = (resp.choices[0].message.content or "").strip()
+    except Exception as e:
+        print(f"[WARN] 翻译标题和摘要为中文失败：{e}")
+        return "", ""
+
+    if not content:
+        return "", ""
+
+    # 简单按标记切分出标题和摘要的中文部分
+    zh_title = ""
+    zh_abstract = ""
+    try:
+        # 先按“标题”块切
+        parts = content.split("【摘要（中文）】")
+        if len(parts) == 2:
+            title_block = parts[0]
+            abstract_block = parts[1]
+        else:
+            # 无法严格匹配时，全部当摘要处理
+            title_block = ""
+            abstract_block = content
+
+        if title_block:
+            t = title_block.split("【标题（中文）】", 1)
+            if len(t) == 2:
+                zh_title = t[1].strip()
+        zh_abstract = abstract_block.strip()
+    except Exception:
+        # 解析失败时，整个内容当成摘要使用
+        zh_title = ""
+        zh_abstract = content
+
+    return zh_title, zh_abstract
+
+
 def process_single_paper(paper: dict, source: str | None = None, keywords: list[str] | None = None) -> None:
     """
     处理单篇论文：
@@ -639,7 +720,7 @@ def process_single_paper(paper: dict, source: str | None = None, keywords: list[
         f.write(text_content or "")
 
     # 3. 生成对应的 Markdown 文件（用于 Docsify 展示）
-    # 标签区域：根据来源和关键词构建，颜色与订阅面板一致
+    # 3.0 构造标签区域（根据来源和关键词构建，颜色与订阅面板一致）
     tag_parts: list[str] = []
     if source == "keywords" and keywords:
         for kw in keywords:
@@ -652,8 +733,21 @@ def process_single_paper(paper: dict, source: str | None = None, keywords: list[
         )
     tags_html = " ".join(tag_parts) if tag_parts else ""
 
+    # 3.1 使用 arxiv 返回的摘要填充 Abstract 区域；若缺失则给出占位说明
+    abstract_en = (paper.get("summary") or "").strip()
+    if not abstract_en:
+        abstract_en = "arXiv did not provide an abstract for this paper, or the abstract could not be parsed correctly."
+
+    # 3.2 调用大模型生成中文标题与摘要（在有大模型配置时）
+    zh_title, zh_abstract = translate_title_and_abstract_to_zh(
+        paper_title,
+        abstract_en,
+    )
+
     content = f"""
 # {paper_title}
+
+{f'# {zh_title}\n\n' if zh_title else ''}
 
 **Authors**: {', '.join(paper_authors) if paper_authors else 'Unknown'}
 **Date**: {date}
@@ -663,7 +757,9 @@ def process_single_paper(paper: dict, source: str | None = None, keywords: list[
 ---
 
 ## Abstract
-...
+{abstract_en}
+
+{f'\n\n## 摘要\n{zh_abstract}' if zh_abstract else ''}
 """
     with open(md_file_path, "w", encoding="utf-8") as f:
         f.write(content)

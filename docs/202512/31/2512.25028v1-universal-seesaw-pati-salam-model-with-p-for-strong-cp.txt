@@ -1,0 +1,3953 @@
+Title: Universal Seesaw Pati-Salam Model with P for Strong CP
+
+URL Source: https://arxiv.org/pdf/2512.25028v1
+
+Published Time: Thu, 01 Jan 2026 02:36:33 GMT
+
+Number of Pages: 39
+
+Markdown Content:
+# Universal Seesaw Pati-Salam Model with P for Strong CP 
+
+K.S. Babu, a Sumit Biswas a
+
+> a
+
+Department of Physics, Oklahoma State University, Stillwater, OK 74078, USA 
+
+E-mail: babu@okstate.edu , sumit.biswas@okstate.edu 
+
+Abstract: We develop a universal seesaw version of the Pati-Salam model wherein quarks and leptons of each family are unified into common multiplets transforming as {ψL(2 , 1, 4))+ 
+
+ψR((1 , 2, 4) } under the SU (2) L × SU (2) R × SU (4) c gauge symmetry. Parity symmetry is spontaneously broken in the model, which helps in solving the strong CP problem with-out the axion. The Higgs sector of the model is very simple, consisting of a single pair of 
+
+{HL(2 , 1, 4)+ HR(1 , 2, 4) } fields. Fermion masses arise through mixing of the chiral fermions with vector-like quarks and leptons contained in (1 , 1, 15) as well as {(1 , 1, 10) L +(1 , 1, 10) R}
+
+multiplets via a universal seesaw mechanism. Consistency of such a spectrum with the observed quark and lepton masses is established. The parity solution to the strong CP problem is shown to be effective in this framework, although there are new loop contribu-tions to θ, compared to the analogous left-right symmetric model, arising from color sextet and octet fermions, as well as from diagrams mediated by leptoquark bosons. We also find that, in this setup, although lepton number is broken, neutrino masses remain zero at the tree-level. Small and finite Majorana neutrino masses are induced via one-loop diagrams, which we analyze and show to be compatible with oscillation experiments. 
+
+> arXiv:2512.25028v1 [hep-ph] 31 Dec 2025
+
+Contents 
+
+1 Introduction 12 Pati-Salam model with universal seesaw 33 Higgs potential analysis 74 Realistic down-quark and charged-lepton masses 10 
+
+4.1 Benchmark point with Y15 -induced radiative corrections 10 4.2 A second benchmark point with Y10 -induced radiative corrections 15 
+
+5 Radiative neutrino mass generation 17 6 Parity solution to the strong CP problem 20 
+
+6.1 Contributions to ¯θ at one loop 21 6.1.1 Corrections to up- and down-quark mass matrices 21 6.1.2 Corrections to the sextet and octet fermion mass matrices 29 
+
+7 Other aspects of the model 31 
+
+7.1 Exact parity symmetric version 31 7.2 Baryon number violation 31 7.3 Quality of the parity solution to the strong CP problem 33 
+
+8 Conclusions 34 
+
+1 Introduction 
+
+One of the most elegant extensions of the Standard Model (SM) is the Pati-Salam (PS) model based on the non-Abelian gauge symmetry SU (2) L × SU (2) R × SU (4) c [1]. With the embedding of the color group SU (3) c of the SM in SU (4) c, quarks and leptons are unified into common multiplets. This enables the identification of lepton number as the fourth color. The non-Abelian nature of the symmetry group implies that electric charge is quantized, which explains one of the puzzles of the SM. Parity is a good symmetry of the model, which is broken spontaneously, providing a symmetry-based rationale for the (V − A) structure of weak interactions. Furthermore, the gauge structure of the model dictates that the left-handed neutrino be accompanied by a right-handed partner, which paves the way for small neutrino masses via the seesaw mechanism. The purpose of this paper is to develop a universal seesaw version of the Pati-Salam model, which also solves the strong CP problem by virtue of parity symmetry. The axion is not needed for solving the strong CP problem in this framework. The fermions of each – 1 – family belong to {ψL(2 , 1, 4) + ψR(1 , 2, 4) } of the PS gauge symmetry. In conventional PS models, symmetry breaking and fermion mass generation are accomplished by introducing three sets of Higgs fields: (i) {∆L(3 , 1, 10) + ∆ R(1 , 3, 10) }, used for the PS gauge symmetry breaking down to the SM and for the generation of right-handed neutrino Majorana masses; (ii) Φ(2 , 2, 1) and (iii) Σ(2 , 2, 15), which are introduced for realistic fermion mass generation as well as for electroweak symmetry breaking. While such models are fully consistent, the proliferation of Higgs fields and the associated Higgs potential parameters may be viewed as a blemish of these realizations. For a detailed study of the Higgs sector of such models, see Ref. [2]. With this Higgs sector, it is difficult to solve the strong CP problem via parity symmetry as the determinant of the quark mass matrix is not real and contributes to the CP-violating parameter θ at tree-level. An alternative to the conventional Higgs sector mentioned above is to introduce a single set of {HL(2 , 1, 4)+ HR(1 , 2, 4) } fields, which is sufficient for the purpose of symmetry breaking. HR would break SU (2) R × SU (4) c down to U (1) Y × SU (3) c at an energy scale well above the weak scale, while HL breaks the SU (2) L × U (1) Y down to U (1) em . Such a simple Higgs sector alone, however, cannot generate masses for quarks and leptons. To remedy this issue, one can introduce vector-like fermions with which the chiral fermions mix, thus generating their masses via a universal seesaw mechanism [3]. Such models have been studied in the context of left-right symmetry based on the gauge group SU (2) L ×
+
+SU (2) R × U (1) B−L × SU (3) c [3–8], which is a subgroup of the PS symmetry. These models can solve the strong CP problem by parity symmetry without the need for the axion [4]. Invariance of the Lagrangian under parity sets the QCD θ-term to zero, and the parity-symmetric seesaw structure of the quark mass matrix makes its determinant real at tree level, and also at the one-loop level, making the strong CP-violation parameter θ sufficiently small to be consistent with neutron electric dipole moment (nEDM) limits [5–10]. 1 The same mechanism can work in the proposed PS model, although there are certain important differences compared to the left-right symmetric models, which we shall elaborate on in this paper. In particular, the θ parameter receives contributions from loop corrections to the masses of color octet fermions contained in (1 , 1, 15) as well as from color sextets from 
+
+{(1 , 1, 10) L + (1 , 1, 10) R} vector-like fermions. In addition, there are new loop diagrams correcting the up-type and down-type quark mass matrices through the exchange of vector and scalar leptoquarks. In spite of these new diagrams, we find that θ can be sufficiently small for a wide range of model parameters so as to be consistent with nEDM limits. Specifically, we find that the one-loop induced θ parameter is parametrically suppressed if either of the vector-like fermions (1 , 1, 15) or (1 , 1, 10) has a bare mass much smaller than the parity restoration scale of order 5 × 10 13 GeV. There is yet another motivation for the PS models with the simple Higgs sector belong-ing to {HL(2 , 1, 4) + HR(1 , 2, 4) }. Once parity symmetry is imposed, the Higgs potential will have a single mass parameter in this setup. This implies that the amount of fine-tuning required to realize the SM Higgs boson is the same as in the SM [6]. This is a special fea-
+
+> 1For alternative approaches to solve the strong CP problem with parity symmetry in left-right symmetric models, see Ref. [11–18].
+
+– 2 – ture shared only by very few models, including this version of the PS model, its left-right symmetric subgroup, and a parity-symmetric mirror model [7, 19, 20]. We find the simplest set of vector-like fermions that can generate realistic quark and lepton masses through mixing in the PS model to be (1 , 1, 15) and {(1 , 1, 10) L +(1 , 1, 10) R}.The former real field contains a vector-like iso-singlet up-type quark, while the latter con-tains a vector-like down-type quark as well as a lepton. We show that with this spectrum, the closely related down-quark and charged lepton mass matrices can be consistently decou-pled to realize correct masses for all fermions. A consequence of this setup is that, although lepton number is broken in the model, neutrino masses remain zero at the tree-level. Small and finite Majorana masses for the neutrinos arise at one-loop, which we analyze and show consistency with neutrino oscillation data. Variations of the Pati-Salam model with vector-like fermions have been studied in Ref. [21–23] to lower the PS scale down to multi-TeV. For other variants of the PS model, see Refs. [24–35]. In contrast to these works, the PS scale in our proposal is high, of order 5 × 10 13 GeV, which is the scale where the two SU (2) gauge couplings become equal, 
+
+g2L = g2R.
+
+2 Pati-Salam model with universal seesaw 
+
+The Pati-Salam model that we develop here is based on the gauge symmetry SU (2) L ×
+
+SU (2) R × SU (4) c. Each family of quarks and leptons transforms under the gauge group as ΨL(2 , 1, 4) = u1 u2 u3 νd1 d2 d3 e
+
+!
+
+> L
+
+, ΨR(1 , 2, 4) = u1 u2 u3 νd1 d2 d3 e
+
+!
+
+> R
+
+. (2.1) Quarks are unified with leptons, with lepton number serving as the fourth color. The model developed here has a simple Higgs sector consisting of 
+
+HL(2 , 1, 4) = χu 
+
+> 1
+
+χu 
+
+> 2
+
+χu 
+
+> 3
+
+χν
+
+χd 
+
+> 1
+
+χd 
+
+> 2
+
+χd 
+
+> 3
+
+χe
+
+!
+
+> L
+
+, HR(1 , 2, 4) = χu 
+
+> 1
+
+χu 
+
+> 2
+
+χu 
+
+> 3
+
+χν
+
+χd 
+
+> 1
+
+χd 
+
+> 2
+
+χd 
+
+> 3
+
+χe
+
+!
+
+> R
+
+. (2.2) Spontaneous gauge symmetry breaking occurs when the neutral components of HL and 
+
+HR acquire vacuum expectation values (VEVs), denoted as 
+
+⟨χνL⟩ = κL, ⟨χνR⟩ = κR, (2.3) with the hierarchy κR ≫ κL. The symmetry breaking occurs in two stages: 
+
+SU (2) L × SU (2) R × SU (4) cκR
+
+−−→ SU (2) L × U (1) Y × SU (3) cκL
+
+−−→ SU (3) c × U (1) em .(2.4) We note here that by SU (2) L,R rotations, the VEVs ( κL, κ R) can be made real, a feature of this minimal Higgs sector that plays a role in the parity solution to the strong CP problem. With this Higgs structure, while spontaneous gauge symmetry breaking can be achieved, quarks and leptons will remain massless, as no Yukawa couplings are allowed between the fermions of Eq. (2.1) and the Higgs bosons of Eq. (2.2). Fermion mass generation can be – 3 – achieved via a universal seesaw mechanism [3] where the chiral families mix with vector-like fermion families through Yukawa couplings involving the Higgs fields of Eq. (2.2). The simplest set of vector-like fermions that can lead to realistic fermion masses and mixings is found to be three families transforming as ΣL(1 , 1, 15) = 1
+
+√2
+
+ 
+
+> O3√2
+
++ O8√6 + N√12 O12 O13 U1
+
+Oc 
+
+> 12
+
+− O3√2 + O8√6 + N√12 O23 U2
+
+Oc 
+
+> 13
+
+Oc 
+
+> 23
+
+−
+
+q 23 O8 + N√12 U3
+
+U c 
+
+> 1
+
+U c 
+
+> 2
+
+U c 
+
+> 3
+
+− 
+
+> √32
+
+N
+
+
+
+> L
+
+(2.5) ΩL,R (1 , 1, 10) = 1
+
+√2
+
+
+
+√2S11 S12 S13 D1
+
+S12 
+
+√2S22 S23 D2
+
+S13 S23 
+
+√2S33 D3
+
+D1 D2 D3
+
+√2E−
+
+
+
+> L,R
+
+. (2.6) The Σ L(1 , 1, 15) decomposes under SU (3) c × SU (2) L × U (1) Y as ΣL(1 , 1, 15) = U (3 , 1, 23 ) + U c(3 , 1, − 23 ) + O(8 , 1, 0) + N (1 , 1, 0) (2.7) which contains a vector-like up-type quark U , a Majorana singlet NL as well as a Majorana octet O. The up-type quarks will mix with the vector-like U quarks and acquire their masses. Similarly, the νL and ( νR)c will mix with the NL from Σ L and generate light neutrino masses. The color octet, while unmixed with other fermions, can contribute to the strong CP parameter θ, which we shall address later. The {ΩL(1 , 1, 10) L + Ω R(1 , 1, 10) R} fields contain a vector-like D quark, a vector-like charged lepton E− and a vector-like color sextet S. Its decomposition under SU (3) c ×
+
+SU (2) L × U (1) Y is given by ΩL,R (1 , 1, 10) = DL,R (3 , 1, − 13 ) + E−
+
+> L,R
+
+(1 , 1, −1) + SL,R (6 , 1, 13 ) . (2.8) The down-type quarks will mix with the D quarks, and the charged leptons will mix with the E− leptons to acquire masses. Although the vector-like D -quarks and E− leptons are unified in common multiplets, we shall show that consistent masses for the light down-type quarks and charged leptons can be realized within this setup. Under parity symmetry, the fermion and scalar fields transform as ΨL ↔ ΨR, ΩL ↔ ΩR, ΣL ↔ ΣcR, HL ↔ HR (2.9) along with the SU (2) L,R gauge bosons transforming as WL ↔ WR. The action of parity on ΣL can be written explicitly as NL ↔ N cR, OL ↔ O cR and UL ↔ UR. The parity-symmetric Yukawa/mass Lagrangian of the model can be written as 
+
+LYuk = √2Y †
+
+> 15
+
+Tr  ΣLΨTL H∗
+
+> L
+
+ + Tr  ΣLΨTRH∗
+
+> R
+
+
+
+− √2Y10 
+
+n
+
+Tr 
+
+
+
+ΨL ˜HLΩR
+
+
+
++ Tr 
+
+
+
+ΨR ˜HRΩL
+
+o 
+
++ M10 ΩLΩR + M15 (Σ c)RΣL + h.c. (2.10) – 4 – Here we have defined ˜HL,R = iτ 2H∗
+
+> L,R
+
+. The Dirac spinor contraction in the first term of 
+
+Y15 is via the charge conjugation matrix C, and we have used the identity Σ cR C = Σ L.Note that the Σ L is defined with a transposition of the matrix of Eq. (2.5). The gauge invariance of these Yukawa terms can be verified by applying special unitary rotations on various fields given as ΨL → VLΨLV Tc , ΨR → VRΨRV Tc , ΣL → VcΣLV † 
+
+> c
+
+, ΩL,R → VcΩL,R V Tc ,HL → VLHLV Tc , HR → VRHRV Tc . (2.11) Here VL, VR, and Vc are, respectively, the special unitary rotation matrices corresponding to SU (2) L, SU (2) R, and SU (4) c gauge transformations. Owing to parity symmetry, the mass matrices M10 and M15 of Eq. (2.10) are hermitian: 
+
+M † 
+
+> 10
+
+= M10 , M † 
+
+> 15
+
+= M15 . (2.12) Furthermore, M15 is also symmetric, which follows from the Lorentz structure, implying that M15 is real and symmetric. The Yukawa/mass terms of Eq. (2.10) can be expanded explicitly in component form as 
+
+LYuk = Y † 
+
+> 15
+
+U cLuLχν∗ 
+
+> L
+
++ U cLdLχe∗ 
+
+> L
+
++ ULeLχd∗ 
+
+> L
+
++ ULνLχu∗ 
+
+> L
+
+−√32 NLνLχν∗ 
+
+> L
+
+−√32 NLeLχe∗
+
+> L
+
++ 12√3 NLdLχd∗ 
+
+> L
+
++ 12√3 NLuLχu∗ 
+
+> L
+
++ √2OαLβ dLα χd∗βL + √2OαLβ uLα χu∗βL
+
+
+
++Y † 
+
+> 15
+
+U LuRχν∗ 
+
+> R
+
++ U LdRχe∗ 
+
+> R
+
++ U cLeRχd∗ 
+
+> R
+
++ U cLνRχu∗ 
+
+> R
+
+−√32 NLνRχν∗ 
+
+> R
+
+−√32 NLeRχe∗
+
+> R
+
++ 12√3 NLdRχd∗ 
+
+> R
+
++ 12√3 NLuRχu∗ 
+
+> R
+
++ √2OαLβ dRα χd∗βR + √2OαLβ uRα χu∗βR
+
+
+
++Y10 
+
+
+
+dLDRχν∗ 
+
+> L
+
+− uLDRχe∗ 
+
+> L
+
++ √2eLERχν∗ 
+
+> L
+
+− √2νLERχe∗ 
+
+> L
+
++ eLDRχu∗ 
+
+> L
+
+− νLDRχd∗
+
+> L
+
+−uαL(SR)αβ χd∗βL + dαL(SR)αβ χu∗βL
+
+
+
++ Y10 
+
+
+
+dRDLχν∗ 
+
+> R
+
+− uRDLχe∗ 
+
+> R
+
++ √2eRELχν∗
+
+> R
+
+−√2νRELχe∗ 
+
+> R
+
++ eRDLχu∗ 
+
+> R
+
+− νRDLχd∗ 
+
+> R
+
+− uαR(SL)αβ χd∗βR + dαR(SL)αβ χu∗βR
+
+
+
++M10 
+
+ DLDR + ELER + SLSR
+
+ + M15 
+
+
+
+U cLUL + 12 NLNL + 12 (OL)βα(OL)αβ
+
+
+
++ h .c. (2.13) Here the color octet ( OL)αβ and the color sextet Sαβ are defined in Eqs. (2.5)-(2.6) as the upper-left 3 × 3 block matrix with elements denoted as O and S respectively. Once the VEVs of the Higgs fields, as given in Eq. (2.3), are inserted into Eq. (2.13), fermion mass matrices with a universal seesaw structure will be generated. For the charged fermions, the mass matrices Mf written in a basis 
+
+Lmass =  f L F L
+
+ Mf
+
+fR
+
+FR
+
+!
+
+, (2.14) – 5 – where f = ( u, d, e ) and F = ( U, D, E ), take the form: 
+
+Mu = 0 Y15 κL
+
+Y †
+
+> 15
+
+κR M †
+
+> 15
+
+!
+
+, Md = 0 Y10 κL
+
+Y †
+
+> 10
+
+κR M10 
+
+!
+
+, Me = 0 √2Y10 κL
+
+√2Y †
+
+> 10
+
+κR M10 
+
+!
+
+.(2.15) In addition, the color-octet and color sextet fermion masses are given by the Hermitian mass matrices 
+
+MO = M †
+
+> 15
+
+, MS = M10 . (2.16) The light charged fermion masses arise via a universal seesaw, with the 3 × 3 mass matrices for Mu,d,e given in the approximation ( Y †
+
+> 15
+
+κRM −115 ) ≪ 1 and ( Y †
+
+> 10
+
+κRM −110 ) ≪ 1 by 
+
+Mu ≃ − 
+
+
+
+Y15 M −115 Y †
+
+> 15
+
+
+
+κLκR, (2.17) 
+
+Md ≃ − 
+
+
+
+Y10 M −110 Y †
+
+> 10
+
+
+
+κLκR, (2.18) 
+
+Me ≃ − 2
+
+
+
+Y10 M −110 Y †
+
+> 10
+
+
+
+κLκR . (2.19) This approximation ( Y †
+
+> 15
+
+κRM −115 ) ≪ 1 and ( Y †
+
+> 10
+
+κRM −110 ) ≪ 1 may not be valid for the third family quarks and leptons, especially the top quark. We shall allow for the possibility that for the third family, ( Y15 κR)33 ≲ (M15 )33 as well as ( Y10 κR)33 ≲ (M10 )33 .Note that the charged lepton mass matrix Me of Eq. (2.19) and the down-type quark mass matrix Md of Eq. (2.18) are proportional, with the constant of proportionality being 2, within the validity of the approximation used. If the opposite limit is used instead, viz., (Y10 κR)33 ≪ (M10 )33 , the proportionality constant will become √2, rather than 2. This latter possibility is consistent with the mass ratio mτ /m b when the low energy values of the respective Yukawa couplings are extrapolated to a high energy scale of about 2 × 10 12 
+
+GeV, which is close to the scale at which Pati-Salam symmetry breaks down to the SM gauge symmetry, μPS ∼ 5.2 × 10 13 GeV. While the ratio yτ /y b ≃ √2 is consistent with observed mass ratios, the ratios yμ/y s and ye/y d are inconsistent with either √2 or 2, or any value in between. Radiative corrections proportional to the top-quark or bottom-quark Yukawa couplings can correct these wrong relations and make them compatible with observed values. This issue will be addressed in the next section, after the symmetry-breaking sector of the model is analyzed. Note that the determinants of Mu and Md are real, a feature that helps solve the strong CP problem via parity symmetry. We shall delegate the discussion of the neutral lepton sector and the generation of small neutrino masses in the model to Sec. 5, where we show that the light neutrinos obtain their masses only via one-loop radiative corrections. – 6 – 3 Higgs potential analysis 
+
+The most general Higgs potential of the model involving the {HL(2 , 1, 4) + HR(1 , 2, 4) }
+
+fields is given by 2
+
+V = −μ2
+
+> L
+
+Tr( H†
+
+> L
+
+HL) − μ2
+
+> R
+
+Tr( H†
+
+> R
+
+HR) + λ1
+
+n
+
+(Tr( H†
+
+> L
+
+HL)) 2 + (Tr( H†
+
+> R
+
+HR)) 2o
+
++ λ2
+
+n
+
+Tr( H†
+
+> L
+
+HLH†
+
+> L
+
+HL) + Tr( H†
+
+> R
+
+HRH†
+
+> R
+
+HR)
+
+o
+
++ λ3Tr( H†
+
+> L
+
+HL) Tr( H†
+
+> R
+
+HR)+ λ4Tr( H†
+
+> L
+
+HLH†
+
+> R
+
+HR) + λ5
+
+n
+
+Tr( HTL ˜H∗
+
+> L
+
+H† 
+
+> R
+
+˜HR) + Tr( HTR ˜H∗
+
+> R
+
+H† 
+
+> L
+
+˜HL)
+
+o
+
++
+
+n
+
+λ6 Hαa L Hβb L Hγc R Hδd R ϵαβγδ ϵab ϵcd + h .c.
+
+o
+
+. (3.1) Here we have imposed parity invariance, as defined in Eq. (2.9), which makes the quartic coupling λ5 real. We have allowed for the possibility that parity may be broken softly by the dimension-two terms of Eq. (3.1). Exact parity may be realized by setting μ2 
+
+> L
+
+= μ2 
+
+> R
+
+in Eq. (3.1), which we shall also consider. The complex coupling λ6 connects four different fields and therefore does not appear in the minimization conditions nor in the computation of the scalar spectrum. This term violates baryon number B, and will lead to dimension-nine B-violating operators that will lead to double nucleon decay, such as n → e+e+ν,which will be discussed in Sec. 7.2. The vacuum expectation values ⟨χνL⟩ = κL and ⟨χνR⟩ = κR can be determined by minimizing the potential of Eq. (3.1): 
+
+μ2 
+
+> L
+
+= 2( λ1 + λ2) κ2 
+
+> L
+
++ ( λ3 + λ4) κ2 
+
+> R
+
+, (3.2) 
+
+μ2 
+
+> R
+
+= 2( λ1 + λ2) κ2 
+
+> R
+
++ ( λ3 + λ4) κ2 
+
+> L
+
+. (3.3) The masses of the scalar bosons can be readily computed in this vacuum. Of the 32 real degrees of freedom contained in {HL(2 , 1, 4) + HR(1 , 2, 4) } fields, 12 are Goldstone degrees eaten up by the ( W ±
+
+> Lμ
+
+, W ±
+
+> Rμ
+
+, Z μ, Z ′
+
+> μ
+
+, X μ) gauge bosons that become massive. Here 
+
+Xμ(3 , 1, 23 ) is the leptoquark gauge boson of Pati-Salam theory. The χeL and χeR fields become longitudinal modes of W ± 
+
+> μ
+
+and W ± 
+
+> R
+
+. Writing χνL,R as 
+
+χνL = σL + ia L
+
+√2 + κL, χνR = σR + ia R
+
+√2 + κR (3.4) leads to aL and aR becoming the longitudinal modes of Zμ and Z′
+
+> μ
+
+. The Goldstone boson associated with the leptoquark Xμ is a linear combination of χuL and χuR, which mix with a mass matrix given by 
+
+M 2 
+
+> χuL,R
+
+= −λ4κ2 
+
+> R
+
+λ4κLκR
+
+λ4κLκR −λ4κ2
+
+> L
+
+!
+
+. (3.5) The linear combinations are defined as 
+
+χu 
+
+> 1
+
+= (κRχuL − κLχuR)
+
+q
+
+κ2 
+
+> L
+
++ κ2
+
+> R
+
+, χu 
+
+> 2
+
+= (κLχuL + κRχuR)
+
+q
+
+κ2 
+
+> L
+
++ κ2
+
+> R
+
+(3.6) 
+
+> 2For construction of a similar potential see Ref. [36].
+
+– 7 – have masses given by 
+
+M 2 
+
+> χu
+> 1
+
+= −λ4(κ2 
+
+> L
+
++ κ2
+
+> R
+
+), M 2 
+
+> χu
+> 2
+
+= 0 (3.7) with χu 
+
+> 2
+
+identified as the longitudinal mode of Xμ.An analogous mixing matrix arises in the ( χdL, χ dR) sector which is given by 
+
+M 2
+
+> χdL,R
+
+= −2λ2κ2 
+
+> L
+
+− λ4κ2 
+
+> R
+
+−2λ5κLκR
+
+−2λ5κLκR −2λ2κ2 
+
+> R
+
+− λ4κ2
+
+> L
+
+!
+
+. (3.8) The two mass eigenstates obtained by diagonalizing this matrix are physical, which we denote as χd
+
+> 1,2
+
+.The remaining spectrum consists of the mixed states arising from the neutral scalars (σL, σ R) with a mass matrix given by 
+
+M 2 
+
+> σL,R
+
+= 4( λ1 + λ2)κ2 
+
+> L
+
+2( λ3 + λ4)κLκR
+
+2( λ3 + λ4)κLκR 4( λ1 + λ2)κ2
+
+> R
+
+!
+
+. (3.9) The resulting two mass eigenstates are part of the spectrum, with the lighter one identified as the SM Higgs boson with a mass of 125 GeV. We should note that consistent symmetry breaking can be achieved with all squared masses of the scalars being positive for suitable values of the quartic coupling parameters. This Higgs spectrum will play a role in showing the consistency of the Yukawa sector by including one-loop radiative corrections, inducing small neutrino masses radiatively, and in the calculation of one-loop corrections to the strong CP parameter θ. We shall turn to addressing these issues in the subsequent sections. The gauge boson mass spectrum can be computed from the covariant derivatives of the scalar fields given as (Cf: Eq. (2.11)) 
+
+Lkinetic = Tr {(DμHL)†(DμHL)} + Tr {(DμHR)†(DμHR)} (3.10) where 
+
+DμHL = ∂μHL − ig 2L(⃗ TL.⃗W Lμ )HL − ig 4HL(⃗ λ.⃗G μ)T ,DμHR = ∂μHR − ig 2R(⃗ TR.⃗W Rμ )HR − ig 4HR(⃗ λ.⃗G μ)T . (3.11) Here ⃗ TL,R stand for the normalized SU (2) L,R generators, while ⃗ λ stands for the SU (4) c
+
+generators. (The matrix ⃗ λ.⃗G μ has the same form as Σ L of Eq. (2.5), but with O replaced by the gluon fields, N by G15  
+
+> μ
+
+, and U replaced by Xμ.) The masses of the charged gauge bosons are computed to be 
+
+M 2 
+
+> Wμ±
+> L
+
+= 12 g22Lκ2
+
+> L
+
+M 2 
+
+> Wμ±
+> R
+
+= 12 g22Rκ2
+
+> R
+
+M 2 
+
+> Xμ
+
+= 12 g24 (κ2 
+
+> L
+
++ κ2
+
+> R
+
+) . (3.12) Note that there is no tree-level mixing between W μ± 
+
+> L
+
+and W μ± 
+
+> R
+
+gauge bosons. – 8 – In the neutral gauge boson sector there is mixing between ZLμ and ZRμ with the mass matrix given by 
+
+M 2 
+
+> Z−Z′
+
+= 12
+
+
+
+(g2 
+
+> Y
+
++ g22L) κ2 
+
+> L
+
+g2
+
+> Y
+
+r g2 
+
+> Y+g22L
+> g22R−g2
+> Y
+
+κ2
+
+> L
+
+g2
+
+> Y
+
+r g2 
+
+> Y+g22L
+> g22R−g2
+> Y
+
+κ2
+
+> Lg4
+> Y
+> g22R−g2
+> Y
+
+κ2 
+
+> L
+
++ g42R
+
+> g22R−g2
+> Y
+
+κ2
+
+> R
+
+ . (3.13) Here, one should use the matching condition among the gauge couplings at the Pati-Salam scale as 1
+
+g2
+
+> Y
+
+= 1
+
+g22R
+
++ 23g24
+
+. (3.14) We have eliminated g4 in favor of gY and g2R in Eq. (3.13) using Eq. (3.14). With parity symmetry, we have g2R = g2L at the PS scale. The ZLμ and ZRμ fields, as well as the massless photon field Aμ, are defined in terms of the original gauge fields as 
+
+Aμ =
+
+√3g4g2RW 0 
+
+> μL
+
++ √3g4g2LW 0 
+
+> μR
+
++ √2g2Lg2RG15 
+
+> μ
+
+q
+
+2g22Lg22R + 3 g24 (g22L + g22R)
+
+, (3.15) 
+
+ZLμ = g2L(3 g24 + 2 g22R)W 0 
+
+> μL
+
+− 3g24 g2RW 0 
+
+> μR
+
+− √6g22Rg4G15 
+
+> μ
+
+q
+
+(3 g24 + 2 g22R)(2 g22Lg22R + 3 g24 (g22L + g22R)) 
+
+, (3.16) 
+
+ZRμ = −√2g2RW 0 
+
+> μR
+
++ √3g4G15 
+
+> μ
+
+q
+
+3g24 + 2 g22R
+
+. (3.17) Note that the ZLμ − ZRμ mixing angle is of order κ2
+
+> L
+
+/κ 2 
+
+> R
+
+≪ 1. The mass eigenstates arising from Eq. (3.13) will be denoted as Zμ and Z′
+
+> μ
+
+.The gauge bosons couple to the fermions charged under the corresponding gauge groups through their kinetic terms, 
+
+Lkin = i ψ L /Dψ L + i ψ R /Dψ R + i ΣL /DΣL + i ΩL /DΩL + i ΩR /DΩR, (3.18) where the covariant derivatives for the (2 , 1, 4) and (1 , 2, 4) multiplets were given in Eq. (3.11). For the remaining (1 , 1, 10) L,R and (1 , 1, 15) L fields, using the transformations in Eq. (2.11) and with the same notation for the SU(4) c generators as in Eq. (3.11), we have 
+
+DμΣL = ∂μΣL − ig 4
+
+⃗λ·⃗ Gμ, ΣL
+
+, (3.19) 
+
+DμΩL,R = ∂μΩL,R − ig 4⃗ λ·⃗ Gμ ΩL,R − ig 4ΩL,R 
+
+ ⃗ λ·⃗ Gμ
+
+T . (3.20) We can expand Eq. (3.18) to get the explicit couplings of Xμ to fermions in the gauge eigenbasis: 
+
+LXμ = g4
+
+√2
+
+h
+
+(uLγμνL + dLγμeL)Xμ + √2 DLγμELXμ + Sαβ L γμDLβ Xμα + L ↔ R+ 1
+
+√3 NLγμU cLXμ + 1
+
+√3 N cRγμURXμ + 1
+
+√2 (OL)αβ γμU cLα Xβμ + + 1
+
+√2 (OcR)αβ γμURα Xβμ
+
+i
+
++ h .c.
+
+(3.21) We will require these couplings in the subsequent sections to study neutrino mass generation and the solution to the strong CP problem. Interactions with other gauge bosons can be extracted similarly when needed. – 9 – 4 Realistic down-quark and charged-lepton masses 
+
+An important consistency check of the model is the generation of realistic quark and lepton masses with the particle content present in the model. The mass matrices Md and Me
+
+of Eq. (2.15) for the 6 × 6 down-type quarks and charged leptons involve the same two 3 × 3 sub-matrices, namely M10 and Y10 . This can lead to relations among the light fermion masses ( me)i and ( md)i that are potentially inconsistent with observations. This is apparent in the light 3 × 3 mass matrices Md and Me obtained by the seesaw formulas shown in Eqs. (2.18)-(2.19), which leads to the mass relations at the Pati-Salam scale 
+
+mτ = 2 mb, mμ = 2 ms, me = 2 md. These relations are incompatible with the values of the masses extrapolated to the parity restoration scale μP = 5 .2×10 13 GeV. In this section, we show how these relations can be corrected within the model without any modifications so as to be consistent with the observed fermion masses. In Fig. 1 we present the running masses as a function of energy scale μ extrapolated from low to high energies. Here the running mass is defined as mi(μ) = Yi(μ) v where Yi is the Yukawa couplings of fermion flavor i and v = 174 GeV. In obtaining this figure, we have used two-loop renormalization group (RG) equations for the running of the gauge couplings and the Yukawa couplings of the SM. As input at μ = mt(mt) = 163 .6 GeV, we have used the following running masses, based on the PDG fermion-mass averages [37] and the running-mass analysis of Ref. [38], with slight rounding for our numerical implementation: 
+
+mt(mt) = 163 .6 GeV , mc(mt) = 0 .620 GeV , mu(mt) = 1 .30 MeV ,mb(mt) = 2 .78 GeV , ms(mt) = 55 .0 MeV , md(mt) = 2 .70 MeV ,mτ (mt) = 1 .78 GeV , mμ(mt) = 105 .7 MeV , me(mt) = 0 .511 MeV . (4.1) In addition, we have used αY (MZ ) = 0 .017, α2(MZ ) = 0 .034, and α3(MZ ) = 0 .118 as input for the three gauge couplings of the SM in their two-loop RG evolution equations. We determine the scale of parity restoration, μP , from the condition that g2L(μP ) = g2R(μP ), aided by Eq. (3.14). We find μP = 5 .2 × 10 13 GeV as the parity restoration scale. We also list the numerical values of the running fermion masses at the parity restoration scale in Table 1. The lepton to quark mass ratios of the same generation are found to have values at μP given by 
+
+mτ
+
+mb
+
+= 1 .47 , mμ
+
+ms
+
+= 3 .97 , me
+
+md
+
+= 0 .39 (μ = 5 .2 × 10 13 GeV) . (4.2) Thus, a constant value of 2 for these ratios is implied by Eqs. (2.18)-(2.19) needs correction of order one. We now show that the mass ratios ( me)i/(md)i given in Eq. (4.2) can be consistently realized within the model once one-loop radiative corrections are included. We present two scenarios where realistic fermion masses are generated: the first where the corrections arise through the Yukawa couplings Y15 , and another where they arise through the coupling Y10 .
+
+4.1 Benchmark point with Y15 -induced radiative corrections 
+
+Radiative corrections to Md and Me proportional to the Yukawa coupling matrix Y15 from the up-type quark sector can be significant, as these would introduce a new flavor structure. – 10 – 4 7 10 13 16 10 -40.001 0.010 0.100 110 100    
+
+> log 10 (μ/GeV )
+> mf (μ)/  GeV
+> t
+> b
+> τ
+> c
+> μ
+> s
+> d
+> u
+> e
+
+Figure 1: Running masses of the quarks and leptons mf (μ) as a function of the renormalization scale μ. The dashed vertical line represents the parity–restoration scale 
+
+μP = 5 .2 × 10 13 GeV. The numerical values of the running masses at μP are listed in Table 1. 
+
+mf (μP ) [GeV] 
+
+mt 8.50 × 10 1
+
+mb 1.19 
+
+mτ 1.76 
+
+mc 2.89 × 10 −1
+
+mμ 1.04 × 10 −1
+
+ms 2.63 × 10 −2
+
+md 1.29 × 10 −3
+
+mu 6.06 × 10 −4
+
+me 5.05 × 10 −4
+
+Table 1 : Values of the running quark and lepton masses evaluated at the parity restoration scale μP = 5 .2 × 10 13 GeV. We present one-loop diagrams correcting the down-type quark and charged lepton masses through Y15 in Fig. 2 through the exchange of χdL,R leptoquarks. There are similar diagrams that correct the up-type quark masses through Y10 Yukawa couplings, but we shall ignore – 11 – them in this benchmark point by choosing all entries of |(Y10 )ij | ≪ 1. To evaluate the loop 
+
+Figure 2 : One–loop radiative corrections to the down–quark and charged–lepton masses induced by the Y15 coupling. The diagrams involve the exchange of χdL,R leptoquark scalars together with the neutral fermion NL, the color octet OL, and the up–type quarks and generate new flavor structures in Md and Me beyond the tree–level contribution. diagrams of Fig. 2 that contribute to Md and Me we work in a basis where M15 is diagonal and real, a choice that is most general, with the diagonal entries of M15 denoted as ( M15 )i.In addition, we assume that only those contributions to Md and Me that are proportional to ( M15 )3 are significant. This is a reasonable assumption since realistic top-quark mass generation requires ( M15 )3 to be not much larger than κR. In contrast, u and c-quark masses can be induced even with ( M15 )1,2 ≫ κR, implying that corrections to Md and 
+
+Me proportional to ( M15 )1,2 will be suppressed, which shall be elaborated below. We also adopt the seesaw approximation for the tree-level mass matrices as shown in Eqs. (2.17)-(2.19). Since the χdL − χdR mixing is small, of order κL/κ R (see Eq. (3.8)), we keep only the lowest order term in this mixing angle. The loop corrections to Md and Me arising from Fig. 2 are then found to be ∆Md ≃
+
+ 11 4
+
+ Y15 M15 Y †
+
+> 15
+
+16 π2 (2 λ5κLκR) F (M 215 3 , M 2
+
+> χd
+> 1
+
+, M 2
+
+> χd
+> 2
+
+)∆Me ≃ (3) Y15 M15 Y †
+
+> 15
+
+16 π2 (2 λ5κLκR) F (M 215 3 , M 2
+
+> χd
+> 1
+
+, M 2
+
+> χd
+> 2
+
+) . (4.3) These corrections should be added to the tree-level mass matrices Md and Me given in Eqs. (2.18)-(2.19). Here the symmetric function F (x, y, z ) is defined as 
+
+F (x, y, z ) = x log x
+
+(x − y)( x − z) + y log y
+
+(y − x)( y − z) + z log z
+
+(z − x)( z − y) . (4.4) In Eq. (4.3) the factors (11/4) and (3) are color factors, with the factor (11/4) for ∆ Md
+
+arising from the two diagrams with the exchange of N (which gives a factor of 1/12) and the color-octet O (which yields a factor of 8/3). To illustrate consistency of the down-type quark and charged lepton masses, including these radiative corrections, we observe that in the up-type quark sector, generation of the – 12 – top quark requires ( M15 )3 to be of the same order as ( Y15 )33 κR. This is because of the matching condition for the top quark Yukawa coupling, which is given by 
+
+Yt(μP ) = |(Y15 )33 |2 κR
+
+q
+
+|(M15 )3|2 + |(Y15 )33 |2 κ2
+
+> R
+
+, (4.5) where we have ignored the small mixing of the third family with the first two. Numerical evolution of the top quark Yukawa coupling of the SM yields Yt(μP ) ≃ 0.5, which implies that the ratio |(M15 )3|/|(Y15 )33 | cannot exceed a factor of 4 or so, so that the correct value of Yt(μP ) is reproduced while the coupling ( Y15 )33 remains perturbative. In contrast, the lighter up-quark and charm-quark masses allow the masses ( M15 )2 and ( M15 )1 to be much larger than κR. Consequently, in the correction terms for Md and Me given in Eq. (4.3) we may ignore the contributions that are proportional to ( M15 )1 and ( M15 )2. This is because for x ≫ y, z , the function F (x, y, z ) takes the form 
+
+F (x, y, z ) ≃
+
+y log 
+
+ xy
+
+
+
+− z log   xz
+
+
+
+x(y − z) , x ≫ y, z , (4.6) leading to a suppression of κR/(M15 )1 for the contribution arising from the diagram pro-portional to ( M15 )1 of Fig. 2, with a similar suppression for the ( M15 )2 contribution. We also note the approximation 
+
+F (x, y, z ) ≃ 1
+
+x
+
+
+
+log 
+
+ xy
+
+
+
+− 1
+
+
+
+, x ≫ y = z . (4.7) Keeping only the contributions proportional to ( M15 )3 in Eq. (4.3), we see that ∆ Md
+
+and ∆ Me are of rank-one. We can parametrize the radiatively corrected Md and Me as 
+
+Md =
+
+
+
+m11 m12 m13 
+
+m∗ 
+
+> 12
+
+m22 m23 
+
+m∗ 
+
+> 13
+
+m∗ 
+
+> 23
+
+m33 
+
+ + 11 5 m0
+
+
+
+|δ1|2 δ1δ∗ 
+
+> 2
+
+δ1δ∗
+
+> 3
+
+δ∗ 
+
+> 1
+
+δ2 |δ2|2 δ2δ∗
+
+> 3
+
+δ∗ 
+
+> 1
+
+δ3∗ δ∗ 
+
+> 2
+
+δ3 |δ3|2
+
+ ,Me = 2 
+
+
+
+m11 m12 m13 
+
+m∗ 
+
+> 12
+
+m22 m23 
+
+m∗ 
+
+> 13
+
+m∗ 
+
+> 23
+
+m33 
+
+ + 12 5 m0
+
+
+
+|δ1|2 δ1δ∗ 
+
+> 2
+
+δ1δ∗
+
+> 3
+
+δ∗ 
+
+> 1
+
+δ2 |δ2|2 δ2δ∗
+
+> 3
+
+δ∗ 
+
+> 1
+
+δ3∗ δ∗ 
+
+> 2
+
+δ3 |δ3|2
+
+ . (4.8) Here, the first matrices on the right-hand sides are the hermitian tree-level contributions, while the second ones are the loop corrections. We have defined δi and m0 as 
+
+δi = ( Y15 )i3,m0 =
+
+ 54
+
+ (M15 )3
+
+16 π2 (2 λ5κLκR) F (M 215 3 , M 2
+
+> χd
+> 1
+
+, M 2
+
+> χd
+> 2
+
+). (4.9) A benchmark scenario where simple analytic formulas can be obtained for fitting the masses is obtained by setting the off-diagonal elements of Me to zero by appropriate choice of the off-diagonal mij . The mass matrices of Eq. (4.17) take the form, for this benchmark – 13 – scenario, given as 
+
+Me =
+
+
+
+me
+
+mμ
+
+mτ
+
+ , Md =
+
+ 
+
+> me
+> 2
+
++ m0|δ1|2 m0δ1δ∗ 
+
+> 2
+
+m0δ1δ∗
+
+> 3
+
+m0δ∗ 
+
+> 1
+
+δ2 mμ 
+
+> 2
+
++ m0|δ2|2 m0δ2δ∗
+
+> 3
+
+m0δ∗ 
+
+> 1
+
+δ3 m0δ∗ 
+
+> 2
+
+δ3 mτ 
+
+> 2
+
++ m0|δ3|2
+
+ . (4.10) In this form, the charged lepton mass matrix is diagonal, and we can diagonalize Md using the approximation mτ , |δ3|2m0 ≫ mμ, |δ2|2m0 ≫ me, |δ1|2m0. We obtain for the down-type quark masses the relations 
+
+mb ≃ mτ
+
+2 + |δ3|2m0
+
+msmb ≃ mμmτ
+
+4 + 12 |δ2|2m0mτ + 12 |δ3|2m0mμ
+
+mdmsmb ≃ memμmτ
+
+8 + 14 |δ3|2m0memμ + 14 |δ2|2m0memτ + 14 |δ1|2m0mμmτ . (4.11) These relations can be solved for |δi|2m0 as: 
+
+|δ3|2m0 ≃
+
+
+
+mb − mτ
+
+2
+
+
+
+,
+
+|δ2|2m0 ≃ 2mb
+
+mτ
+
+
+
+ms − mμ
+
+2
+
+
+
+,
+
+|δ1|2m0 ≃ 4msmb
+
+mμmτ
+
+
+
+md − me
+
+2
+
+
+
+. (4.12) Now we use the values of the charged lepton masses and down-type quark masses from Table 1 to determine the required values of the radiative corrections |δi|2m0 from Eqs. (4.12). One should note that the mass parameters can take either positive or negative signs when applied to Eqs. (4.12). Since the left-hand sides of these equations should have the same signs, certain restrictions occur for the choice of the signs of ( md)i and ( me)i.A consistent choice results if all masses have positive signs, except for mμ and ms, which have negative signs. With these sign choices and the values of the masses given in Table 1, we obtain 
+
+|δ3|2m0 = 0 .313 GeV , |δ2|2m0 = 0 .035 GeV , |δ1|2m0 = 7 .09 × 10 −4 GeV . (4.13) Note that these corrections are of the same order as mb, m s, m d respectively. We have veri-fied that when these values are inserted into Eq. (4.10) and the resulting Md is diagonalized numerically, the eigenvalues are correctly reproduced within a percent or so accuracy. Now we turn to the realization of these corrections in terms of the model parameters given in Eq. (4.9). To explore this, we set the masses of χd 
+
+> 1
+
+and χd 
+
+> 2
+
+equal to κR, and (M15 )3 = 4 κR. Furthermore, if we set λ5 = 0 .125, we find that the required radiative corrections are reproduced when the Yukawa couplings take values (Y15 )33 = 1 .434 , (Y15 )23 = 0 .481 , (Y15 )13 = 0 .068 . (4.14) This is a consistent choice of parameters. We also note that the seesaw approximation used for the top quark mass is reasonable, since for this choice we have |(Y15 )33 /(M15 )3| = 0 .358 – 14 – along with Yt = 0 .514. Corrections to the top-quark seesaw is of order 12 |(Y15 )33 /(M15 )3|2 ≃
+
+0.064, which is not excessive. Since the Yukawa couplings suggested in Eq. (4.14) will lead to a contribution to charm-quark mass of order mc ∼ { (Y15 )23 }4 κLκR/({(Y15 )33 }2(M15 )2), we see that ( M15 )2/κ R ≥ 15 is needed. The contribution to the charm quark mass from the term |(Y15 )22 |2κLκR/(M15 )2 allows for ( M15 )2/κ R ∼ 600. Such a value is consistent with our assumption that contributions proportional to ( M15 )2 and ( M15 )1 to ∆ Md and ∆Me are negligible. The choice of the |δi|2m0 and the Yukawa couplings as given in Eqs. (4.13)-(4.14) leads to a quark mixing matrix arising from Md which is found to be (with all δi taken to be real) 
+
+Vd =
+
+
+
+0.991 0.132 −0.024 0.134 −0.987 0.083 0.013 0.086 0.996 
+
+ . (4.15) The CKM mixing matrix is given by VCKM = V † 
+
+> u
+
+Vd with the elements of Vu, the unitary matrix that diagonalizes Mu, completely free. We see that the elements of Vd have a hierarchy similar to the CKM matrix, and that realistic CKM angles can be reproduced with the suggested benchmark. 
+
+4.2 A second benchmark point with Y10 -induced radiative corrections 
+
+We now present a second benchmark scenario where the radiative corrections to Md and 
+
+Me are induced through the Y10 Yukawa coupling matrix. Here we ignore the contributions from the Y15 Yukawa coupling matrix, which is justified in the approximation ( M15 )i ≪ κR.Such a scheme is desirable since this choice makes the one-loop contributions to the strong CP parameter θ parametrically suppressed by the factor ( M15 )i/κ R.The Feynman diagrams that correct Md and Me in this scenario are shown in Fig. 3. In evaluating these diagrams, we assume, as in the previous benchmark point, that only terms proportional to ( M10 )3 are significant. The justification to this approximation is that (M10 )1 and ( M10 )2 can be much larger than ( M10 )3, in which case the terms proportional to ( M10 )1,2 will be suppressed by a factor κR/(M10 )1,2, while those proportional to ( M10 )3
+
+will have a milder suppression factor of κR/(M10 )3.Rather than evaluating all the diagrams of Fig. 3, we shall focus on Fig. 3 (b) and (h), which are mediated by χuL,R leptoquark scalars. This assumption will be justified a posteriori. In fact, we shall see that the relevant quartic coupling for Fig. 3 (b) and (h) is 
+
+λ4 ∼ 3, which is larger than g24 /2 ∼ 1/4 relevant to the Xμ gauge boson exchange diagrams by an order of magnitude. Similarly, we ignore the σL −σR exchange diagrams by assuming that the relevant quartic coupling there, ( λ3 + λ4), is smaller than λ4.As in the previous benchmark point, we keep only the contributions proportional to (M10 )3 in evaluating these leptoquark scalar-mediated diagrams. The one-loop corrections – 15 – to Md and Me are given by ∆Md ≃ (3) Y10 M10 Y †
+
+> 10
+
+16 π2 (2 λ4κLκR) F (M 210 3 , M 2 
+
+> χu
+> 1
+
+, M 2 
+
+> χu
+> 2
+
+)∆Me ≃ (5) Y10 M10 Y †
+
+> 10
+
+16 π2 (2 λ4κLκR) F (M 210 3 , M 2 
+
+> χu
+> 1
+
+, M 2 
+
+> χu
+> 2
+
+) (4.16) with the function F given in Eq. (4.4). Note that χu 
+
+> 2
+
+is the Goldstone boson absorbed by the leptoquark gauge boson Xμ and the mass of χu 
+
+> 1
+
+is given in Eq. (3.7). We note here that this equation has been utilized in arriving at Eqs. (4.16)-(4.16), where we have ignored the contributions proportional to g24 .The full mass matrices Md and Me can now be written down as 
+
+Md =
+
+
+
+m11 m12 m13 
+
+m∗ 
+
+> 12
+
+m22 m23 
+
+m∗ 
+
+> 13
+
+m∗ 
+
+> 23
+
+m33 
+
+ + 4 m0
+
+
+
+|δ1|2 δ1δ∗ 
+
+> 2
+
+δ1δ∗
+
+> 3
+
+δ∗ 
+
+> 1
+
+δ2 |δ2|2 δ2δ∗
+
+> 3
+
+δ∗ 
+
+> 1
+
+δ3 δ∗ 
+
+> 2
+
+δ3 |δ3|2
+
+ ,Me = 2 
+
+
+
+m11 m12 m13 
+
+m∗ 
+
+> 12
+
+m22 m23 
+
+m∗ 
+
+> 13
+
+m∗ 
+
+> 23
+
+m33 
+
+ + 6 m0
+
+
+
+|δ1|2 δ1δ∗ 
+
+> 2
+
+δ1δ∗
+
+> 3
+
+δ∗ 
+
+> 1
+
+δ2 |δ2|2 δ2δ∗
+
+> 3
+
+δ∗ 
+
+> 1
+
+δ3 δ∗ 
+
+> 2
+
+δ3 |δ3|2
+
+ . (4.17) Here, the first matrices on the right-hand sides are the hermitian tree-level contributions, while the second ones are the loop corrections. We have defined δi and m0 as 
+
+δi = ( Y10 )i3,m0 =
+
+ 12
+
+ (M10 )3
+
+16 π2 (2 λ4κLκR) F (M 210 3 , M 2 
+
+> χu
+> 1
+
+, M 2 
+
+> χu
+> 2
+
+). (4.18) As in the previous benchmark, we choose the off-diagonal mij terms to make the charged lepton mass matrix diagonal. The resulting mass matrices are identical to the ones given Eq. (4.10), but with the new identification of δi and m0 as in Eq. (4.18). Consequently Eq. (4.12) and Eq. (4.13) will follow. We choose the Yukawa couplings (Y10 )3i as in Eq. (4.14), namely, (Y10 )33 = 1 .434 , (Y10 )23 = 0 .481 , (Y10 )13 = 0 .068 . (4.19) Unlike in the previous benchmark, here we should also fit the diagonal tau lepton mass, which is given by 
+
+mτ ≃ 2 |(Y10 )33 |2κLκR
+
+(M10 )3
+
++ 6 m0|δ3|2 . (4.20) A good fit to all the fermion masses is obtained by choosing the following parameters: 
+
+λ4 = −3.14 , (M10 )3 = 219 κR, (4.21) which yields m0 = −0.152 GeV and mτ = 1 .76 GeV. Here we have used the mass relation 
+
+Mχu 
+
+> 1
+
+≃ √−λ4κR.To conclude this section, we have shown by two explicit constructions that the model can reproduce realistic quark and lepton masses once radiative corrections are included. – 16 – (a) (b) (c)       
+
+> (d) (e) (f)
+> (g) (h) (i)
+> (j) (k) (l)
+
+Figure 3 : One–loop radiative corrections to the down–quark and charged–lepton masses induced by the Y10 coupling. The diagrams involve the exchange of χuL,R leptoquark scalars, leptoquark and neutral gauge bosons together with the charged lepton, the color sextet, and the down–type quarks. 
+
+5 Radiative neutrino mass generation 
+
+In the neutral fermion sector the Majorana mass matrix spanning ( νL, ν cL, N L) resulting from the Yukawa interactions of Eq. (2.13) is given by 
+
+Mν =
+
+
+
+0 0 − 
+
+> √32
+
+Y ∗
+
+> 15
+
+κL
+
+0 0 − 
+
+> √32
+
+Y15 κR
+
+− 
+
+> √32
+
+Y †
+
+> 15
+
+κL − 
+
+> √32
+
+Y T
+
+> 15
+
+κR M15 
+
+ . (5.1) It is clear from Eq. (5.2) that three of the neutrinos remain massless at tree-level. Quantum corrections, arising through one-loop diagrams, will, however, generate nonzero entries in the zero blocks of Mν , leading to finite and calculable light neutrino masses. We now turn to the discussion of the induced light neutrino masses. Loop-induced corrections will populate the zero-blocks of Eq. (5.2) so that the full – 17 – (a) (b) (c) 
+
+(d) (e) 
+
+(f) (g) 
+
+(h) (i) 
+
+Figure 4 : Radiative neutrino mass generation through one-loop correction matrix becomes 
+
+Mν =
+
+
+
+mL mDν − 
+
+> √32
+
+Y ∗
+
+> 15
+
+κL
+
+(mDν )T mR − 
+
+> √32
+
+Y15 κR
+
+− 
+
+> √32
+
+Y †
+
+> 15
+
+κL − 
+
+> √32
+
+Y T
+
+> 15
+
+κR M15 
+
+ . (5.2) with mL,R = mTL,R . The light 3 × 3 neutrino mass matrix now becomes 
+
+M ℓν ≈ mL −
+
+
+
+mDν −√32 Y ∗
+
+> 15
+
+κL
+
+ 
+
+mR −√32 Y15 κR
+
+−√32 Y T
+
+> 15
+
+κR M15 
+
+ 
+
+> −1
+
+ (mDν )T
+
+−√32 Y †
+
+> 15
+
+κL
+
+ . (5.3) 
+
+≈ − κL
+
+κR
+
+
+
+mDν (Y T
+
+> 15
+
+)−1Y † 
+
+> 15
+
++ Y ∗ 
+
+> 15
+
+Y −115 (mDν )T 
+
++ κ2
+
+> L
+
+κ2
+
+> R
+
+
+
+Y ∗ 
+
+> 15
+
+Y −115 mR (Y T
+
+> 15
+
+)−1Y †
+
+> 15
+
+
+
++ mL.
+
+(5.4) – 18 – Eq. (5.4) is actually quite general. In going from Eq. (5.3) to Eq. (5.4), we have only assumed the hierarchy 
+
+M15 ≪ κR m−1 
+
+> R
+
+κR. (5.5) The loop-induced corrections mL, mR and mDν arise through the diagrams shown in Fig. 4. These diagrams can be evaluated to get 
+
+mL ≃ 34 Y †
+
+> 15
+
+M15 
+
+"
+
+332 π2
+
+M 2
+
+> ZL
+
+M 215 3 − M 2
+
+> ZL
+
+ln M 215 3
+
+M 2
+
+> ZL
+
+!
+
++ 132 π2
+
+M 2
+
+> σL
+
+M 215 3 − M 2
+
+> σL
+
+ln M 215 3
+
+M 2
+
+> σL
+
+!# 
+
+Y ∗
+
+> 15
+
+,
+
+(5.6) 
+
+mR ≃ 34 Y †
+
+> 15
+
+M15 
+
+"
+
+332 π2
+
+M 2
+
+> ZR
+
+M 215 3 − M 2
+
+> ZR
+
+ln M 215 3
+
+M 2
+
+> ZR
+
+!
+
++ 132 π2
+
+M 2
+
+> σR
+
+M 215 3 − M 2
+
+> σR
+
+ln M 215 3
+
+M 2
+
+> σR
+
+!# 
+
+Y ∗ 
+
+> 15
+
+,
+
+(5.7) 
+
+mDν = mDν (f + g) + mDν (h) + mDν (i) . (5.8) where we have defined, 
+
+mDν (f + g) ≃ 3Y †
+
+> 15
+
+M15 
+
+"
+
+3g24
+
+32 π2
+
+κLκR
+
+M 215 3 − M 2
+
+> X
+
+ln M 215 3
+
+M 2
+
+> X
+
+!
+
++ λ4κLκR
+
+16 π2 F (M 215 3 , M 2 
+
+> χu
+> 1
+
+, M 2 
+
+> X
+
+)
+
+#
+
+Y15 ,
+
+(5.9) 
+
+mDν (h) ≃ 3(2 λ5κLκR)16 π2 Y †
+
+> 10
+
+M10 Y10 F (M 210 3 , M 2
+
+> χd
+> 1
+
+, M 2
+
+> χd
+> 2
+
+) , (5.10) 
+
+mDν (i) ≃ 2( λ3 + λ4)κLκR
+
+16 π2 Y †
+
+> 15
+
+M15 Y15 F (M 215 3 , M 2 
+
+> σL
+
+, M 2
+
+> σdR
+
+). (5.11) The function F (x, y, z ) has been defined in Eq. (4.4). We have performed the loop cal-culations in ’t Hooft-Feynman gauge, following Refs. [39, 40] closely for self-energy dia-grams. In the process, we have used the couplings gZLνν =
+
+q
+
+g2 
+
+> Y
+
++ g22L/2 and gZRνRνR =
+
+g22R/(2 
+
+q
+
+g22R − g2 
+
+> Y
+
+) which follow from the kinetic terms in Eq. (3.18) together with the definitions of ZL,R in Eqs. (3.16)–(3.17). The approximate masses of ZL,R can be obtained from Eq. (3.13). The leptoquark gauge-boson coupling is specified in Eq. (3.21), with its mass defined in Eq. (3.12). Scalar couplings are obtained from the expanded Yukawa Lagrangian in Eq. (2.13), while the relevant scalar mass matrices are provided in Sec. 3. To get an order of magnitude estimate for the neutrino mass, we consider two bench-mark scenarios. One with M10 ∼ μP and another with M15 ∼ μP . In each case, one multiplet needs to be taken relatively light while the other lies around the PS scale and generates neutrino mass, as it is favored by the parity solution to the strong CP problem, which will be discussed in Sec. 6. 
+
+First Benchmark: In this scenario, we consider a case with heavy sextet and light octet fermions. With light octets, say M15 ∼ 10 5 GeV, only diagram 4(h) will generate neutrino mass of the right order; all the other corrections involving neutral leptons will be suppressed by a factor M15 /κ R. Using Eq. (5.10), we arrive at this benchmark: Input : λ5 = 3 , Y10 = 1 ,
+
+– 19 – M10 3 = 1 .5 × 10 15 GeV , Mχd 
+
+> 1
+
+= 5 × 10 12 GeV , Mχd 
+
+> 2
+
+= 7 × 10 12 GeV ,
+
+Output : mν ≈ 0.05 eV .
+
+Note that this benchmark prefers λ5 ∼ O (1) for generating the neutrino mass. The effec-tiveness of seesaw in the down-quark sector allowed us to take Y10 to be of order one (see Eq. (2.18)). 
+
+Second Benchmark: In this scenario, we consider a case with heavy octets and light sextets. Now with heavy octets, all diagrams involving heavy neutral leptons in Fig. 4 will generate neutrino mass of the right order. We focus on one of the diagrams, say Fig 4(i), and using Eq. (5.11), we obtain a benchmark given by: Input : (λ3 + λ4) = 1 .5, Y15 = 1 ,M15 3 = 5 × 10 13 GeV , MσL = 125 GeV , MσR = 7 × 10 13 GeV ,
+
+Output : mν ≈ 0.05 eV .
+
+We note that the benchmarks discussed above are presented to show that the observed neutrino mass scale can be produced properly. We did not attempt a detailed fit to the oscillation data here since the model has enough freedom to accommodate them. In par-ticular, the loop-induced matrix M ℓν in Eq. (5.4) depends on the flavor structures Y15 and 
+
+Y10 through the independent contributions shown in Eqs. (5.6)–(5.8). Since these Yukawa matrices involve sufficient independent parameters (which include phases), one can, in prin-ciple, adjust both the overall neutrino mass scale and the flavor structure to produce the measured mass-squared differences and mixing angles. We therefore expect realistic fits to neutrino oscillation data within this setup. 
+
+6 Parity solution to the strong CP problem 
+
+The QCD Lagrangian admits a CP-violating topological term, 
+
+LQCD  
+
+> θ
+
+= g2
+
+> s
+
+32 π2 θQCD Gaμν eGa μν , (6.1) where Gaμν the gluon field strength and eGa μν = 12 ϵμναβ Gaαβ . θQCD is unphysical by itself. In the presence of colored fermions, the physical strong CP phase receives contributions from the phases of all colored mass determinants after chiral rotations, and in our universal seesaw framework, it takes the form ¯θ = θQCD + ArgDet( MuMd) + 5 ArgDet MS + 3 ArgDet MO, (6.2) where Mu and Md are the 6 ×6 up- and down-type quark mass matrices of Eq. (2.15), while 
+
+MS and MO denote the bare mass matrices of the color–sextet and color–octet fermions defined in Eq. (2.16). Since parity is an exact symmetry in our setup, it will forbid the parity-violating term in Eq. (6.1) in the fundamental Lagrangian, allowing us to set θQCD = 0. And from Eq. (2.15) it follows that parity forces Det Mu and Det Md to be real and since MS , MO
+
+are hermitian, all arguments in Eq. (6.2) vanish and hence ¯θ = 0 at tree level. We now proceed to compute the loop-induced contributions to θ.– 20 – 6.1 Contributions to ¯θ at one loop 
+
+In this section, we compute the one-loop contributions to ¯θ in our model. We work in the weak (gauge) basis and follow the framework of Ref. [5]. As shown in Ref. [5] for universal left–right symmetric model, the one-loop corrections to ¯θ from neutral-scalars, σL,R and neutral-gauge bosons exchange ( W 0
+
+> μL
+
+, W 0
+
+> μR
+
+, G 15  
+
+> μ
+
+) vanish due to the seesaw structure to-gether with parity. The same conclusion holds for our setup, so we do not present those calculations here. Charged gauge bosons W ± 
+
+> μL
+
+and W ± 
+
+> μR
+
+also do not contribute at this order since they do not mix at the tree level. We instead focus on the new contributions coming from the quark–lepton symmetric structure, mediated by the vector leptoquark Xμ
+
+and the scalar leptoquarks χu,d L,R . We also take into account loop contributions arising from corrections to the masses of color octet and sextet fermions. In the basis defined in Eqs. (2.15)–(2.16), we can write the one-loop correction for each mass matrix Mi (i = u, d, S, O) as 
+
+M1L  
+
+> i
+
+≡ M i + δMi = Mi (1 + Σ i) , Σi = M−1 
+
+> i
+
+δMi . (6.3) Since the tree-level determinants are real, the one-loop strong-CP phase follows from Eq. (6.2): ¯θ(1) = Im Tr 
+
+h
+
+Σ(1)  
+
+> u
+
++ Σ (1)  
+
+> d
+
++ 5 Σ (1)  
+
+> S
+
++ 3 Σ (1) 
+
+> O
+
+i
+
+. (6.4) 
+
+6.1.1 Corrections to up- and down-quark mass matrices 
+
+First, we evaluate the corrections to the quark mass matrices using the 2 × 2 light–heavy block structure of Mu,d . For q = u, d we have Σ q = M−1 
+
+> q
+
+δMq, so that ¯θ(1) (u+d) = Im Tr M−1 
+
+> u
+
+δMu + M−1 
+
+> d
+
+δMd
+
+ . (6.5) Let us decompose the corrections to the mass matrix in the light/heavy basis as follows 
+
+δMq = δMqLL δMqLH 
+
+δMqHL δMqHH 
+
+!
+
+, (6.6) and using the inverse of Mq3, one finds for the down sector, ¯θ(1)  
+
+> d
+
+= Im Tr 
+
+
+
+− 1
+
+κLκR
+
+δMdLL (Y †
+
+> 10
+
+)−1 M10 Y −110 + 1
+
+κL
+
+δMdLH Y −110 + 1
+
+κR
+
+δMdHL (Y †
+
+> 10
+
+)−1
+
+
+
+,
+
+(6.7) where M10 denotes the heavy down-quark mass block. Note that δMdHH drops out from Eq. (6.7), so corrections to the heavy–heavy block do not contribute to ¯θ at one loop. The             
+
+> 3For the inverse of a 2 ×2 block matrix (assuming (2 ,2) block is non-singular), we can implement the following recipe [41]:
+> A B C D
+> !−1
+> =S−1−S−1BD −1
+> −D−1CS −1D−1+D−1CS −1BD −1
+> !
+> where the Schur complement S= ( A−BD −1C) of Dis invertible.
+
+– 21 – corresponding equation for the up-sector can be obtained from Eq. (6.7) by the replacement 
+
+Y10 → Y15 and M10 → M †
+
+> 15
+
+. Since we are treating the mass matrices as interaction vertices, the crosses in Figs. 5–8 represent the geometric sum over all possible mass insertions on the internal fermion line. In addition to the universal left-right symmetric scenario, quark-lepton symmetry also allows leptons, color sextets, and octets to run in the self-energy diagrams to correct the quark masses, which we now turn to. 
+
+Charged-fermion as propagator: Let us start with the contribution mediated through the charged-lepton line (see Figs. 5(d)–(f)). Following the definitions of the basis from Eq. (2.14), the re-summed tree-level propagator connecting right- to left-handed fields with momentum k can be written as 
+
+−L e, tree eff =  eR ER
+
+ M†
+
+> e
+
+k2 
+
+k2 − M eM†
+
+> e
+
+−1  eL
+
+EL
+
+
+
+, (6.8) where Me has been defined in Eq. (2.15). We write the 2 × 2 block decomposition as 
+
+
+
+MeM† 
+
+> e
+
+− k2−1
+
+= Pe(k2) Qe(k2)
+
+Q†
+
+> e
+
+(k2) Re(k2)
+
+!
+
+, with Pe(k2) = P † 
+
+> e
+
+(k2), R e(k2) = R†
+
+> e
+
+(k2).
+
+(6.9) Inserting Me into Eq. (6.9) and multiplying out 
+
+
+
+MeM† 
+
+> e
+
+− k2
+
+  
+
+MeM† 
+
+> e
+
+− k2
+
+−1
+
+= 1, we obtain the following relations, 
+
+
+
+2κ2 
+
+> R
+
+Y †
+
+> 10
+
+Y10 + M10 M † 
+
+> 10
+
+− k2
+
+Q†
+
+> e
+
+(k2) = −√2 κL M10 Y † 
+
+> 10
+
+Pe(k2), (6.10) 2κL Y10 Y † 
+
+> 10
+
+Pe(k2) + √2 Y10 M † 
+
+> 10
+
+Q†
+
+> e
+
+(k2) = 1
+
+κL
+
+
+
+1 + k2Pe(k2)
+
+
+
+, (6.11) 
+
+Qe(k2) = −√2κL He(k2) Y10 M † 
+
+> 10
+
+Re(k2), (6.12) with 
+
+He(k2) = 
+
+
+
+2κ2 
+
+> L
+
+Y10 Y † 
+
+> 10
+
+− k2−1
+
+= H† 
+
+> e
+
+(k2), (6.13) 
+
+Re(k2) = 
+
+h 
+
+2κ2 
+
+> R
+
+Y †
+
+> 10
+
+Y10 + M10 M † 
+
+> 10
+
+− k2
+
+− 2κ2
+
+> L
+
+M10 Y †
+
+> 10
+
+HeY10 M †
+
+> 10
+
+i−1
+
+= R†
+
+> e
+
+(k2). (6.14) Here, though M10 is Hermitian due to parity, we have kept its hermitian conjugate as M †
+
+> 10
+
+for generality. Using these identities, the interaction corresponding to the cross on the electron line can be read off by expanding Eq. (6.8): 
+
+−L e, tree eff = ER
+
+ k4
+
+√2κL
+
+Y −110 Qe(k2)
+
+
+
+EL + eR
+
+h√2k2 Y10 κR Re(k2)
+
+i
+
+EL
+
++ ER
+
+ k2
+
+√2κL
+
+Y −110 
+
+
+
+1 + k2Pe(k2)
+
+
+
+eL + eR
+
+h√2k2 Y10 κR Q†
+
+> e
+
+(k2)
+
+i
+
+eL + h .c. (6.15) which we use to read the associated fermion line correction in Figs. 5(d)–5(f). Since Mu,d 
+
+has the same seesaw structure as Me, we can use the same re-summation and block-decomposition formalism to read off the corrections from up- and down-type quark lines (see Fig 8 for example). – 22 – Neutral lepton as propagator: For the neutrino line correction (see Figs. 5(c) and 6(c)– 6(f)), we proceed similarly. Starting from the Majorana mass matrix in Eq. (5.1), we may equivalently use the corresponding 4-component mass term ( νL νcL NL) M′ 
+
+> ν
+
+(νcR νR N cR)T
+
+and perform the following small rotation in the ( νL, ν cL) plane that removes the νL–N
+
+mixing at O(κL/κ R), 
+
+U ≃ 1 −ρρ† 1
+
+!
+
+, ρ = κL
+
+κR
+
+Y15 (Y ∗
+
+> 15
+
+)−1, (6.16) and the N -coupling with νℓL = νL − ρ ν cL vanishes up to O(κ2
+
+> L
+
+/κ 2
+
+> R
+
+). The rotated states can be written as 
+
+νℓL = νL − ρ ν cL, νhL = νcL + ρ†νL. (6.17) Keeping terms up to O(κ2
+
+> L
+
+/κ 2
+
+> R
+
+), the tree-level neutral-lepton mass term gets reduced to a 2 × 2 block in the heavy-sector subspace: 
+
+Lνh 
+
+> mass
+
+=  νhL NL
+
+ Mνh
+
+ν chR 
+
+N cR
+
+
+
++ h.c. , (6.18) where we have defined 
+
+Mνh =
+
+
+
+0 −√32 κR Y ∗
+
+> 15
+
+−√32 κR Y † 
+
+> 15
+
+M †
+
+> 15
+
+ + O(κ2
+
+> L
+
+/κ 2
+
+> R
+
+). (6.19) and νℓ remains massless at tree level. Though Mνh has a similar structure as other mass matrices in Eq. (2.15), there is an important difference. The (1,2) block and the (2,1) block are transposes of each other, unlike in Eq. (2.15), where the Yukawa matrices are hermitian conjugates. Consequently, for the neutrino contributions to θ, we should also define the analogous 2 × 2 block decomposition for the projection operator and write down the identities carefully. We define 
+
+ Mνh M† 
+
+> νh
+
+− k2−1 = Pν (k2) Qν (k2)
+
+Q† 
+
+> ν
+
+(k2) Rν (k2)
+
+!
+
+, with Pν (k2) = P † 
+
+> ν
+
+(k2), R ν (k2) = R† 
+
+> ν
+
+(k2).
+
+(6.20) and adopt the same recipe as before to get the following relations: 
+
+ 34 κ2 
+
+> R
+
+Y †
+
+> 15
+
+Y15 + M †
+
+> 15
+
+M15 k2
+
+Q† 
+
+> ν
+
+(k2) = 
+
+√32 κR M † 
+
+> 15
+
+Y T 
+
+> 15
+
+Pν (k2), (6.21) 34 κR Y ∗
+
+> 15
+
+Y T 
+
+> 15
+
+Pν (k2) −√32 Y ∗
+
+> 15
+
+M15 Q† 
+
+> ν
+
+(k2) = 1
+
+κR
+
+
+
+1 + k2Pν (k2)
+
+
+
+, (6.22) 
+
+Qν (k2) = 
+
+√32 κR Hν (k2) Y ∗
+
+> 15
+
+M15 Rν (k2). (6.23) with 
+
+Hν (k2) = 
+
+ 34 κ2 
+
+> R
+
+Y ∗
+
+> 15
+
+Y T 
+
+> 15
+
+− k2−1
+
+= H† 
+
+> ν
+
+(k2), (6.24) 
+
+Rν (k2) = 
+
+" 34 κ2 
+
+> R
+
+Y †
+
+> 15
+
+Y15 + M †
+
+> 15
+
+M15 − k2
+
+− 34 κ2 
+
+> R
+
+M †
+
+> 15
+
+Y T
+
+> 15
+
+Hν Y ∗
+
+> 15
+
+M15 
+
+#−1
+
+= R† 
+
+> ν
+
+(k2). (6.25) – 23 – (a) (b) (c) 
+
+(d) (e) (f) 
+
+Figure 5 : One-loop radiative diagrams contributions to the down-quark mass matrix through leptoquark gauge bosons and leptoquark scalars. Now, we can read the interaction terms corresponding to the cross on the neutrino line from the effective Lagrangian given by 
+
+−L ν, tree eff = N cR
+
+
+
+− 2k4
+
+√3κR
+
+(Y ∗
+
+> 15
+
+)−1 Qν (k2)
+
+
+
+NL + νchR 
+
+"
+
+−√3k2
+
+2 Y15 κR Rν (k2)
+
+#
+
+NL
+
++ N cR
+
+
+
+− 2k2
+
+√3κR
+
+(Y ∗
+
+> 15
+
+)−1
+
+1 + k2Pν (k2)
+
+
+
+νhL + νchR 
+
+"
+
+−√3k2
+
+2 Y15 κR Q† 
+
+> ν
+
+(k2)
+
+#
+
+νhL + h .c.
+
+(6.26) We use this equation to read the associated neutral lepton line correction in Fig. 5(c) and Fig. 6(c)–(f). 
+
+Octet and sextet as propagator: Since the color octets, OαLβ , do not mix with other fields, the insertion on the internal octet line involves only the Hermitian bare mass matrix 
+
+M15 . Similar comment holds for the sextets, Sαβ , with mass M10 .
+
+Null contributions to ¯θ at one-loop: Now we are ready to evaluate the one-loop contributions to ¯θ. Among the diagrams in Fig. 5 and Fig. 6, only Fig. 5(c) can generate a nonzero contribution; all others give vanishing contributions to θ, as we shall show below. Let’s start with Fig. 5(a). The corresponding correction to the down-quark light–light block is 
+
+δMdLL =
+
+Z d4k
+
+(2 π)4
+
+Y15 M15 Y † 
+
+> 15
+
+(2 λ5 κLκR)
+
+ k2 − M 215 
+
+  (p − k)2 − M 2
+
+> χdR
+
+  (p − k)2 − M 2
+
+> χdL
+
+ , (6.27) where the relevant vertices follow from Eqs. (2.13) and (3.1). From Eq. (6.7), we see that this diagram contributes to ¯θd as follows: Im Tr 
+
+−2λ5
+
+Z d4k
+
+(2 π)4
+
+Y15 M15 Y †
+
+> 15
+
+ k2 − M 215 
+
+  (p − k)2 − M 2
+
+> χdR
+
+  (p − k)2 − M 2
+
+> χdL
+
+ (Y †
+
+> 10
+
+)−1 M10 Y −110 
+
+ .
+
+(6.28) – 24 – We don’t need to do the explicit loop integration here. We can already see that the quantity inside the trace is a product of two Hermitian matrices, 
+
+Y15 M15 Y † 
+
+> 15
+
+and (Y †
+
+> 10
+
+)−1 M10 Y −110 , (6.29) and therefore its trace is real. Hence this contribution to ¯θ from Fig. 5(a) vanishes. We follow the same techniques to check the one-loop contributions from other diagrams. Fig. 5(b) has the similar flavor structure, Im Tr 
+
+h 
+
+Y10 M10 Y †
+
+> 10
+
+  
+
+(Y †
+
+> 10
+
+)−1 M10 Y −110 
+
+i 
+
+= 0 . (6.30) Fig. 5(d) involves the leptoquark gauge boson Xμ. We evaluate this contribution in the unitary gauge. In that case, we don’t need to compute the would-be Goldstone boson contribution (but, in a renormalizable gauge, it would carry the same flavor structure as the corresponding gauge boson interaction). Now let’s use the charged-lepton mass insertion from Eq. (6.15) and pick the corresponding light–light down-type block contribution to ¯θ
+
+from Eq. (6.7). The relevant flavor structure can be written as Im Tr 
+
+h
+
+QeY †
+
+> 10
+
+(Y †
+
+> 10
+
+)−1 M10 Y −110 
+
+i
+
+= −√2κL Im Tr 
+
+
+
+2κ2 
+
+> L
+
+Y10 Y † 
+
+> 10
+
+− k2−1 
+
+M † 
+
+> 10
+
+Re(k2)M10 
+
+
+
+,
+
+(6.31) which is also the trace of a product of two Hermitian matrices, and hence zero. We have used the relevant definitions from Eqs. (6.12)-(6.14) to reach this conclusion. Fig. 5(e) contributes to the δM dHL block in Eq. (6.7). Using the insertion in Eq. (6.15), the flavor structure entering ¯θ reduces to Im Tr 
+
+h
+
+R†
+
+> e
+
+Y †
+
+> 10
+
+(Y †
+
+> 10
+
+)−1i
+
+= 0 , (6.32) where the fact Re = R† 
+
+> e
+
+has been used. Fig. 5(f) contributes to the δM dLH block leading to Im Tr 
+
+h 1 + k2Pe(k2)†(Y −110 )†Y −110 
+
+i
+
+= 0 . (6.33) With the fact that Pe = P † 
+
+> e
+
+, it’s the imaginary trace of a product of two hermitian matrices, which vanishes. Now let’s move to the up-type quark sector, Fig. 6(a) and (b), representing the up-quark mass correction through the octet and sextet, respectively, which give null contribu-tions to ¯θ, similar to the down sector. Explicitly, for Fig. 6(a), we get Im Tr 
+
+h 
+
+Y15 M15 Y †
+
+> 15
+
+  
+
+(Y †
+
+> 15
+
+)−1 M † 
+
+> 15
+
+Y −115 
+
+i 
+
+= 0 , (6.34) where ( Y †
+
+> 15
+
+)−1 M † 
+
+> 15
+
+Y −115 appears from the δMuLL insertion (the up-sector analogue of Eq. (6.7)). Similarly, Fig. 6(b) also gives no contribution, Im Tr 
+
+h 
+
+Y † 
+
+> 10
+
+M † 
+
+> 10
+
+Y10 
+
+  
+
+(Y †
+
+> 15
+
+)−1 M † 
+
+> 15
+
+Y −115 
+
+i 
+
+= 0 . (6.35) – 25 – The flavor structure of Fig. 6(c) takes the form Im Tr 
+
+h
+
+Y15 (Y ∗
+
+> 15
+
+)−1 Qν (k2) Y †
+
+> 15
+
+
+
+(Y †
+
+> 15
+
+)−1 M † 
+
+> 15
+
+Y −115 
+
+i 
+
+, (6.36) which is actually zero. This can be understood after recasting this structure using Eqs. (6.23)– (6.24) as Im Tr 
+
+ 34 κ2 
+
+> R
+
+Y T
+
+> 15
+
+Y ∗ 
+
+> 15
+
+− k2−1
+
+M † 
+
+> 15
+
+Rν (k2) M †
+
+> 15
+
+
+
+= 0 , (6.37) since Rν (k2) is Hermitian and   34 κ2 
+
+> R
+
+Y T
+
+> 15
+
+Y ∗ 
+
+> 15
+
+− k2−1 is also Hermitian, implying that the trace is real. For Figs. 6(d)–6(f), we read off the leptoquark gauge couplings in the rotated basis using Eqs. (3.21) and (6.17). The flavor structure of Fig. 6(d) is Im Tr 
+
+h
+
+ρ Q ν (k2) Y †
+
+> 15
+
+
+
+(Y †
+
+> 15
+
+)−1 M † 
+
+> 15
+
+Y −115 
+
+i 
+
+. (6.38) Using Eq. (6.16) for the definition of ρ together with Eqs. (6.23)–(6.24), this becomes Im Tr 
+
+ κL
+
+κR
+
+ 34 κ2 
+
+> R
+
+Y T
+
+> 15
+
+Y ∗ 
+
+> 15
+
+− k2−1
+
+M † 
+
+> 15
+
+Rν (k2) M †
+
+> 15
+
+
+
+= 0 , (6.39) which follows by the same logic as Eq. (6.37). For Fig. 6(e), the correction to the δM uHL block provides a vanishing contribution to ¯θ, because its flavor structure reduces to Im Tr 
+
+h
+
+R† 
+
+> ν
+
+(k2) Y †
+
+> 15
+
+(Y †
+
+> 15
+
+)−1i
+
+= 0 , (6.40) since Rν (k2) is Hermitian. The remaining Fig. 6(f) contributes to the δM uLH block with Im Tr 
+
+h
+
+ρ
+
+
+
+1 + k2P † 
+
+> ν
+
+(k2)
+
+
+
+(Y T
+
+> 15
+
+)−1Y −115 
+
+i
+
+= Im Tr 
+
+h
+
+(Y ∗
+
+> 15
+
+)−1
+
+1 + k2P † 
+
+> ν
+
+(k2)
+
+
+
+(Y T
+
+> 15
+
+)−1i
+
+= 0 ,
+
+(6.41) where we used Eq. (6.16) for ρ and Pν (k2) = P † 
+
+> ν
+
+(k2). Thus, we have explicitly shown that, apart from the neutral-lepton diagram correcting the down-quark mass (Fig. 5(c)), all other new one-loop contributions to ¯θ correcting down- and up-quark mass vanish individually within our setup (at least up to O(κ2
+
+> L
+
+/κ 2
+
+> R
+
+) for up-quark). 
+
+Estimation of ¯θ arising from Fig. 5(c): In this part, we present approximate one-loop estimations for the induced ¯θ. Unlike the diagrams discussed above, whose individual contributions vanish, the neutral-lepton contribution correcting the down quark mass in Fig. 5(c) is CP-violating at one loop in general. We organize the discussion as follows: first, we show that the relevant trace is no longer taken over a completely Hermitian flavor structure. We then write an approximate expression for ¯θ at leading order to show the parametric dependence, and determine what is needed for a suppressed ¯θ.The general flavor structure of Fig. 5(c) reads as Im Tr 
+
+h
+
+Y15 ξ Y †
+
+> 15
+
+
+
+(Y †
+
+> 10
+
+)−1 M10 Y −110 
+
+i 
+
+. (6.42) – 26 – (a) (b) (c) 
+
+(d) (e) (f) 
+
+Figure 6 : One-loop radiative diagrams contributing to the up-quark mass matrix through leptoquark gauge bosons and leptoquark scalars. where we defined ξ = ( Y ∗
+
+> 15
+
+)−1 Qν (k2). If ξ were Hermitian, the quantity inside the trace in Eq. (6.42) would be a product of two Hermitian matrices and therefore would not contribute to ¯θ. To check this, we can write ξ explicitly in terms of original matrices using Eqs. (6.23)–(6.25): 
+
+ξ =
+
+√32 κR k4 (M †
+
+> 15
+
+)−1 − k2M † 
+
+> 15
+
++ 916 κ4 Y †
+
+> 15
+
+Y15 M −115 Y T
+
+> 15
+
+Y ∗
+
+> 15
+
+− 34 k2κ2
+
+> R
+
+
+
+M −115 Y T
+
+> 15
+
+Y ∗ 
+
+> 15
+
++ Y †
+
+> 15
+
+Y15 M −115 
+
+!−1
+
+. (6.43) We can see that ξ is not Hermitian in general unless we impose some additional flavor structures. For example, if Y †
+
+> 15
+
+Y15 is real for all elements, then ξ becomes Hermitian. The reason Eq. (6.42) is not Hermitian in general is that the down-sector mass receives a correction from neutral leptons whose mass matrix is complex symmetric, and the resulting flavor structure involves two independent Yukawa couplings, Y15 and Y10 . We will discuss two scenarios where this contribution can be suppressed with O(1) CP-violating phases. 
+
+First Benchmark: In this scenario, we consider the case with light octets with M15 ≪ κR.Then the sextets must lie near the PS scale to generate the fermion masses correctly, with the quartic coupling λ5 = O(1). Using Eq. (6.7) for the definition of ¯θ, we can make a rough estimation assuming the combination of Yukawas and CP-violating phases is O(1): ¯θ ∼ λ5
+
+96 π2
+
+mt
+
+mb
+
+M15 κR F (M 215 3 , M 2
+
+> χd
+> 1
+
+, M 2
+
+> χd
+> 2
+
+), (6.44) where F (x, y, z ) is defined in Eq. (4.4). For a numerical estimation, we consider a bench-mark: Input : λ5 = 3 , mt
+
+mb
+
+= 10 2, M15 = 10 5 GeV ,M15 3 = 10 14 GeV , κR = 5 ×10 13 GeV , Mχd 
+
+> 1
+
+= 8 ×10 13 GeV , Mχd 
+
+> 2
+
+= 7 ×10 13 GeV ,
+
+– 27 – Output : ¯θ ≈ 10 −10 .
+
+Note that ¯θ < 10 −10 in this benchmark requires a low-lying octet, M15 ≲ 10 5 GeV. When 
+
+M15 ≪ κR, the induced θ has a suppression of M15 /κ R, which admits a large range of M15 .The proportionality to M15 is expected because it is the mass insertion on the neutral-lepton line. With some flavor alignment or small CP phases, it may be allowed to have larger values of M15 .
+
+Second Benchmark: In this benchmark, we consider a low mass sextet with M10 ≪ κR.In this case, the octet mass should lie near the PS scale to generate realistic fermion masses. With a light sextet, the seesaw suppression in the down sector is no longer effective, so the bottom Yukawa can give an O(10 4) enhancement to ¯θ. Assuming the combination of Yukawas and CP-violating phases is O(1), we can estimate ¯θ as ¯θ ∼ λ5
+
+96 π2 Y15 M15 3 Y †
+
+> 15
+
+
+
+(Y †
+
+> 10
+
+)−1 M10 Y −110 
+
+
+
+F (M 215 3 , M 2
+
+> χd
+> 1
+
+, M 2
+
+> χd
+> 2
+
+), (6.45) where F (x, y, z ) is defined in Eq. (4.4). Now we consider a benchmark, keeping only the third generation: Input : λ5 = 0 .1, Y15 = 1 , Y10 = 10 −2, M15 3 = 10 13 GeV ,M10 = 10 5 GeV , Mχd 
+
+> 1
+
+= 8 × 10 13 GeV , Mχd 
+
+> 2
+
+= 7 × 10 13 GeV ,
+
+Output : ¯θ ≈ 10 −10 .
+
+Note that ¯θ < 10 −10 in this benchmark requires a low-lying sextet, M10 ≲ 10 5 GeV. In this case θ is suppressed by a factor M10 /κ R ≪ 1. Of course, some flavor alignment or small CP phases can allow for larger values of M10 . Unlike the first benchmark, here we can also take λ5 to be smaller. Since M15 lies at the PS scale, realistic fermion masses can be generated without relying on the λ5 induced contributions. Regarding the smallness of λ5, we should check its size induced radiatively from the box diagram involving heavy states. A rough estimate for λ5 is given by 
+
+Figure 7: Box diagram that radiatively induces the effective λ5 quartic coupling 
+
+ HTL ˜H∗
+
+> L
+
+  H† 
+
+> R
+
+˜HR
+
+ after integrating out the heavy states. 
+
+λ5 ∼ 316 π2 Tr 
+
+
+
+Y †
+
+> 10
+
+Y10 Y †
+
+> 15
+
+Y15 
+
+
+
+ln M 215 3
+
+M 2Pl 
+
+!
+
+∼ 4.4 × 10 −5, (6.46) – 28 – where we have used Y10 ∼ 10 −2 (effective bottom Yukawa), Y15 ∼ 1 (top Yukawa), M15 3 ∼
+
+10 14 GeV, and MPl ∼ 10 19 GeV. We can summarize the results obtained so far as follows. To obtain realistic fermion masses, including radiative corrections, at least one of M15 (octet) or M10 (sextet) must lie near the PS scale. However, whichever multiplet dominates in generating fermion mass, the other one is then preferred to be relatively light, typically ≲ O(10 5) GeV, to suppress the induced contribution to ¯θ from the neutral lepton correction to the down-quark mass (see Fig. 5(c)). 
+
+6.1.2 Corrections to the sextet and octet fermion mass matrices 
+
+Here, we evaluate the ¯θ arising from the corrections to the sextet and octet mass matrices: ¯θ(1) (S+O) = Im Tr 5 M−1 
+
+> S
+
+δMS + 3 M−1 
+
+> O
+
+δMO
+
+ , (6.47) where the bare masses MS and MO have been defined in Eq. (2.16). The relevant one-loop diagrams are shown in Fig. 8. We will focus on the sextet-mass corrections shown in Fig. 8(a)–(c). The corresponding octet-mass corrections have the same flavor structure, so they follow directly from the sextet discussion, and we will not repeat them. Let’s consider Fig. 8(a) first. The associated flavor structure is 5 k2 κR Im Tr M −110 ζa
+
+ . (6.48) where ζa =
+
+
+
+Y † 
+
+> 10
+
+Y10 R† 
+
+> d
+
+M10 Y † 
+
+> 10
+
+Hd Y10 
+
+
+
+. We have read the insertion on the down-type fermion line in direct analogy with the electron-type correction in Eq. (6.15). Using iden-tities similar to the down-type quarks as in Eqs. (6.23)–(6.25), ζa can be expressed as 
+
+ζa = −κL
+
+
+
+k4Y −110 (Y †
+
+> 10
+
+)−1M −110 Y −110 (Y †
+
+> 10
+
+)−1 − k2Y −110 (Y †
+
+> 10
+
+)−1M †
+
+> 10
+
+Y −110 (Y †
+
+> 10
+
+)−1 + κ2
+
+> L
+
+κ2
+
+> R
+
+M −110 
+
+−k2 
+
+κ2
+
+> L
+
+M −110 Y −110 (Y †
+
+> 10
+
+)−1 + κ2
+
+> R
+
+Y −110 (Y †
+
+> 10
+
+)−1M −110 
+
+ −1
+
+(6.49) If ζa were Hermitian, then Tr  M −110 ζa
+
+ would be real and Eq. (6.48) would not contribute to ¯θ. But we see the non-Hermiticity appearing in the last term of Eq. (6.49). It is useful to estimate the size of ¯θ using Eq. (6.47) to get an idea of the numeric: ¯θ1 
+
+> S(a)
+
+∼ 5λ4
+
+8π2 Y †
+
+> 10
+
+κ2
+
+> L
+
+M 210 3 − M 2
+
+> χu
+> 1
+
+ln M 210 3
+
+M 2
+
+> χu
+> 1
+
+!
+
+− κ2
+
+> L
+
+M 210 3 − M 2
+
+> X
+
+ln M 210 3
+
+M 2
+
+> X
+
+!! 
+
+Y10 . (6.50) We see a huge suppression of O(κ2
+
+> L
+
+/κ 2
+
+> R
+
+) for ¯θ which is well below the experimental limit. Now let’s move to Fig. 8(b). We take the same approach. We first check the Hermiticity of the flavor structure, 5 k2 κR Im Tr 
+
+h
+
+M −110 Y †
+
+> 10
+
+ζbY10 
+
+i
+
+. (6.51) where we can explicitly write down ζb as 
+
+ζb = −κL
+
+
+
+k4(Y †
+
+> 15
+
+)−1(M †
+
+> 15
+
+)−1Y −115 − k2(Y †
+
+> 15
+
+)−1M15 Y −115 + κ2
+
+> L
+
+κ2
+
+> R
+
+Y15 (M †
+
+> 15
+
+)−1Y †
+
+> 15
+
+−k2 
+
+κ2
+
+> L
+
+Y15 (M †
+
+> 15
+
+)−1Y −115 + κ2
+
+> R
+
+(Y †
+
+> 15
+
+)−1(M †
+
+> 15
+
+)−1Y †
+
+> 15
+
+ −1
+
+. (6.52) – 29 – (a) (b) (c) 
+
+(d) (e) (f) 
+
+Figure 8 : One-loop radiative diagrams contributing to the sextet and octet mass matrix through leptoquark gauge bosons and leptoquark scalars. And again, we observe a similar pattern of non-Hermiticity. We proceed to get a rough estimation for ¯θ, given as ¯θ1 
+
+> S(b)
+
+∼ 5λ5κ2
+
+> L
+
+8π2M10 
+
+Y †
+
+> 10
+
+M15 
+
+M 215 3 − M 2
+
+> χd
+> 1
+
+ln M 215 3
+
+M 2
+
+> χd
+> 1
+
+!
+
+− M15 
+
+M 215 3 − M 2
+
+> χd
+> 2
+
+ln M 215 3
+
+M 2
+
+> χd
+> 2
+
+!! 
+
+Y10 . (6.53) which is also highly suppressed. Now, we move to the gauge boson contribution in Fig. 8(c). The relevant flavor struc-ture is 5 k4
+
+κL
+
+Im Tr M −110 ζc
+
+ . (6.54) where ζc can be written explicitly as the following: 
+
+ζc = −κL
+
+
+
+k4M −110 − k2M † 
+
+> 10
+
++ κ2
+
+> L
+
+κ2 
+
+> R
+
+Y †
+
+> 10
+
+Y10 M −110 Y †
+
+> 10
+
+Y10 
+
+− k2
+
+κ2 
+
+> L
+
+Y †
+
+> 10
+
+Y10 M −110 + κ2 
+
+> R
+
+M −110 Y †
+
+> 10
+
+Y10 
+
+ −1
+
+.
+
+(6.55) One comment about diagram 8(c). The sextet can receive radiative corrections only through insertions of M10 , or through insertions involving M10 together with κR before electroweak symmetry breaking ( κL = 0). However, from Eq. (6.55) we see that setting 
+
+κL = 0 does not induce any CP violation through this diagram, in this limit 1
+
+κL
+
+Tr ζc M −110 
+
+
+
+is real. So, CP violation can arise only after ⟨χνL⟩̸ = 0, i.e. when κL is turned on. This is why we have shown the leading representative diagram involving the insertions of κL in Fig. 8(c). A rough estimate for ¯θ from Fig. 8(c) can be written as ¯θ 1 
+
+> S(c)
+
+∼ 15 g24
+
+32 π2 Y †
+
+> 10
+
+κ2
+
+> L
+
+M 210 3 − M 2
+
+> X
+
+ln M 210 3
+
+M 2
+
+> X
+
+!
+
+Y10 , (6.56) where the expected suppression O(κ2
+
+> L
+
+/κ 2
+
+> R
+
+) is manifest. – 30 – The same analysis holds for the octet-mass corrections. One can simply replace Y10 →
+
+Y15 and M10 → M †
+
+> 15
+
+, and use the corresponding couplings from Eqs. (2.13) and (3.21). The takeaway message is the same: all diagrams contribute to ¯θ with an overall O(κ2
+
+> L
+
+/κ 2
+
+> R
+
+)suppression. We conclude this section by noting that the new one-loop diagrams contributing to 
+
+θ in the PS model are either suppressed by a factor of ( κL/κ R)2 ∼ 10 −23 , or by a factor (M10 /κ R) or ( M15 /κ R). By choosing either M10 or M15 to be well below the PS breaking scale of 5 × 10 13 GeV, the model provides an excellent solution to the strong CP problem based on parity symmetry. 
+
+7 Other aspects of the model 
+
+In this section, we comment on some other aspects of the model. 
+
+7.1 Exact parity symmetric version 
+
+In the Higgs potential of Eq. (3.1), we allowed for the soft breaking of parity symmetry by the dimension-two scalar mass terms with μ2
+
+> L
+
+̸ = μ2
+
+> R
+
+. A fully realistic model can arise if we set μ2 
+
+> L
+
+= μ2
+
+> R
+
+, in which case parity is only spontaneously broken [6]. This scenario requires the parity symmetry breaking scale to coincide with the scale μc where the SM Higgs quartic coupling becomes zero when extrapolated to high energies. This occurs around 
+
+μc ∼ 10 11 GeV. As emphasized in Ref. [6], such a version of the model has the attractive feature that, despite having multiple scales and Higgs bosons, the fine-tuning required to obtain a light Higgs boson of mass 125 GeV is the same as in the SM. How does this critical value μc compare with the parity restoration scale μP = 5 .2×10 13 
+
+GeV inferred from the equality g2L = g2R? The small difference in the two scales μc and 
+
+μP can be explained by threshold corrections near the PS scale. The SM Higgs doublet has couplings with the physical scalars of the full theory that have masses of order the PS scale. These include χu, χd 
+
+> 1,2
+
+and σR. Such cross-couplings can increase the value of μc
+
+from its SM value by a factor of (10 − 100), provided that some of the masses of these heavy fields are slightly below the PS scale. Examining the scalar mass spectrum specified in Sec. 3, we see no contradiction with such a choice. Thus, the model proposed here can be realized with exact parity symmetry. 
+
+7.2 Baryon number violation 
+
+There is no gauge boson-induced baryon number violation in Pati-Salam models. This can be seen by assigning B of +2 /3 to the PS gauge boson Xμ(3 , 1, 23 ) with all color-triplet quarks and leptoquarks carrying baryon number of +1 /3. All color singlet fields carry zero 
+
+B. While the gauge and Yukawa interactions are seen to conserve B, the scalar sector exhibits B violation through the λ6 term in the Higgs potential of Eq. (3.1). This term, when expanded, reads as 
+
+V (λ6) = 4 λ6
+
+
+
+χuα L χdβ L χdγ R χνRϵαβγ + χdα L χuβ R χdγ R χνLϵαβγ 
+
+
+
++ h .c. (7.1) – 31 – Figure 9 : Feynman diagram for baryon–number–violating nucleon decay induced by the 
+
+λ6 term in the Higgs potential and mediated by χu,d L,R leptoquarks. Here we have set χeL,R = 0, which are the Goldstone bosons. We see that Eq. (7.1) breaks baryon number by one unit. This, in turn, leads to nucleon decay into leptons with or without additional meson final states, which we discuss now. When the couplings of Eq. (7.1) are inserted into the Yukawa couplings of Eq. (2.13), along with the VEVs of χνL and χνR, and the mixing between ordinary fermions with exotic fermions are included, nucleon decay will arise through diagrams such as the one shown in Fig. 9. This diagram arises from the first term of Eq. (7.1). There are other diagrams arising from the second term of Eq. (7.1); however, we find them to be suppressed by an additional factor of ( κL/κ R)3. This suppression factor arises since one of the light-heavy quark mixing angles involves left-handed quarks, one needs to use the VEV of χνL, and since the physical non-Goldstone component of χuR is proportional to κL/κ R. Hence, we focus on the diagram shown in Fig. 9. The dominant nucleon decay has an amplitude given by 
+
+A[( νLdR)( eLdR)( ecLuR)] = 4λ6 κR
+
+M 4 
+
+> χL
+
+M 2
+
+> χdR
+
+ Y 210 κR
+
+M10 
+
+2  Y 215 κR
+
+M15 
+
+
+
+. (7.2) Here, the couplings Y10 and Y15 refer to the first-generation Yukawa couplings, and the masses M10 and M15 stand for the masses of the first-generation vector-like fermions. The operator of Eq. (7.2) will lead to the decays 
+
+n → e+e−νp → π+π0e+e−ν . (7.3) These decays would violate ( B − L) by two units. Such decays have been suggested in the context of Pati-Salam models with somewhat different Higgs sectors in Ref. [42–44]. The operators of Eq. (7.2) are of dimension-nine, and consequently the lifetime of the nucleon – 32 – arising from them are rather long. We estimate the lifetime to be of order 10 126 yrs, if the PS breaking scale is identified as the parity restoration scale of μP ∼ 5.2 × 10 13 GeV. In this estimate, we assumed that the Yukawa couplings are all of order unity, the scalar masses are at the PS scale, and the vector-like fermion masses M10 and M15 are 10 3κR, a choice dictated by the fermion masses of the first family. We note, however, that if the PS scale is taken to be of order 10 4 GeV, the lifetime of the nucleon will be of order 10 33 yrs. We note in passing that, unlike in the Pati-Salam model with conventional Higgs fields, there is no neutron-antineutron oscillation [45] induced in the present model. That process is replaced by leptonic decay of the nucleon, owing to differences in selection rules between the conventional Higgs sector and the ones employed here. 
+
+7.3 Quality of the parity solution to the strong CP problem 
+
+The model presented here can be extrapolated all the way to the Planck scale, as it remains perturbative throughout. To see this, we note that for μ > μ P ≃ 5.2 × 10 13 GeV, the one-loop beta function coefficients for the SU (2) L,R and SU (4) c are given by 
+
+b2L = b2R = − 83 , b4 = +10 , (7.4) where bi are defined through dg i/d ln μ = big3 
+
+> i
+
+/(16 π2). The quoted values for bi include contributions from the chiral fermion families as well as three families of vector-like fermions and the Higgs scalars, which are assumed to have a common mass at μP . Thus, the two 
+
+SU (2) gauge groups remain asymptotically free, while SU (4) c is not. However, using 
+
+α4(μP ) ≃ 1/39 .1, we see that its value at the Planck scale MP = 1 .22 × 10 19 GeV is 
+
+α4(MP) ≃ 1/19 .7, which is well within the perturbative regime. This allows us to explore higher-dimensional operators that may be induced by quantum gravity. In particular, such operators need not respect parity symmetry, which may disturb the parity solution to the strong CP problem. An interesting aspect of the model is that higher-dimensional operators induced by gravity, which only have the Higgs scalars HL and HR, do not upset the strong CP solution based on parity. This is because one can choose the VEVs ⟨χνL,R ⟩ of these fields to be real by gauge rotations. The lowest-dimensional operators that can potentially affect the strong CP parameter are of dimension-five involving HL,R and the chiral fermion fields ψL,R , given by 
+
+L(1) gravity = AMP
+
+Tr(Ψ LHL)Tr( H†
+
+> R
+
+ΨR) + BMP
+
+Tr(Ψ LHLH†
+
+> R
+
+ΨR) . (7.5) If parity is a global symmetry, quantum gravitational effects are expected to violate it, in which case the 3 × 3 matrices A and B in Eq. (7.5) will be non-Hermitian. These terms would then contribute to the strong CP parameter θ. In this case their coefficients should obey the conditions |Aij |, |Bij | ≤ 10 −6 when κR ∼ 5 × 10 13 GeV is used, to be consistent with the constraint |θ| < 10 −10 .If the PS breaking scale obeys κR ≤ 10 7 GeV, the operators of Eq. (7.5) would be harmless, even with order one coefficients [46]. This situation can be easily realized in the left-right symmetric version of the universal seesaw model, which is based on the gauge – 33 – group SU (3) c × SU (2) L × SU (2) R × U (1) [5]. Since this gauge group has three independent gauge couplings, once parity symmetry is imposed, an arbitrary scale for parity restoration can be realized in this context. In contrast, in the PS model developed here based on 
+
+SU (2) L × SU (2) R × SU (4) c, there are only two gauge couplings when parity symmetry is imposed. This sets the parity restoration scale μP ≃ 5.2 × 10 13 GeV, which makes the operators of Eq. (7.5) non-negligible. However, in comparison to the quality of the axion solution to the strong CP problem, where one must choose the coefficient of the 
+
+d = 5 operator |Φ|4Φ/M P (where Φ is a SM singlet scalar which acquires a VEV of order 
+
+fa ∼ 10 11 GeV) to be less than 10 −50 , the tuning needed in the PS model is very modest. It is also possible that parity can emerge as a discrete gauge symmetry upon com-pactification of higher-dimensional theories. For the realization of CP as a discrete gauge symmetry, see Refs. [47, 48]. When parity is realized as a discrete gauge symmetry, quan-tum gravity would conserve it, implying that the matrices A and B of Eq. (7.5) would be hermitian, giving zero contributions to θ. There are parity-conserving operators at dimension-six which can contribute to θ with the leading operator given by [6] 
+
+L(2) gravity = cM 2P
+
+Gμν Gαβ ϵμναβ 
+
+Tr( H†
+
+> L
+
+HL) − Tr( H†
+
+> R
+
+HR)
+
+
+
+(7.6) where Gμν stand for the gluon field strength. Inserting the VEVs κL and κR in Eq. (7.6) will induce a nonzero θ. The experimental limit |θ| ≤ 10 −10 requires vR < 10 13 GeV (with the coefficient c ∼ 1 in Eq. (7.6)) [6], which is nicely consistent with the parity restoration scale inferred from low energy data. 
+
+8 Conclusions 
+
+In this paper, we have developed a universal seesaw Pati-Salam model that has many attractive features. Quarks and leptons are unified in common multiplets of the gauge symmetry SU (2) L × SU (2) R × SU (4) c with lepton number identified as the fourth color [1]. Parity is realized as a spontaneously broken symmetry with the scale of parity restoration inferred to be μP ≃ 5.2 × 10 13 GeV from extrapolating low-energy gauge couplings of the SM to high energies. As such, new particles of the model are not directly accessible to experiments. However, the model developed here has many noteworthy features, which we summarize here. In the universal seesaw version of the PS model, all fermion masses arise through mixing of the chiral families with heavy vector-like families of fermions. The Higgs sector of the model is very simple, consisting of a single pair of fields {HL(2 , 1, 4) + HR(1 , 2, 4) }. We have shown that vector-like fermions transforming as (1 , 1, 15) and {(1 , 1, 10) L +(1 , 1, 10) R}
+
+can generate all quark and lepton masses consistently. Potentially unacceptable mass relations among down-type quarks and charged leptons are evaded by the inclusion of one-loop radiative corrections induced by the up-type or down-type quark sector. Explicit benchmark points have been presented that accommodate realistic fermion masses, which is highly nontrivial. The structure of the theory is such that the neutrinos are massless at tree-level. This is because only one combination of νL and νcL acquires mass via mixing with the SM singlet – 34 – fermion contained in the (1 , 1, 15) fermion multiplet. Small Majorana neutrino masses are induced via one-loop corrections, which are shown to be compatible with neutrino oscillation data. One interesting aspect is that the model realizes a minimal radiative mechanism for neutrino mass generation [39, 40, 49, 50]. One of the main motivations for constructing the universal seesaw version of the Pati-Salam model is that it can solve the strong CP problem by parity symmetry. The QCD θ
+
+term is zero by parity, and the quark contribution to θ is zero due to the parity-symmetric Yukawa couplings and the seesaw structure of the quark mass matrices. We have examined the induced one-loop contributions to θ in the model and found that a vast majority of diagrams vanish. However, unlike in the left-right symmetric theories based on the gauge group SU (3) c × SU (2) L × SU (2) R × U (1) where all one-loop contributions vanish to θ [4], here neutral lepton contributions yield non-vanishing θ at one-loop. These contributions are parametrically suppressed by the ratios ( M10 /κ R) or ( M15 /κ R), which can be chosen to be sufficiently small, consistent with phenomenology. The small and finite θ induced at the loop level is not far below the constraint from the neutron electric dipole moment. Observation of a nonzero neutron EDM will provide further credence to the proposed model. Finally, the gauge and Yukawa interactions of the model conserve baryon number, but the Higgs self-interactions do not. Nucleon decay of the type n → e+e−ν and p →
+
+e+e−νπ +π0 are predicted to occur, but with lifetimes well outside of the sensitivity of current experiments. 
+
+Acknowledgments 
+
+This work is supported in part by the U.S. Department of Energy under grant no. DE-SC0016013. We thank Jogesh Pati for discussions and encouragement. 
+
+References                                
+
+> [1] J.C. Pati and A. Salam, Lepton Number as the Fourth Color ,Phys. Rev. D 10 (1974) 275. [2] S. Saad, Fermion Masses and Mixings, Leptogenesis and Baryon Number Violation in Pati-Salam Model ,Nucl. Phys. B 943 (2019) 114630 [ 1712.04880 ]. [3] A. Davidson and K.C. Wali, Universal Seesaw Mechanism? ,Phys. Rev. Lett. 59 (1987) 393. [4] K.S. Babu and R.N. Mohapatra, CP Violation in Seesaw Models of Quark Masses ,Phys. Rev. Lett. 62 (1989) 1079. [5] K.S. Babu and R.N. Mohapatra, A Solution to the Strong CP Problem Without an Axion ,
+> Phys. Rev. D 41 (1990) 1286. [6] L.J. Hall and K. Harigaya, Implications of Higgs Discovery for the Strong CP Problem and Unification ,JHEP 10 (2018) 130 [ 1803.08119 ]. [7] L.J. Hall and K. Harigaya, Higgs Parity Grand Unification ,JHEP 11 (2019) 033 [1905.12722 ]. [8] N. Craig, I. Garcia Garcia, G. Koszegi and A. McCune, P not PQ ,JHEP 09 (2021) 130 [2012.13416 ].
+
+– 35 – [9] J. de Vries, P. Draper and H.H. Patel, Do Minimal Parity Solutions to the Strong CP 
+
+Problem Work? , 2109.01630 .[10] J. Hisano, T. Kitahara, N. Osamura and A. Yamada, Novel loop-diagrammatic approach to QCD θ parameter and application to the left-right model , JHEP 03 (2023) 150 [ 2301.13405 ]. [11] M.A.B. Beg, D.J. Maloof and H.S. Tsao, Strong P and T Noninvariances in a Class of Gauge Theories , Phys. Rev. D 19 (1979) 2221. [12] R.N. Mohapatra and G. Senjanovic, Natural Suppression of Strong p and t Noninvariance ,
+
+Phys. Lett. B 79 (1978) 283. [13] S.M. Barr, D. Chang and G. Senjanovic, Strong CP problem and parity , Phys. Rev. Lett. 67 
+
+(1991) 2765. [14] R.N. Mohapatra and A. Rasin, Simple supersymmetric solution to the strong CP problem ,
+
+Phys. Rev. Lett. 76 (1996) 3490 [ hep-ph/9511391 ]. [15] R.N. Mohapatra, A. Rasin and G. Senjanovic, P, C and strong CP in left-right supersymmetric models , Phys. Rev. Lett. 79 (1997) 4744 [ hep-ph/9707281 ]. [16] K.S. Babu, B. Dutta and R.N. Mohapatra, Solving the strong CP and the SUSY phase problems with parity symmetry , Phys. Rev. D 65 (2002) 016005 [ hep-ph/0107100 ]. [17] R. Kuchimanchi, P/CP Conserving CP/P Violation Solves Strong CP Problem , Phys. Rev. D 82 (2010) 116008 [ 1009.5961 ]. [18] R. Kuchimanchi, P and CP solution of the strong CP puzzle , Phys. Rev. D 108 (2023) 095023 [ 2306.03039 ]. [19] R. Foot and R.R. Volkas, Neutrino physics and the mirror world: How exact parity symmetry explains the solar neutrino deficit, the atmospheric neutrino anomaly and the LSND experiment , Phys. Rev. D 52 (1995) 6595 [ hep-ph/9505359 ]. [20] Z.G. Berezhiani and R.N. Mohapatra, Reconciling present neutrino puzzles: Sterile neutrinos as mirror neutrinos , Phys. Rev. D 52 (1995) 6607 [ hep-ph/9505385 ]. [21] M.J. Dolan, T.P. Dutka and R.R. Volkas, Lowering the scale of Pati-Salam breaking through seesaw mixing , JHEP 05 (2021) 199 [ 2012.05976 ]. [22] J.D. Clarke, R. Foot and R.R. Volkas, Quark-lepton symmetric model at the LHC , Phys. Rev. D 85 (2012) 074012 [ 1112.3405 ]. [23] K.S. Babu, S. Biswas and S. Saad, TeV Scale Quark-Lepton Unification , 2512.11113 .[24] A.V. Kuznetsov and N.V. Mikheev, Vector leptoquarks could be rather light? , Phys. Lett. B 
+
+329 (1994) 295 [ hep-ph/9406347 ]. [25] R.R. Volkas, Prospects for mass unification at low-energy scales , Phys. Rev. D 53 (1996) 2681 [ hep-ph/9507215 ]. [26] R. Foot, An AlternatVolkas:1995ynive SU(4) x SU(2)L x SU(2)R model , Phys. Lett. B 420 
+
+(1998) 333 [ hep-ph/9708205 ]. [27] R. Foot and G. Filewood, Implications of TeV scale SU(4) x SU(2)-L x SU(2)-R quark lepton-lepton unification , Phys. Rev. D 60 (1999) 115002 [ hep-ph/9903374 ]. [28] A.D. Smirnov, Mass limits for scalar and gauge leptoquarks from K(L)0 — > e-+ mu+-, B0 —> e-+ tau+- decays , Mod. Phys. Lett. A 22 (2007) 2353 [ 0705.0308 ]. 
+
+– 36 – [29] P. Fileviez Perez and M.B. Wise, Low Scale Quark-Lepton Unification , Phys. Rev. D 88 
+
+(2013) 057703 [ 1307.6213 ]. [30] L. Calibbi, A. Crivellin and T. Li, Model of vector leptoquarks in view of the B-physics anomalies , Phys. Rev. D 98 (2018) 115002 [ 1709.00692 ]. [31] A. Greljo and B.A. Stefanek, Third family quark–lepton unification at the TeV scale , Phys. Lett. B 782 (2018) 131 [ 1802.04274 ]. [32] J. Heeck and D. Teresi, Pati-Salam explanations of the B-meson anomalies , JHEP 12 (2018) 103 [ 1808.07492 ]. [33] S. Iguro, J. Kawamura, S. Okawa and Y. Omura, TeV-scale vector leptoquark from Pati-Salam unification with vectorlike families , Phys. Rev. D 104 (2021) 075008 [2103.11889 ]. [34] M. Fern´ andez Navarro and S.F. King, B-anomalies in a twin Pati-Salam theory of flavour including the 2022 LHCb RK(∗) analysis , JHEP 02 (2023) 188 [ 2209.00276 ]. [35] J. Butterworth, H. Debnath, P. Fileviez Perez and P. Wang, Quark-Lepton Unification Signatures , 2512.00143 .[36] M.P. Worah, Radiatively generated fermion masses in SU(4) x SU(2)-L x SU(2)-R , Phys. Rev. D 53 (1996) 283 [ hep-ph/9502222 ]. [37] Particle Data Group collaboration, Review of particle physics , Phys. Rev. D 110 (2024) 030001. [38] Z.-z. Xing, H. Zhang and S. Zhou, Updated Values of Running Quark and Lepton Masses ,
+
+Phys. Rev. D 77 (2008) 113016 [ 0712.1419 ]. [39] D. Aristizabal Sierra and C.E. Yaguna, On the importance of the 1-loop finite corrections to seesaw neutrino masses , JHEP 08 (2011) 013 [ 1106.3587 ]. [40] P.S.B. Dev and A. Pilaftsis, Minimal Radiative Neutrino Mass Mechanism for Inverse Seesaw Models , Phys. Rev. D 86 (2012) 113001 [ 1209.4051 ]. [41] T.-T. Lu and S.-H. Shiou, Inverses of 2 × 2 block matrices , Computers & Mathematics with Applications 43 (2002) 119. [42] J.C. Pati, Nucleon Decays Into Lepton + Lepton + Anti-lepton + Mesons Within SU(4) of Color , Phys. Rev. D 29 (1984) 1549. [43] J.C. Pati, A. Salam and U. Sarkar, Delta B = - Delta L, neutron — > e- pi+, e- K+, mu-pi+ and mu- K+ DECAY modes in SU(2)-L X SU(2)-R X SU(4)-C or SO(10) , Phys. Lett. B 133 (1983) 330. [44] P.J. O’Donnell and U. Sarkar, Three lepton decay mode of the proton , Phys. Lett. B 316 
+
+(1993) 121 [ hep-ph/9307254 ]. [45] R.N. Mohapatra and R.E. Marshak, Local B-L Symmetry of Electroweak Interactions, Majorana Neutrinos and Neutron Oscillations , Phys. Rev. Lett. 44 (1980) 1316. [46] Z.G. Berezhiani, R.N. Mohapatra and G. Senjanovic, Planck scale physics and solutions to the strong CP problem without axion , Phys. Rev. D 47 (1993) 5565 [ hep-ph/9212318 ]. [47] K.-w. Choi, D.B. Kaplan and A.E. Nelson, Is CP a gauge symmetry? , Nucl. Phys. B 391 
+
+(1993) 515 [ hep-ph/9205202 ]. 
+
+– 37 – [48] M. Dine, R.G. Leigh and D.A. MacIntire, Of CP and other gauge symmetries in string theory , Phys. Rev. Lett. 69 (1992) 2030 [ hep-th/9205011 ]. [49] W. Grimus and L. Lavoura, One-loop corrections to the seesaw mechanism in the multi-Higgs-doublet standard model , Phys. Lett. B 546 (2002) 86 [ hep-ph/0207229 ]. [50] J. Lopez-Pavon, E. Molinaro and S.T. Petcov, Radiative Corrections to Light Neutrino Masses in Low Scale Type I Seesaw Scenarios and Neutrinoless Double Beta Decay , JHEP 
+
+11 (2015) 030 [ 1506.05296 ]. 
+
+– 38 –
