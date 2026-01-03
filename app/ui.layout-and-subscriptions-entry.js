@@ -8,47 +8,6 @@
   }
 })();
 
-// 1.1 小屏侧边栏显隐：使用自定义类 dpr-sidebar-open，同步 Docsify 的 close 状态
-(function () {
-  var BREAKPOINT = 768;
-
-  function handleMobileSidebarToggle(e) {
-    var btn = e.target.closest && e.target.closest('.sidebar-toggle');
-    if (!btn) return;
-
-    var w =
-      window.innerWidth || document.documentElement.clientWidth || 0;
-    if (w > BREAKPOINT) return; // 只在小屏下同步状态，桌面端完全交给 Docsify
-
-    // 不拦截事件，让 Docsify 自己先切换 body.close，
-    // 然后在本轮事件结束后读取最新状态，同步到 dpr-sidebar-open。
-    setTimeout(function () {
-      var isClosed = document.body.classList.contains('close');
-      document.body.classList.toggle('dpr-sidebar-open', !isClosed);
-    }, 0);
-  }
-
-  function handleResize() {
-    var w =
-      window.innerWidth || document.documentElement.clientWidth || 0;
-    if (w > BREAKPOINT) {
-      // 回到大屏时，移除小屏专用类，完全交给 Docsify
-      document.body.classList.remove('dpr-sidebar-open');
-    }
-  }
-
-  function initMobileSidebarControl() {
-    document.addEventListener('click', handleMobileSidebarToggle);
-    window.addEventListener('resize', handleResize);
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMobileSidebarControl);
-  } else {
-    initMobileSidebarControl();
-  }
-})();
-
 // 2. 侧边栏宽度拖拽脚本
 (function() {
   function setupSidebarResizer() {
@@ -63,6 +22,7 @@
 
     resizer.addEventListener('mousedown', function (e) {
       dragging = true;
+      document.body.classList.add('sidebar-resizing');
       e.preventDefault();
     });
 
@@ -84,6 +44,7 @@
 
     window.addEventListener('mouseup', function () {
       dragging = false;
+      document.body.classList.remove('sidebar-resizing');
     });
   }
 
@@ -93,6 +54,7 @@
     setupSidebarResizer();
   }
 
+  var resizeTimer = null;
   window.addEventListener('resize', function () {
     var resizer = document.getElementById('sidebar-resizer');
     if (window.innerWidth <= 768) {
@@ -104,6 +66,16 @@
         setupSidebarResizer();
       }
     }
+
+    // 为窗口调整过程加上 dpr-resizing，禁用输入框/底部条的过渡，让动画更跟手
+    document.body.classList.add('dpr-resizing');
+    if (resizeTimer) {
+      clearTimeout(resizeTimer);
+    }
+    resizeTimer = setTimeout(function () {
+      document.body.classList.remove('dpr-resizing');
+      resizeTimer = null;
+    }, 150);
   });
 })();
 

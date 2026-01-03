@@ -163,7 +163,9 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   z-index: 1500;
   box-sizing: border-box;
-  transition: none;
+  /* 默认用于 sidebar 展开/收起时的平滑过渡 */
+  transition: left 0.25s ease-out, transform 0.25s ease-out,
+    max-width 0.25s ease-out;
   overflow: hidden; /* 遮住内部内容的左右和下边，配合圆角 */
 }
 
@@ -266,7 +268,18 @@ body.close #paper-chat-container .input-area {
   font-size: 12px;
   color: #666;
   z-index: 1501;
-  transition: none;
+  transition: left 0.25s ease-out, transform 0.25s ease-out,
+    max-width 0.25s ease-out;
+}
+
+/* 当正在拖拽侧边栏或调整窗口尺寸时，禁用过渡，让布局“跟手” */
+body.sidebar-resizing #paper-chat-container .input-area,
+body.sidebar-resizing .chat-footer,
+body.dpr-resizing #paper-chat-container .input-area,
+body.dpr-resizing .chat-footer,
+body.sidebar-resizing .content,
+body.dpr-resizing .content {
+  transition: none !important;
 }
 
 /* 侧边栏收起时footer也居中 */
@@ -368,7 +381,7 @@ body.close .chat-footer {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
-  z-index: 2000;
+  z-index: 2200;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -455,7 +468,8 @@ body.close .chat-footer {
   padding-left: 0 !important;
   display: flex !important;
   justify-content: center !important;
-  transition: margin-left 0.3s ease !important;
+  /* 默认在 sidebar 展开/收起（body.close 切换）时做轻微过渡 */
+  transition: margin-left 0.25s ease-out !important;
 }
 
 body.close .content {
@@ -484,7 +498,7 @@ article.markdown-section {
 }
 
 /* 移动端布局适配：在小屏幕下让内容区域占满宽度，并简化左右留白，
-   同时将浮动聊天输入框与底部工具条改为相对视口居中，而不再依赖侧边栏宽度 */
+   同时将浮动聊天输入框与底部工具条改为相对视口居中，不改变 Docsify 自带的侧边栏开合行为 */
 @media (max-width: 768px) {
   .content {
     margin-left: 0 !important;
@@ -529,16 +543,6 @@ article.markdown-section {
   width: var(--sidebar-width, 260px) !important;
   min-width: var(--sidebar-min-width, 180px);
   max-width: var(--sidebar-max-width, 480px);
-}
-
-/* 移动端：不再依赖 body.close，而是用自定义类控制显隐 */
-@media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%) !important;
-  }
-  body.dpr-sidebar-open .sidebar {
-    transform: translateX(0) !important;
-  }
 }
 
 /* 侧边栏按日期折叠：日期行样式与箭头 */
@@ -822,7 +826,7 @@ article.markdown-section {
   border-right: 1px solid rgba(0, 0, 0, 0.07);
   border-top: 1px solid rgba(0, 0, 0, 0.07);
   cursor: pointer;
-  z-index: 4;
+  z-index: 1600;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -832,9 +836,27 @@ article.markdown-section {
 .custom-toggle-btn:hover {
   background: #f8f8f8;
 }
+
+/* 确保 Docsify 自带的 sidebar 折叠按钮在聊天浮层之上可见（尤其是小屏幕） */
+.sidebar-toggle {
+  z-index: 1600;
+}
+
+/* 窄屏下（无论侧边栏是否展开），缩小左下角菜单按钮和齿轮按钮尺寸 */
 @media (max-width: 768px) {
+  .sidebar-toggle {
+    width: 28px;
+    left: 0;
+    bottom: 6px;
+    padding: 4px 8px;
+  }
+
   .custom-toggle-btn {
-    display: none;
+    width: 22px;
+    height: 22px;
+    bottom: 7px;
+    left: 32px;
+    font-size: 12px;
   }
 }
 
@@ -857,7 +879,7 @@ article.markdown-section {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.35);
-  z-index: 1000;
+  z-index: 2100;
   display: none;
   align-items: center;
   justify-content: center;
