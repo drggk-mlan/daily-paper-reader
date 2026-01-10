@@ -4,15 +4,18 @@
 import argparse
 import json
 import os
-from datetime import datetime, timezone
+import re
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Tuple
 
 SCRIPT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
+ARCHIVE_ROOT = os.path.join(ROOT_DIR, "archive")
 TODAY_STR = datetime.now(timezone.utc).strftime("%Y%m%d")
-ARCHIVE_DIR = os.path.join(ROOT_DIR, "archive", TODAY_STR)
+ARCHIVE_DIR = os.path.join(ARCHIVE_ROOT, TODAY_STR)
 RANKED_DIR = os.path.join(ARCHIVE_DIR, "rank")
 RECOMMEND_DIR = os.path.join(ARCHIVE_DIR, "recommend")
+CARRYOVER_PATH = os.path.join(ARCHIVE_ROOT, "carryover.json")
 CONFIG_FILE = os.path.join(ROOT_DIR, "config.yaml")
 
 MODES = {
@@ -38,6 +41,9 @@ MODES = {
         "deep_strategy": "round_robin",
     },
 }
+
+CARRYOVER_DAYS = 5
+CARRYOVER_RATIO = 0.5
 
 
 def log(message: str) -> None:
@@ -65,6 +71,99 @@ def save_json(data: Dict[str, Any], path: str) -> None:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     log(f"[INFO] saved: {path}")
+
+
+def parse_date_str(date_str: str) -> datetime.date:
+    return datetime.strptime(date_str, "%Y%m%d").date()
+
+
+def list_date_dirs(archive_root: str) -> List[str]:
+    if not os.path.isdir(archive_root):
+        return []
+    result: List[str] = []
+    for name in os.listdir(archive_root):
+        if re.match(r"^\d{8}$", name):
+            result.append(name)
+    return sorted(result)
+
+
+def collect_seen_ids(archive_root: str, today_str: str) -> set:
+    seen = set()
+    for day in list_date_dirs(archive_root):
+        if day == today_str:
+            continue
+        rec_dir = os.path.join(archive_root, day, "recommend")
+        if not os.path.isdir(rec_dir):
+            continue
+        for name in os.listdir(rec_dir):
+            if not name.startswith(f"arxiv_papers_{day}.") or not name.endswith(".json"):
+                continue
+            rec_path = os.path.join(rec_dir, name)
+            try:
+                payload = load_json(rec_path)
+            except Exception:
+                continue
+            for key in ("deep_dive", "quick_skim"):
+                for item in payload.get(key) or []:
+                    pid = str(item.get("id") or item.get("paper_id") or "").strip()
+                    if pid:
+                        seen.add(pid)
+    return seen
+
+
+def parse_payload_date(payload: Dict[str, Any]) -> datetime.date | None:
+    date_str = str(payload.get("updated_date") or "").strip()
+    if date_str:
+        try:
+            return parse_date_str(date_str)
+        except Exception:
+            return None
+    generated_at = str(payload.get("generated_at") or "").strip()
+    if generated_at:
+        try:
+            return datetime.fromisoformat(generated_at.replace("Z", "+00:00")).date()
+        except Exception:
+            return None
+    return None
+
+
+def load_recent_carryover(
+    carryover_path: str,
+    today_date: datetime.date,
+    max_days: int,
+) -> Tuple[List[Dict[str, Any]], int]:
+    if not os.path.exists(carryover_path):
+        return [], 0
+    try:
+        payload = load_json(carryover_path)
+    except Exception:
+        return [], 0
+
+    items = payload.get("items") or []
+    if not isinstance(items, list):
+        items = []
+
+    base_date = parse_payload_date(payload)
+    delta = 0
+    if base_date:
+        delta = (today_date - base_date).days
+        if delta < 0:
+            delta = 0
+
+    updated: List[Dict[str, Any]] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        carry_days = int(item.get("carry_days") or 1)
+        if delta > 0:
+            carry_days += delta
+        if carry_days > max_days:
+            continue
+        copied = dict(item)
+        copied["carry_days"] = carry_days
+        updated.append(copied)
+
+    return updated, delta
 
 
 def load_config_tag_count() -> Tuple[int, List[str]]:
@@ -118,6 +217,24 @@ def load_config_tag_count() -> Tuple[int, List[str]]:
     return len(unique), unique
 
 
+def load_arxiv_paper_setting() -> Dict[str, Any]:
+    if not os.path.exists(CONFIG_FILE):
+        return {}
+    try:
+        import yaml  # type: ignore
+    except Exception:
+        log("[WARN] PyYAML not installed, skip arxiv_paper_setting.")
+        return {}
+    try:
+        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+    except Exception as exc:
+        log(f"[WARN] failed to read config.yaml: {exc}")
+        return {}
+    setting = (data or {}).get("arxiv_paper_setting") or {}
+    return setting if isinstance(setting, dict) else {}
+
+
 def normalize_tags(raw: Any) -> List[str]:
     if not isinstance(raw, list):
         return []
@@ -161,6 +278,33 @@ def build_scored_papers(papers: List[Dict[str, Any]], llm_ranked: List[Dict[str,
         paper["llm_evidence"] = str(item.get("evidence") or "").strip()
         paper["llm_tags"] = normalize_tags(item.get("tags"))
         merged[pid] = paper
+
+    return list(merged.values())
+
+
+def build_candidates(
+    scored_papers: List[Dict[str, Any]],
+    carryover_items: List[Dict[str, Any]],
+    seen_ids: set,
+) -> List[Dict[str, Any]]:
+    merged: Dict[str, Dict[str, Any]] = {}
+
+    for item in carryover_items:
+        pid = str(item.get("id") or item.get("paper_id") or "").strip()
+        if not pid or pid in seen_ids:
+            continue
+        copied = dict(item)
+        copied["id"] = pid
+        copied["_source"] = "carryover"
+        merged[pid] = copied
+
+    for item in scored_papers:
+        pid = str(item.get("id") or "").strip()
+        if not pid or pid in seen_ids:
+            continue
+        copied = dict(item)
+        copied["_source"] = "new"
+        merged[pid] = copied
 
     return list(merged.values())
 
@@ -355,13 +499,86 @@ def select_quick_skim(
     return interleave_layers(marked, order)[:target]
 
 
+def sanitize_items(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    cleaned: List[Dict[str, Any]] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        copied = dict(item)
+        copied.pop("_source", None)
+        copied.pop("carry_days", None)
+        cleaned.append(copied)
+    return cleaned
+
+
+def select_deep_with_carryover(
+    candidates: List[Dict[str, Any]],
+    cap: int,
+    carryover_ratio: float,
+) -> List[Dict[str, Any]]:
+    if cap <= 0:
+        return []
+    new_items = [p for p in candidates if p.get("_source") != "carryover"]
+    carry_items = [p for p in candidates if p.get("_source") == "carryover"]
+
+    max_carry = int(cap * carryover_ratio) if carryover_ratio > 0 else 0
+    cap_new = max(cap - max_carry, 0)
+
+    selected: List[Dict[str, Any]] = []
+    selected_ids = set()
+
+    if new_items:
+        pick_new = round_robin_select(new_items, min(cap_new, len(new_items)))
+        selected.extend(pick_new)
+        selected_ids.update(p.get("id") for p in pick_new)
+
+    remaining = cap - len(selected)
+    if remaining > 0 and carry_items:
+        pick_carry = round_robin_select(carry_items, min(remaining, len(carry_items)))
+        selected.extend(pick_carry)
+        selected_ids.update(p.get("id") for p in pick_carry)
+        remaining = cap - len(selected)
+
+    if remaining > 0 and new_items:
+        extra_new = [p for p in new_items if p.get("id") not in selected_ids]
+        if extra_new:
+            pick_extra = round_robin_select(extra_new, min(remaining, len(extra_new)))
+            selected.extend(pick_extra)
+
+    return selected
+
+
+def build_carryover_out(
+    candidates: List[Dict[str, Any]],
+    recommended_ids: set,
+    carryover_days: int,
+) -> List[Dict[str, Any]]:
+    carryover_out: List[Dict[str, Any]] = []
+    for item in candidates:
+        pid = str(item.get("id") or "").strip()
+        if not pid or pid in recommended_ids:
+            continue
+        if float(item.get("llm_score", 0)) < 8.0:
+            continue
+        carry_days = int(item.get("carry_days") or 1)
+        if carry_days > carryover_days:
+            continue
+        copied = dict(item)
+        copied.pop("_source", None)
+        copied["paper_id"] = copied.get("id")
+        copied["carry_days"] = carry_days
+        carryover_out.append(copied)
+    return carryover_out
+
+
 def process_mode(
-    scored_papers: List[Dict[str, Any]],
+    candidates: List[Dict[str, Any]],
     tag_count: int,
     mode: str,
     cfg: Dict[str, Any],
+    carryover_ratio: float,
 ) -> Dict[str, Any]:
-    deep_candidates = [p for p in scored_papers if float(p.get("llm_score", 0)) >= 8.0]
+    deep_candidates = [p for p in candidates if float(p.get("llm_score", 0)) >= 8.0]
     deep_candidates = sort_by_score(deep_candidates)
 
     cap = None
@@ -378,14 +595,18 @@ def process_mode(
             if strategy == "score":
                 deep_selected = deep_candidates[:cap]
             else:
-                deep_selected = round_robin_select(deep_candidates, cap)
+                deep_selected = select_deep_with_carryover(
+                    deep_candidates,
+                    cap,
+                    carryover_ratio,
+                )
 
     selected_ids = {p.get("id") for p in deep_selected}
     deep_overflow = [p for p in deep_candidates if p.get("id") not in selected_ids]
 
     quick_candidates = [
         p
-        for p in scored_papers
+        for p in candidates
         if p.get("id") not in selected_ids and 6.0 <= float(p.get("llm_score", 0)) < 8.0
     ]
     if deep_overflow:
@@ -394,6 +615,7 @@ def process_mode(
             pid = item.get("id")
             if pid not in quick_map:
                 quick_candidates.append(item)
+
     quick_base = int(cfg.get("quick_base") or 0)
     quick_target = quick_base + tag_count
     quick_strategy = str(cfg.get("quick_strategy") or "uniform")
@@ -402,26 +624,26 @@ def process_mode(
     stats = {
         "mode": mode,
         "tag_count": tag_count,
-        "deep_dive_selected": len(deep_selected),
-        "deep_dive_cap": cap,
-        "deep_dive_divecandidates": len(deep_candidates),
-        "quick_skim_selected": len(quick_selected),
+        "deep_divecandidates": len(deep_candidates),
+        "deep_cap": cap,
+        "deep_selected": len(deep_selected),
+        "quick_candidates": len(quick_candidates),
         "quick_skim_target": quick_target,
-        "quick_skim_candidates": len(quick_candidates),
+        "quick_selected": len(quick_selected),
     }
 
     return {
         "mode": mode,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "stats": stats,
-        "deep_dive": deep_selected,
-        "quick_skim": quick_selected,
+        "deep_dive": sanitize_items(deep_selected),
+        "quick_skim": sanitize_items(quick_selected),
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Step 5: select papers for deep dive + quick skim (standard/pro/spark).",
+        description="Step 5: select papers for deep dive + quick skim (standard/extend/spark).",
     )
     parser.add_argument(
         "--input",
@@ -438,8 +660,8 @@ def main() -> None:
     parser.add_argument(
         "--modes",
         type=str,
-        default="standard,extend,spark",
-        help="comma separated modes (standard,extend,spark).",
+        default=None,
+        help="comma separated modes (standard,extend,spark). default: config arxiv_paper_setting.mode",
     )
 
     args = parser.parse_args()
@@ -452,7 +674,13 @@ def main() -> None:
     if not os.path.isabs(output_dir):
         output_dir = os.path.abspath(os.path.join(ROOT_DIR, output_dir))
 
-    modes = [m.strip() for m in str(args.modes or "").split(",") if m.strip()]
+    setting = load_arxiv_paper_setting()
+    carryover_days = int(setting.get("days_window") or CARRYOVER_DAYS)
+    mode_text = args.modes
+    if not mode_text:
+        mode_text = setting.get("mode") or "standard,extend,spark"
+
+    modes = [m.strip() for m in str(mode_text or "").split(",") if m.strip()]
     modes = [m for m in modes if m in MODES]
     if not modes:
         raise ValueError("modes must include at least one of: standard, extend, spark")
@@ -466,6 +694,7 @@ def main() -> None:
 
     tag_count, tag_list = load_config_tag_count()
     log(f"[INFO] config tags={tag_count} | {tag_list}")
+    log(f"[INFO] arxiv_paper_setting mode={mode_text} days_window={carryover_days}")
 
     scored_papers = build_scored_papers(papers, llm_ranked)
     if not scored_papers:
@@ -475,9 +704,26 @@ def main() -> None:
     group_start(f"Step 5 - select {os.path.basename(input_path)}")
     log(f"[INFO] scored_papers={len(scored_papers)}")
 
+    archive_root = os.path.join(ROOT_DIR, "archive")
+    today_date = parse_date_str(TODAY_STR)
+    seen_ids = collect_seen_ids(archive_root, TODAY_STR)
+    carryover_items, _delta = load_recent_carryover(
+        CARRYOVER_PATH,
+        today_date,
+        carryover_days,
+    )
+    candidates = build_candidates(scored_papers, carryover_items, seen_ids)
+    recommended_ids: set = set()
+
     for mode in modes:
         cfg = MODES.get(mode) or {}
-        result = process_mode(scored_papers, tag_count, mode, cfg)
+        result = process_mode(
+            candidates,
+            tag_count,
+            mode,
+            cfg,
+            carryover_ratio=CARRYOVER_RATIO,
+        )
         output_path = os.path.join(output_dir, f"arxiv_papers_{TODAY_STR}.{mode}.json")
         stats = result.get("stats") or {}
         log(f"[STATS] {json.dumps(stats, ensure_ascii=False)}")
@@ -486,6 +732,21 @@ def main() -> None:
             f"[INFO] mode={mode} deep={stats.get('deep_selected')} quick={stats.get('quick_selected')} "
             f"cap={stats.get('deep_cap')} target={stats.get('quick_skim_target')}"
         )
+
+        for key in ("deep_dive", "quick_skim"):
+            for item in result.get(key) or []:
+                pid = str(item.get("id") or item.get("paper_id") or "").strip()
+                if pid:
+                    recommended_ids.add(pid)
+
+    carryover_out = build_carryover_out(candidates, recommended_ids, carryover_days)
+    carryover_payload = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_date": TODAY_STR,
+        "carryover_days": carryover_days,
+        "items": carryover_out,
+    }
+    save_json(carryover_payload, CARRYOVER_PATH)
 
     group_end()
 

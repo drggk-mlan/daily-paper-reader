@@ -88,6 +88,18 @@ jobs:
         run: |
           python scripts/4.llm_refine_papers.py
 
+      - name: Step 5 Select
+        run: |
+          echo "::group::Step 5 - select papers"
+          python scripts/5.select_papers.py
+          echo "::endgroup::"
+
+      - name: Step 6 Generate Docs
+        run: |
+          echo "::group::Step 6 - generate docs"
+          python scripts/6.generate_docs.py
+          echo "::endgroup::"
+
       - name: Commit results
         run: |
           git config user.name "github-actions[bot]"

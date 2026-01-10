@@ -1,9 +1,9 @@
 github:
   owner: ''
   repo: daily-paper-reader
-crawler:
-  days_window: 8
-  max_results: 50
+arxiv_paper_setting:
+  mode: standard
+  days_window: 3
   docs_dir: docs
 subscriptions:
   keywords:

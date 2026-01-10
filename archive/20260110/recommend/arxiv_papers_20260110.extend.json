@@ -1,15 +1,15 @@
 {
   "mode": "extend",
-  "generated_at": "2026-01-10T21:41:46.949685+00:00",
+  "generated_at": "2026-01-10T22:36:38.858982+00:00",
   "stats": {
     "mode": "extend",
     "tag_count": 5,
-    "deep_dive_selected": 15,
-    "deep_dive_cap": 15,
-    "deep_dive_divecandidates": 52,
-    "quick_skim_selected": 20,
+    "deep_divecandidates": 52,
+    "deep_cap": 15,
+    "deep_selected": 15,
+    "quick_candidates": 128,
     "quick_skim_target": 20,
-    "quick_skim_candidates": 128
+    "quick_selected": 20
   },
   "deep_dive": [
     {
@@ -234,6 +234,36 @@
       ]
     },
     {
+      "id": "2601.04411v1",
+      "title": "Rate or Fate? RLV$^\\varepsilon$R: Reinforcement Learning with Verifiable Noisy Rewards",
+      "abstract": "Reinforcement learning with verifiable rewards (RLVR) is a simple but powerful paradigm for training LLMs: sample a completion, verify it, and update. In practice, however, the verifier is almost never clean--unit tests probe only limited corner cases; human and synthetic labels are imperfect; and LLM judges (e.g., RLAIF) are noisy and can be exploited--and this problem worsens on harder domains (especially coding) where tests are sparse and increasingly model-generated. We ask a pragmatic question: does the verification noise merely slow down the learning (rate), or can it flip the outcome (fate)?   To address this, we develop an analytically tractable multi-armed bandit view of RLVR dynamics, instantiated with GRPO and validated in controlled experiments. Modeling false positives and false negatives and grouping completions into recurring reasoning modes yields a replicator-style (natural-selection) flow on the probability simplex. The dynamics decouples into within-correct-mode competition and a one-dimensional evolution for the mass on incorrect modes, whose drift is determined solely by Youden's index J=TPR-FPR. This yields a sharp phase transition: when J>0, the incorrect mass is driven toward extinction (learning); when J=0, the process is neutral; and when J<0, incorrect modes amplify until they dominate (anti-learning and collapse). In the learning regime J>0, noise primarily rescales convergence time (\"rate, not fate\"). Experiments on verifiable programming tasks under synthetic noise reproduce the predicted J=0 boundary. Beyond noise, the framework offers a general lens for analyzing RLVR stability, convergence, and algorithmic interventions.",
+      "authors": [
+        "Ali Rad",
+        "Khashayar Filom",
+        "Darioush Keivan",
+        "Peyman Mohajerin Esfahani",
+        "Ehsan Kamalinejad"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-01-07 21:31:26+00:00",
+      "link": "https://arxiv.org/pdf/2601.04411v1",
+      "tags": [
+        "keyword:RL",
+        "keyword:符号回归（示例）"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence": "Reinforcement learning with verifiable rewards for training LLMs",
+      "llm_tags": [
+        "keyword:RL",
+        "query:大厂llm"
+      ]
+    },
+    {
       "id": "2601.03986v1",
       "title": "Benchmark^2: Systematic Evaluation of LLM Benchmarks",
       "abstract": "The rapid proliferation of benchmarks for evaluating large language models (LLMs) has created an urgent need for systematic methods to assess benchmark quality itself. We propose Benchmark^2, a comprehensive framework comprising three complementary metrics: (1) Cross-Benchmark Ranking Consistency, measuring whether a benchmark produces model rankings aligned with peer benchmarks; (2) Discriminability Score, quantifying a benchmark's ability to differentiate between models; and (3) Capability Alignment Deviation, identifying problematic instances where stronger models fail but weaker models succeed within the same model family. We conduct extensive experiments across 15 benchmarks spanning mathematics, reasoning, and knowledge domains, evaluating 11 LLMs across four model families. Our analysis reveals significant quality variations among existing benchmarks and demonstrates that selective benchmark construction based on our metrics can achieve comparable evaluation performance with substantially reduced test sets.",
@@ -272,61 +302,6 @@
       ]
     },
     {
-      "id": "2601.04411v1",
-      "title": "Rate or Fate? RLV$^\\varepsilon$R: Reinforcement Learning with Verifiable Noisy Rewards",
-      "abstract": "Reinforcement learning with verifiable rewards (RLVR) is a simple but powerful paradigm for training LLMs: sample a completion, verify it, and update. In practice, however, the verifier is almost never clean--unit tests probe only limited corner cases; human and synthetic labels are imperfect; and LLM judges (e.g., RLAIF) are noisy and can be exploited--and this problem worsens on harder domains (especially coding) where tests are sparse and increasingly model-generated. We ask a pragmatic question: does the verification noise merely slow down the learning (rate), or can it flip the outcome (fate)?   To address this, we develop an analytically tractable multi-armed bandit view of RLVR dynamics, instantiated with GRPO and validated in controlled experiments. Modeling false positives and false negatives and grouping completions into recurring reasoning modes yields a replicator-style (natural-selection) flow on the probability simplex. The dynamics decouples into within-correct-mode competition and a one-dimensional evolution for the mass on incorrect modes, whose drift is determined solely by Youden's index J=TPR-FPR. This yields a sharp phase transition: when J>0, the incorrect mass is driven toward extinction (learning); when J=0, the process is neutral; and when J<0, incorrect modes amplify until they dominate (anti-learning and collapse). In the learning regime J>0, noise primarily rescales convergence time (\"rate, not fate\"). Experiments on verifiable programming tasks under synthetic noise reproduce the predicted J=0 boundary. Beyond noise, the framework offers a general lens for analyzing RLVR stability, convergence, and algorithmic interventions.",
-      "authors": [
-        "Ali Rad",
-        "Khashayar Filom",
-        "Darioush Keivan",
-        "Peyman Mohajerin Esfahani",
-        "Ehsan Kamalinejad"
-      ],
-      "primary_category": "cs.LG",
-      "categories": [
-        "cs.LG",
-        "cs.AI",
-        "cs.CL"
-      ],
-      "published": "2026-01-07 21:31:26+00:00",
-      "link": "https://arxiv.org/pdf/2601.04411v1",
-      "tags": [
-        "keyword:RL",
-        "keyword:符号回归（示例）"
-      ],
-      "llm_score": 9.0,
-      "llm_evidence": "Reinforcement learning with verifiable rewards for training LLMs",
-      "llm_tags": [
-        "keyword:RL",
-        "query:大厂llm"
-      ]
-    },
-    {
-      "id": "2601.04260v1",
-      "title": "Towards a Mechanistic Understanding of Propositional Logical Reasoning in Large Language Models",
-      "abstract": "Understanding how Large Language Models (LLMs) perform logical reasoning internally remains a fundamental challenge. While prior mechanistic studies focus on identifying taskspecific circuits, they leave open the question of what computational strategies LLMs employ for propositional reasoning. We address this gap through comprehensive analysis of Qwen3 (8B and 14B) on PropLogic-MI, a controlled dataset spanning 11 propositional logic rule categories across one-hop and two-hop reasoning. Rather than asking ''which components are necessary,'' we ask ''how does the model organize computation?'' Our analysis reveals a coherent computational architecture comprising four interlocking mechanisms: Staged Computation (layer-wise processing phases), Information Transmission (information flow aggregation at boundary tokens), Fact Retrospection (persistent re-access of source facts), and Specialized Attention Heads (functionally distinct head types). These mechanisms generalize across model scales, rule types, and reasoning depths, providing mechanistic evidence that LLMs employ structured computational strategies for logical reasoning.",
-      "authors": [
-        "Danchun Chen",
-        "Qiyao Yan",
-        "Liangming Pan"
-      ],
-      "primary_category": "cs.AI",
-      "categories": [
-        "cs.AI",
-        "cs.LG"
-      ],
-      "published": "2026-01-07 04:20:30+00:00",
-      "link": "https://arxiv.org/pdf/2601.04260v1",
-      "tags": [
-        "query:大厂llm"
-      ],
-      "llm_score": 9.0,
-      "llm_evidence": "Mechanistic analysis of Qwen3 architecture and reasoning strategies, directly relevant to LLM technical reports",
-      "llm_tags": [
-        "query:大厂llm"
-      ]
-    },
-    {
       "id": "2601.04537v1",
       "title": "Not All Steps are Informative: On the Linearity of LLMs' RLVR Training",
       "abstract": "Reinforcement learning with verifiable rewards (RLVR) has become a central component of large language model (LLM) post-training. Unlike supervised fine-tuning (SFT), RLVR lets an LLM generate multiple candidate solutions and reinforces those that lead to a verifiably correct final answer. However, in practice, RLVR often requires thousands of training steps to reach strong performance, incurring substantial computation largely attributed to prolonged exploration. In this work, we make a surprising observation: during RLVR, LLMs evolve in a strongly linear manner. Specifically, both model weights and model output log-probabilities exhibit strong linear correlations with RL training steps. This suggests that RLVR predominantly amplifies trends that emerge early in training, rather than continuously discovering new behaviors throughout the entire optimization trajectory. Motivated by this linearity, we investigate whether future model states can be predicted from intermediate checkpoints via extrapolation, avoiding continued expensive training. We show that Weight Extrapolation produces models with performance comparable to standard RL training while requiring significantly less computation. Moreover, Logits Extrapolation consistently outperforms continued RL training on all four benchmarks by extrapolating beyond the step range where RL training remains stable.",
@@ -358,25 +333,26 @@
       ]
     },
     {
-      "id": "2601.04424v1",
-      "title": "Gavel: Agent Meets Checklist for Evaluating LLMs on Long-Context Legal Summarization",
-      "abstract": "Large language models (LLMs) now support contexts of up to 1M tokens, but their effectiveness on complex long-context tasks remains unclear. In this paper, we study multi-document legal case summarization, where a single case often spans many documents totaling 100K-500K tokens. We introduce Gavel-Ref, a reference-based evaluation framework with multi-value checklist evaluation over 26 items, as well as residual fact and writing-style evaluations. Using Gavel-Ref, we go beyond the single aggregate scores reported in prior work and systematically evaluate 12 frontier LLMs on 100 legal cases ranging from 32K to 512K tokens, primarily from 2025. Our results show that even the strongest model, Gemini 2.5 Pro, achieves only around 50 of $S_{\\text{Gavel-Ref}}$, highlighting the difficulty of the task. Models perform well on simple checklist items (e.g., filing date) but struggle on multi-value or rare ones such as settlements and monitor reports. As LLMs continue to improve and may surpass human-written summaries -- making human references less reliable -- we develop Gavel-Agent, an efficient and autonomous agent scaffold that equips LLMs with six tools to navigate and extract checklists directly from case documents. With Qwen3, Gavel-Agent reduces token usage by 36% while resulting in only a 7% drop in $S_{\\text{checklist}}$ compared to end-to-end extraction with GPT-4.1.",
+      "id": "2601.04260v1",
+      "title": "Towards a Mechanistic Understanding of Propositional Logical Reasoning in Large Language Models",
+      "abstract": "Understanding how Large Language Models (LLMs) perform logical reasoning internally remains a fundamental challenge. While prior mechanistic studies focus on identifying taskspecific circuits, they leave open the question of what computational strategies LLMs employ for propositional reasoning. We address this gap through comprehensive analysis of Qwen3 (8B and 14B) on PropLogic-MI, a controlled dataset spanning 11 propositional logic rule categories across one-hop and two-hop reasoning. Rather than asking ''which components are necessary,'' we ask ''how does the model organize computation?'' Our analysis reveals a coherent computational architecture comprising four interlocking mechanisms: Staged Computation (layer-wise processing phases), Information Transmission (information flow aggregation at boundary tokens), Fact Retrospection (persistent re-access of source facts), and Specialized Attention Heads (functionally distinct head types). These mechanisms generalize across model scales, rule types, and reasoning depths, providing mechanistic evidence that LLMs employ structured computational strategies for logical reasoning.",
       "authors": [
-        "Yao Dou",
-        "Wei Xu"
+        "Danchun Chen",
+        "Qiyao Yan",
+        "Liangming Pan"
       ],
-      "primary_category": "cs.CL",
+      "primary_category": "cs.AI",
       "categories": [
-        "cs.CL"
+        "cs.AI",
+        "cs.LG"
       ],
-      "published": "2026-01-07 22:08:17+00:00",
-      "link": "https://arxiv.org/pdf/2601.04424v1",
+      "published": "2026-01-07 04:20:30+00:00",
+      "link": "https://arxiv.org/pdf/2601.04260v1",
       "tags": [
-        "query:sr-bench",
         "query:大厂llm"
       ],
       "llm_score": 9.0,
-      "llm_evidence": "Evaluates frontier LLMs like Gemini on long-context benchmarks",
+      "llm_evidence": "Mechanistic analysis of Qwen3 architecture and reasoning strategies, directly relevant to LLM technical reports",
       "llm_tags": [
         "query:大厂llm"
       ]
@@ -407,6 +383,59 @@
       ]
     },
     {
+      "id": "2601.04424v1",
+      "title": "Gavel: Agent Meets Checklist for Evaluating LLMs on Long-Context Legal Summarization",
+      "abstract": "Large language models (LLMs) now support contexts of up to 1M tokens, but their effectiveness on complex long-context tasks remains unclear. In this paper, we study multi-document legal case summarization, where a single case often spans many documents totaling 100K-500K tokens. We introduce Gavel-Ref, a reference-based evaluation framework with multi-value checklist evaluation over 26 items, as well as residual fact and writing-style evaluations. Using Gavel-Ref, we go beyond the single aggregate scores reported in prior work and systematically evaluate 12 frontier LLMs on 100 legal cases ranging from 32K to 512K tokens, primarily from 2025. Our results show that even the strongest model, Gemini 2.5 Pro, achieves only around 50 of $S_{\\text{Gavel-Ref}}$, highlighting the difficulty of the task. Models perform well on simple checklist items (e.g., filing date) but struggle on multi-value or rare ones such as settlements and monitor reports. As LLMs continue to improve and may surpass human-written summaries -- making human references less reliable -- we develop Gavel-Agent, an efficient and autonomous agent scaffold that equips LLMs with six tools to navigate and extract checklists directly from case documents. With Qwen3, Gavel-Agent reduces token usage by 36% while resulting in only a 7% drop in $S_{\\text{checklist}}$ compared to end-to-end extraction with GPT-4.1.",
+      "authors": [
+        "Yao Dou",
+        "Wei Xu"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-01-07 22:08:17+00:00",
+      "link": "https://arxiv.org/pdf/2601.04424v1",
+      "tags": [
+        "query:sr-bench",
+        "query:大厂llm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence": "Evaluates frontier LLMs like Gemini on long-context benchmarks",
+      "llm_tags": [
+        "query:大厂llm"
+      ]
+    },
+    {
+      "id": "2601.04809v1",
+      "title": "SCALER:Synthetic Scalable Adaptive Learning Environment for Reasoning",
+      "abstract": "Reinforcement learning (RL) offers a principled way to enhance the reasoning capabilities of large language models, yet its effectiveness hinges on training signals that remain informative as models evolve. In practice, RL progress often slows when task difficulty becomes poorly aligned with model capability, or when training is dominated by a narrow set of recurring problem patterns. To jointly address these issues, we propose SCALER (Synthetic sCalable Adaptive Learning Environment for Reasoning), a framework that sustains effective learning signals through adaptive environment design. SCALER introduces a scalable synthesis pipeline that converts real-world programming problems into verifiable reasoning environments with controllable difficulty and unbounded instance generation, enabling RL training beyond finite datasets while preserving strong correctness guarantees. Building on this, SCALER further employs an adaptive multi-environment RL strategy that dynamically adjusts instance difficulty and curates the active set of environments to track the model's capability frontier and maintain distributional diversity. This co-adaptation prevents reward sparsity, mitigates overfitting to narrow task patterns, and supports sustained improvement throughout training. Extensive experiments show that SCALER consistently outperforms dataset-based RL baselines across diverse reasoning benchmarks and exhibits more stable, long-horizon training dynamics.",
+      "authors": [
+        "Caijun Xu",
+        "Changyi Xiao",
+        "Zhongyuan Peng",
+        "Xinrun Wang",
+        "Yixin Cao"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-01-08 10:42:04+00:00",
+      "link": "https://arxiv.org/pdf/2601.04809v1",
+      "tags": [
+        "keyword:RL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence": "Uses Reinforcement Learning to enhance reasoning in Large Language Models",
+      "llm_tags": [
+        "keyword:RL",
+        "query:大厂llm"
+      ]
+    }
+  ],
+  "quick_skim": [
+    {
       "id": "2601.04597v1",
       "title": "THaLLE-ThaiLLM: Domain-Specialized Small LLMs for Finance and Thai -- Technical Report",
       "abstract": "Large Language Models (LLMs) have demonstrated significant potential across various domains, particularly in banking and finance, where they can automate complex tasks and enhance decision-making at scale. Due to privacy, security, and regulatory concerns, organizations often prefer on-premise deployment of LLMs. The ThaiLLM initiative aims to enhance Thai language capabilities in open-LLMs, enabling Thai industry to leverage advanced language models. However, organizations often face a trade-off between deploying multiple specialized models versus the prohibitive expense of training a single multi-capability model. To address this, we explore model merging as a resource-efficient alternative for developing high-performance, multi-capability LLMs. We present results from two key experiments: first, merging Qwen-8B with ThaiLLM-8B demonstrates how ThaiLLM-8B enhances Thai general capabilities, showing an uplift of M3 and M6 O-NET exams over the general instruction-following Qwen-8B. Second, we merge Qwen-8B with both ThaiLLM-8B and THaLLE-CFA-8B. This combination results in further improvements in performance across both general and financial domains, by demonstrating an uplift in both M3 and M6 O-NET, Flare-CFA, and Thai-IC benchmarks. The report showcases the viability of model merging for efficiently creating multi-capability LLMs.",
@@ -432,43 +461,6 @@
       ],
       "llm_score": 9.0,
       "llm_evidence": "Technical report on ThaiLLM architecture and model merging methodologies",
-      "llm_tags": [
-        "query:大厂llm"
-      ]
-    }
-  ],
-  "quick_skim": [
-    {
-      "id": "2601.04720v1",
-      "title": "Qwen3-VL-Embedding and Qwen3-VL-Reranker: A Unified Framework for State-of-the-Art Multimodal Retrieval and Ranking",
-      "abstract": "In this report, we introduce the Qwen3-VL-Embedding and Qwen3-VL-Reranker model series, the latest extensions of the Qwen family built on the Qwen3-VL foundation model. Together, they provide an end-to-end pipeline for high-precision multimodal search by mapping diverse modalities, including text, images, document images, and video, into a unified representation space. The Qwen3-VL-Embedding model employs a multi-stage training paradigm, progressing from large-scale contrastive pre-training to reranking model distillation, to generate semantically rich high-dimensional vectors. It supports Matryoshka Representation Learning, enabling flexible embedding dimensions, and handles inputs up to 32k tokens. Complementing this, Qwen3-VL-Reranker performs fine-grained relevance estimation for query-document pairs using a cross-encoder architecture with cross-attention mechanisms. Both model series inherit the multilingual capabilities of Qwen3-VL, supporting more than 30 languages, and are released in $\\textbf{2B}$ and $\\textbf{8B}$ parameter sizes to accommodate diverse deployment requirements. Empirical evaluations demonstrate that the Qwen3-VL-Embedding series achieves state-of-the-art results across diverse multimodal embedding evaluation benchmarks. Specifically, Qwen3-VL-Embedding-8B attains an overall score of $\\textbf{77.8}$ on MMEB-V2, ranking first among all models (as of January 8, 2025). This report presents the architecture, training methodology, and practical capabilities of the series, demonstrating their effectiveness on various multimodal retrieval tasks, including image-text retrieval, visual question answering, and video-text matching.",
-      "authors": [
-        "Mingxin Li",
-        "Yanzhao Zhang",
-        "Dingkun Long",
-        "Keqin Chen",
-        "Sibo Song",
-        "Shuai Bai",
-        "Zhibo Yang",
-        "Pengjun Xie",
-        "An Yang",
-        "Dayiheng Liu",
-        "Jingren Zhou",
-        "Junyang Lin"
-      ],
-      "primary_category": "cs.CL",
-      "categories": [
-        "cs.CL"
-      ],
-      "published": "2026-01-08 08:36:06+00:00",
-      "link": "https://arxiv.org/pdf/2601.04720v1",
-      "tags": [
-        "keyword:resnet",
-        "query:sr-bench",
-        "query:大厂llm"
-      ],
-      "llm_score": 9.0,
-      "llm_evidence": "Technical report on Qwen3-VL foundation models from Alibaba, covering architecture and training",
       "llm_tags": [
         "query:大厂llm"
       ],
@@ -527,29 +519,37 @@
       "quick_tier": "6"
     },
     {
-      "id": "2601.04809v1",
-      "title": "SCALER:Synthetic Scalable Adaptive Learning Environment for Reasoning",
-      "abstract": "Reinforcement learning (RL) offers a principled way to enhance the reasoning capabilities of large language models, yet its effectiveness hinges on training signals that remain informative as models evolve. In practice, RL progress often slows when task difficulty becomes poorly aligned with model capability, or when training is dominated by a narrow set of recurring problem patterns. To jointly address these issues, we propose SCALER (Synthetic sCalable Adaptive Learning Environment for Reasoning), a framework that sustains effective learning signals through adaptive environment design. SCALER introduces a scalable synthesis pipeline that converts real-world programming problems into verifiable reasoning environments with controllable difficulty and unbounded instance generation, enabling RL training beyond finite datasets while preserving strong correctness guarantees. Building on this, SCALER further employs an adaptive multi-environment RL strategy that dynamically adjusts instance difficulty and curates the active set of environments to track the model's capability frontier and maintain distributional diversity. This co-adaptation prevents reward sparsity, mitigates overfitting to narrow task patterns, and supports sustained improvement throughout training. Extensive experiments show that SCALER consistently outperforms dataset-based RL baselines across diverse reasoning benchmarks and exhibits more stable, long-horizon training dynamics.",
+      "id": "2601.04720v1",
+      "title": "Qwen3-VL-Embedding and Qwen3-VL-Reranker: A Unified Framework for State-of-the-Art Multimodal Retrieval and Ranking",
+      "abstract": "In this report, we introduce the Qwen3-VL-Embedding and Qwen3-VL-Reranker model series, the latest extensions of the Qwen family built on the Qwen3-VL foundation model. Together, they provide an end-to-end pipeline for high-precision multimodal search by mapping diverse modalities, including text, images, document images, and video, into a unified representation space. The Qwen3-VL-Embedding model employs a multi-stage training paradigm, progressing from large-scale contrastive pre-training to reranking model distillation, to generate semantically rich high-dimensional vectors. It supports Matryoshka Representation Learning, enabling flexible embedding dimensions, and handles inputs up to 32k tokens. Complementing this, Qwen3-VL-Reranker performs fine-grained relevance estimation for query-document pairs using a cross-encoder architecture with cross-attention mechanisms. Both model series inherit the multilingual capabilities of Qwen3-VL, supporting more than 30 languages, and are released in $\\textbf{2B}$ and $\\textbf{8B}$ parameter sizes to accommodate diverse deployment requirements. Empirical evaluations demonstrate that the Qwen3-VL-Embedding series achieves state-of-the-art results across diverse multimodal embedding evaluation benchmarks. Specifically, Qwen3-VL-Embedding-8B attains an overall score of $\\textbf{77.8}$ on MMEB-V2, ranking first among all models (as of January 8, 2025). This report presents the architecture, training methodology, and practical capabilities of the series, demonstrating their effectiveness on various multimodal retrieval tasks, including image-text retrieval, visual question answering, and video-text matching.",
       "authors": [
-        "Caijun Xu",
-        "Changyi Xiao",
-        "Zhongyuan Peng",
-        "Xinrun Wang",
-        "Yixin Cao"
+        "Mingxin Li",
+        "Yanzhao Zhang",
+        "Dingkun Long",
+        "Keqin Chen",
+        "Sibo Song",
+        "Shuai Bai",
+        "Zhibo Yang",
+        "Pengjun Xie",
+        "An Yang",
+        "Dayiheng Liu",
+        "Jingren Zhou",
+        "Junyang Lin"
       ],
-      "primary_category": "cs.AI",
+      "primary_category": "cs.CL",
       "categories": [
-        "cs.AI"
+        "cs.CL"
       ],
-      "published": "2026-01-08 10:42:04+00:00",
-      "link": "https://arxiv.org/pdf/2601.04809v1",
+      "published": "2026-01-08 08:36:06+00:00",
+      "link": "https://arxiv.org/pdf/2601.04720v1",
       "tags": [
-        "keyword:RL"
+        "keyword:resnet",
+        "query:sr-bench",
+        "query:大厂llm"
       ],
       "llm_score": 9.0,
-      "llm_evidence": "Uses Reinforcement Learning to enhance reasoning in Large Language Models",
+      "llm_evidence": "Technical report on Qwen3-VL foundation models from Alibaba, covering architecture and training",
       "llm_tags": [
-        "keyword:RL",
         "query:大厂llm"
       ],
       "quick_tier": "8plus"

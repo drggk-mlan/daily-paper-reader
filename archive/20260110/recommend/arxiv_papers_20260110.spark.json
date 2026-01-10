@@ -1,15 +1,15 @@
 {
   "mode": "spark",
-  "generated_at": "2026-01-10T21:41:46.952443+00:00",
+  "generated_at": "2026-01-10T22:36:38.861106+00:00",
   "stats": {
     "mode": "spark",
     "tag_count": 5,
-    "deep_dive_selected": 10,
-    "deep_dive_cap": 10,
-    "deep_dive_divecandidates": 52,
-    "quick_skim_selected": 15,
+    "deep_divecandidates": 52,
+    "deep_cap": 10,
+    "deep_selected": 10,
+    "quick_candidates": 133,
     "quick_skim_target": 15,
-    "quick_skim_candidates": 133
+    "quick_selected": 15
   },
   "deep_dive": [
     {
@@ -151,6 +151,32 @@
       ]
     },
     {
+      "id": "2601.03895v1",
+      "title": "Adaptive-Boundary-Clipping GRPO: Ensuring Bounded Ratios for Stable and Generalizable Training",
+      "abstract": "Group Relative Policy Optimization (GRPO) has emerged as a popular algorithm for reinforcement learning with large language models (LLMs). However, upon analyzing its clipping mechanism, we argue that it is suboptimal in certain scenarios. With appropriate modifications, GRPO can be significantly enhanced to improve both flexibility and generalization. To this end, we propose Adaptive-Boundary-Clipping GRPO (ABC-GRPO), an asymmetric and adaptive refinement of the original GRPO framework. We demonstrate that ABC-GRPO achieves superior performance over standard GRPO on mathematical reasoning tasks using the Qwen3 LLMs. Moreover, ABC-GRPO maintains substantially higher entropy throughout training, thereby preserving the model's exploration capacity and mitigating premature convergence. The implementation code is available online to ease reproducibility https://github.com/chi2liu/ABC-GRPO.",
+      "authors": [
+        "Chi Liu",
+        "Xin Chen"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-01-07 13:04:52+00:00",
+      "link": "https://arxiv.org/pdf/2601.03895v1",
+      "tags": [
+        "keyword:RL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence": "Refines GRPO reinforcement learning for LLM training stability",
+      "llm_tags": [
+        "keyword:RL",
+        "query:大厂llm"
+      ]
+    },
+    {
       "id": "2601.03699v1",
       "title": "RedBench: A Universal Dataset for Comprehensive Red Teaming of Large Language Models",
       "abstract": "As large language models (LLMs) become integral to safety-critical applications, ensuring their robustness against adversarial prompts is paramount. However, existing red teaming datasets suffer from inconsistent risk categorizations, limited domain coverage, and outdated evaluations, hindering systematic vulnerability assessments. To address these challenges, we introduce RedBench, a universal dataset aggregating 37 benchmark datasets from leading conferences and repositories, comprising 29,362 samples across attack and refusal prompts. RedBench employs a standardized taxonomy with 22 risk categories and 19 domains, enabling consistent and comprehensive evaluations of LLM vulnerabilities. We provide a detailed analysis of existing datasets, establish baselines for modern LLMs, and open-source the dataset and evaluation code. Our contributions facilitate robust comparisons, foster future research, and promote the development of secure and reliable LLMs for real-world deployment. Code: https://github.com/knoveleng/redeval",
@@ -208,12 +234,15 @@
       ]
     },
     {
-      "id": "2601.03895v1",
-      "title": "Adaptive-Boundary-Clipping GRPO: Ensuring Bounded Ratios for Stable and Generalizable Training",
-      "abstract": "Group Relative Policy Optimization (GRPO) has emerged as a popular algorithm for reinforcement learning with large language models (LLMs). However, upon analyzing its clipping mechanism, we argue that it is suboptimal in certain scenarios. With appropriate modifications, GRPO can be significantly enhanced to improve both flexibility and generalization. To this end, we propose Adaptive-Boundary-Clipping GRPO (ABC-GRPO), an asymmetric and adaptive refinement of the original GRPO framework. We demonstrate that ABC-GRPO achieves superior performance over standard GRPO on mathematical reasoning tasks using the Qwen3 LLMs. Moreover, ABC-GRPO maintains substantially higher entropy throughout training, thereby preserving the model's exploration capacity and mitigating premature convergence. The implementation code is available online to ease reproducibility https://github.com/chi2liu/ABC-GRPO.",
+      "id": "2601.04411v1",
+      "title": "Rate or Fate? RLV$^\\varepsilon$R: Reinforcement Learning with Verifiable Noisy Rewards",
+      "abstract": "Reinforcement learning with verifiable rewards (RLVR) is a simple but powerful paradigm for training LLMs: sample a completion, verify it, and update. In practice, however, the verifier is almost never clean--unit tests probe only limited corner cases; human and synthetic labels are imperfect; and LLM judges (e.g., RLAIF) are noisy and can be exploited--and this problem worsens on harder domains (especially coding) where tests are sparse and increasingly model-generated. We ask a pragmatic question: does the verification noise merely slow down the learning (rate), or can it flip the outcome (fate)?   To address this, we develop an analytically tractable multi-armed bandit view of RLVR dynamics, instantiated with GRPO and validated in controlled experiments. Modeling false positives and false negatives and grouping completions into recurring reasoning modes yields a replicator-style (natural-selection) flow on the probability simplex. The dynamics decouples into within-correct-mode competition and a one-dimensional evolution for the mass on incorrect modes, whose drift is determined solely by Youden's index J=TPR-FPR. This yields a sharp phase transition: when J>0, the incorrect mass is driven toward extinction (learning); when J=0, the process is neutral; and when J<0, incorrect modes amplify until they dominate (anti-learning and collapse). In the learning regime J>0, noise primarily rescales convergence time (\"rate, not fate\"). Experiments on verifiable programming tasks under synthetic noise reproduce the predicted J=0 boundary. Beyond noise, the framework offers a general lens for analyzing RLVR stability, convergence, and algorithmic interventions.",
       "authors": [
-        "Chi Liu",
-        "Xin Chen"
+        "Ali Rad",
+        "Khashayar Filom",
+        "Darioush Keivan",
+        "Peyman Mohajerin Esfahani",
+        "Ehsan Kamalinejad"
       ],
       "primary_category": "cs.LG",
       "categories": [
@@ -221,13 +250,14 @@
         "cs.AI",
         "cs.CL"
       ],
-      "published": "2026-01-07 13:04:52+00:00",
-      "link": "https://arxiv.org/pdf/2601.03895v1",
+      "published": "2026-01-07 21:31:26+00:00",
+      "link": "https://arxiv.org/pdf/2601.04411v1",
       "tags": [
-        "keyword:RL"
+        "keyword:RL",
+        "keyword:符号回归（示例）"
       ],
       "llm_score": 9.0,
-      "llm_evidence": "Refines GRPO reinforcement learning for LLM training stability",
+      "llm_evidence": "Reinforcement learning with verifiable rewards for training LLMs",
       "llm_tags": [
         "keyword:RL",
         "query:大厂llm"
@@ -268,36 +298,6 @@
       "llm_score": 9.0,
       "llm_evidence": "presents a framework for systematic evaluation of LLM benchmarks across multiple domains",
       "llm_tags": [
-        "query:大厂llm"
-      ]
-    },
-    {
-      "id": "2601.04411v1",
-      "title": "Rate or Fate? RLV$^\\varepsilon$R: Reinforcement Learning with Verifiable Noisy Rewards",
-      "abstract": "Reinforcement learning with verifiable rewards (RLVR) is a simple but powerful paradigm for training LLMs: sample a completion, verify it, and update. In practice, however, the verifier is almost never clean--unit tests probe only limited corner cases; human and synthetic labels are imperfect; and LLM judges (e.g., RLAIF) are noisy and can be exploited--and this problem worsens on harder domains (especially coding) where tests are sparse and increasingly model-generated. We ask a pragmatic question: does the verification noise merely slow down the learning (rate), or can it flip the outcome (fate)?   To address this, we develop an analytically tractable multi-armed bandit view of RLVR dynamics, instantiated with GRPO and validated in controlled experiments. Modeling false positives and false negatives and grouping completions into recurring reasoning modes yields a replicator-style (natural-selection) flow on the probability simplex. The dynamics decouples into within-correct-mode competition and a one-dimensional evolution for the mass on incorrect modes, whose drift is determined solely by Youden's index J=TPR-FPR. This yields a sharp phase transition: when J>0, the incorrect mass is driven toward extinction (learning); when J=0, the process is neutral; and when J<0, incorrect modes amplify until they dominate (anti-learning and collapse). In the learning regime J>0, noise primarily rescales convergence time (\"rate, not fate\"). Experiments on verifiable programming tasks under synthetic noise reproduce the predicted J=0 boundary. Beyond noise, the framework offers a general lens for analyzing RLVR stability, convergence, and algorithmic interventions.",
-      "authors": [
-        "Ali Rad",
-        "Khashayar Filom",
-        "Darioush Keivan",
-        "Peyman Mohajerin Esfahani",
-        "Ehsan Kamalinejad"
-      ],
-      "primary_category": "cs.LG",
-      "categories": [
-        "cs.LG",
-        "cs.AI",
-        "cs.CL"
-      ],
-      "published": "2026-01-07 21:31:26+00:00",
-      "link": "https://arxiv.org/pdf/2601.04411v1",
-      "tags": [
-        "keyword:RL",
-        "keyword:符号回归（示例）"
-      ],
-      "llm_score": 9.0,
-      "llm_evidence": "Reinforcement learning with verifiable rewards for training LLMs",
-      "llm_tags": [
-        "keyword:RL",
         "query:大厂llm"
       ]
     }
