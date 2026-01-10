@@ -1,0 +1,97 @@
+name: daily-paper-reader
+
+on:
+  schedule:
+    - cron: "30 2 * * *" # 每天 UTC 02:30
+  workflow_dispatch:
+    inputs:
+      run_enrich:
+        description: "Run 0.enrich_config_queries.py"
+        required: false
+        default: "false"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-paper-reader
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      BLT_API_KEY: ${{ secrets.BLT_API_KEY }}
+      BLT_REWRITE_MODEL: gemini-3-flash-preview
+      BLT_RERANK_MODEL: qwen3-reranker-4b
+      BLT_FILTER_MODEL: gemini-3-flash-preview-nothinking
+      HF_HOME: ~/.cache/huggingface
+      TRANSFORMERS_CACHE: ~/.cache/huggingface
+      PYTHONUNBUFFERED: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip + HF + torch
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/torch
+          key: ${{ runner.os }}-dpr-${{ hashFiles('requirements.txt') }}
+
+      - name: Install deps (skip sqlite3)
+        run: |
+          python - <<'PY'
+          import re
+          lines = open("requirements.txt", "r", encoding="utf-8").read().splitlines()
+          lines = [l for l in lines if l.strip() and not re.match(r"^sqlite3\\b", l)]
+          open("/tmp/req.txt", "w", encoding="utf-8").write("\\n".join(lines))
+          PY
+          python -m pip install --upgrade pip
+          python -m pip install -r /tmp/req.txt
+
+      - name: Step 0 (optional) enrich config
+        if: ${{ github.event.inputs.run_enrich == 'true' }}
+        run: |
+          python scripts/0.enrich_config_queries.py
+
+      - name: Step 1 fetch arxiv
+        run: |
+          python scripts/1.fetch_paper_arxiv.py
+
+      - name: Step 2.1 BM25
+        run: |
+          python scripts/2.1.retrieval_papers_bm25.py
+
+      - name: Step 2.2 Embedding
+        run: |
+          python scripts/2.2.retrieval_papers_embedding.py --device cpu --batch-size 8
+
+      - name: Step 2.3 RRF
+        run: |
+          python scripts/2.3.retrieval_papers_rrf.py
+
+      - name: Step 3 Rerank
+        run: |
+          python scripts/3.rank_papers.py
+
+      - name: Step 4 LLM refine
+        run: |
+          python scripts/4.llm_refine_papers.py
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add archive config.yaml
+          git diff --cached --quiet || git commit -m "chore: daily pipeline"
+          git push

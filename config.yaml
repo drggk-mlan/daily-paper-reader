@@ -18,18 +18,17 @@ subscriptions:
     rewrite: Find research papers describing recent advancements in symbolic regression
       techniques that utilize deep learning and genetic programming to discover interpretable
       mathematical expressions and governing physical laws from complex datasets.
-  - keyword: transformer
-    tag: 大语言模型
+  - keyword: reinforcement learning
+    tag: RL
     related:
-    - self-attention mechanism
-    - positional encoding
-    - Vision Transformer
-    - sequence-to-sequence learning
-    - multi-head attention
-    - Large Language Models
-    rewrite: Find research papers describing recent advancements in transformer architectures,
-      focusing on self-attention mechanisms, computational efficiency, and their applications
-      in large-scale natural language processing and computer vision.
+    - Markov Decision Processes
+    - Multi-agent systems
+    - Policy gradient methods
+    - Inverse reinforcement learning
+    - Exploration-exploitation trade-off
+    rewrite: Find research papers describing recent advancements in deep reinforcement
+      learning algorithms for autonomous decision-making in complex multi-agent environments
+      and their applications in real-world robotics.
   - keyword: resnet
     tag: resnet
     related:
@@ -43,19 +42,6 @@ subscriptions:
       benchmarks of deep residual networks in computer vision, specifically focusing
       on the implementation of skip connections to address the vanishing gradient
       problem in high-depth neural network training.
-  - keyword: 残差神经网络
-    tag: resnet中文
-    related:
-    - skip connections
-    - vanishing gradient problem
-    - identity mapping
-    - DenseNet
-    - ResNeXt
-    - deep supervision
-    rewrite: Find research papers describing recent advancements in residual neural
-      network architectures, focusing on deep skip connections, optimization strategies
-      for vanishing gradients, and their diverse applications in high-performance
-      computer vision and medical image analysis.
   llm_queries:
   - query: 我希望找一些跟符号回归相关的论文，我是做benchmark的希望找一些benchmark和符号回归结合的论文
     tag: sr-bench

@@ -14,7 +14,21 @@ from typing import Any, Dict, List, Tuple
 
 SCRIPT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-FILTERED_DIR = os.path.join(ROOT_DIR, "archive", "filtered")
+TODAY_STR = datetime.now(timezone.utc).strftime("%Y%m%d")
+ARCHIVE_DIR = os.path.join(ROOT_DIR, "archive", TODAY_STR)
+FILTERED_DIR = os.path.join(ARCHIVE_DIR, "filtered")
+
+def log(message: str) -> None:
+  ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+  print(f"[{ts}] {message}", flush=True)
+
+
+def group_start(title: str) -> None:
+  print(f"::group::{title}", flush=True)
+
+
+def group_end() -> None:
+  print("::endgroup::", flush=True)
 
 
 def load_json(path: str) -> Dict[str, Any]:
@@ -28,16 +42,21 @@ def save_json(data: Dict[str, Any], path: str) -> None:
   os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
   with open(path, "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
-  print(f"[INFO] 已写入融合结果：{path}")
+  log(f"[INFO] 已写入融合结果：{path}")
 
 
-def make_query_key(q: Dict[str, Any]) -> Tuple[str, str, str, str]:
-  return (
-    str(q.get("type") or ""),
-    str(q.get("tag") or ""),
-    str(q.get("paper_tag") or ""),
-    str(q.get("query_text") or ""),
+def make_query_key(q: Dict[str, Any]) -> Tuple[str, str]:
+  """
+  生成用于对齐 BM25 / Embedding 查询的稳定键。
+  优先使用 paper_tag（同一意图在 2.1/2.2 里一致），再退回 tag / query_text。
+  """
+  q_type = str(q.get("type") or "")
+  key_text = (
+    str(q.get("paper_tag") or "")
+    or str(q.get("tag") or "")
+    or str(q.get("query_text") or "")
   )
+  return (q_type, key_text)
 
 
 def normalize_rank_list(sim_scores: Any) -> List[Tuple[str, int]]:
@@ -97,29 +116,52 @@ def build_paper_map(papers_list: List[Dict[str, Any]]) -> Dict[str, Dict[str, An
   return id_to_paper
 
 
+def merge_paper_maps(
+  base: Dict[str, Dict[str, Any]],
+  incoming: Dict[str, Dict[str, Any]],
+) -> Dict[str, Dict[str, Any]]:
+  """合并两份 paper map，tags 取并集，其它字段优先保留已有值。"""
+  for pid, paper in incoming.items():
+    if pid not in base:
+      base[pid] = paper
+      continue
+    base_tags = base[pid].get("tags") or set()
+    incoming_tags = paper.get("tags") or set()
+    if not isinstance(base_tags, set):
+      base_tags = set(base_tags)
+    if not isinstance(incoming_tags, set):
+      incoming_tags = set(incoming_tags)
+    base[pid]["tags"] = base_tags.union(incoming_tags)
+    for k, v in paper.items():
+      if k == "tags":
+        continue
+      if not base[pid].get(k) and v:
+        base[pid][k] = v
+  return base
+
+
 def main() -> None:
   parser = argparse.ArgumentParser(
     description="步骤 2.3：使用 RRF 融合 BM25 + Embedding 的召回结果并打 tag。",
   )
 
-  today_str = datetime.now(timezone.utc).strftime("%Y%m%d")
   parser.add_argument(
     "--bm25-input",
     type=str,
-    default=os.path.join(FILTERED_DIR, f"arxiv_papers_{today_str}.bm25.json"),
-    help="BM25 召回结果 JSON（默认 archive/filtered/arxiv_papers_YYYYMMDD.bm25.json）。",
+    default=os.path.join(FILTERED_DIR, f"arxiv_papers_{TODAY_STR}.bm25.json"),
+    help="BM25 召回结果 JSON（默认 archive/YYYYMMDD/filtered/arxiv_papers_YYYYMMDD.bm25.json）。",
   )
   parser.add_argument(
     "--embedding-input",
     type=str,
-    default=os.path.join(FILTERED_DIR, f"arxiv_papers_{today_str}.embedding.json"),
-    help="Embedding 召回结果 JSON（默认 archive/filtered/arxiv_papers_YYYYMMDD.embedding.json）。",
+    default=os.path.join(FILTERED_DIR, f"arxiv_papers_{TODAY_STR}.embedding.json"),
+    help="Embedding 召回结果 JSON（默认 archive/YYYYMMDD/filtered/arxiv_papers_YYYYMMDD.embedding.json）。",
   )
   parser.add_argument(
     "--output",
     type=str,
-    default=os.path.join(FILTERED_DIR, f"arxiv_papers_{today_str}.json"),
-    help="融合后的输出 JSON（默认 archive/filtered/arxiv_papers_YYYYMMDD.json）。",
+    default=os.path.join(FILTERED_DIR, f"arxiv_papers_{TODAY_STR}.json"),
+    help="融合后的输出 JSON（默认 archive/YYYYMMDD/filtered/arxiv_papers_YYYYMMDD.json）。",
   )
   parser.add_argument(
     "--top-n",
@@ -148,8 +190,10 @@ def main() -> None:
   if not os.path.isabs(out_path):
     out_path = os.path.abspath(os.path.join(ROOT_DIR, out_path))
 
+  group_start("Step 2.3 - load inputs")
   bm25_data = load_json(bm25_path)
   emb_data = load_json(emb_path)
+  group_end()
 
   bm25_queries = bm25_data.get("queries") or []
   emb_queries = emb_data.get("queries") or []
@@ -158,19 +202,28 @@ def main() -> None:
   emb_map = {make_query_key(q): q for q in emb_queries}
 
   all_keys = list({*bm25_map.keys(), *emb_map.keys()})
+  log(f"[INFO] RRF keys={len(all_keys)} | bm25_queries={len(bm25_queries)} | emb_queries={len(emb_queries)}")
 
+  group_start("Step 2.3 - merge papers")
   id_to_paper = build_paper_map(bm25_data.get("papers") or [])
-  id_to_paper.update(build_paper_map(emb_data.get("papers") or []))
+  id_to_paper = merge_paper_maps(id_to_paper, build_paper_map(emb_data.get("papers") or []))
+  log(f"[INFO] merged papers={len(id_to_paper)}")
+  group_end()
 
   fused_queries: List[Dict[str, Any]] = []
 
-  for key in all_keys:
+  group_start("Step 2.3 - fuse queries")
+  for idx, key in enumerate(all_keys, start=1):
     bm25_q = bm25_map.get(key) or {}
     emb_q = emb_map.get(key) or {}
 
-    q_type, q_tag, q_paper_tag, q_text = key
-    if not q_text:
+    q_type, q_key_text = key
+    if not q_key_text:
       continue
+    log(f"[INFO] fuse {idx}/{len(all_keys)} type={q_type} key={q_key_text}")
+    q_tag = bm25_q.get("tag") or emb_q.get("tag") or ""
+    q_paper_tag = bm25_q.get("paper_tag") or emb_q.get("paper_tag") or ""
+    q_text = bm25_q.get("query_text") or emb_q.get("query_text") or ""
 
     bm25_ranks = normalize_rank_list(bm25_q.get("sim_scores"))
     emb_ranks = normalize_rank_list(emb_q.get("sim_scores"))
@@ -185,8 +238,8 @@ def main() -> None:
     sim_scores: Dict[str, Dict[str, float | int]] = {}
     for rank_idx, (pid, score) in enumerate(top_items, start=1):
       sim_scores[pid] = {"score": float(score), "rank": rank_idx}
-    if q_paper_tag and pid in id_to_paper:
-      id_to_paper[pid]["tags"].add(q_paper_tag)
+      if q_paper_tag and pid in id_to_paper:
+        id_to_paper[pid]["tags"].add(q_paper_tag)
 
     fused_queries.append(
       {
@@ -197,6 +250,7 @@ def main() -> None:
         "sim_scores": sim_scores,
       }
     )
+  group_end()
 
   tagged_papers = []
   for p in id_to_paper.values():

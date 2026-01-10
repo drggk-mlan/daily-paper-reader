@@ -9,6 +9,7 @@
 import argparse
 import json
 import os
+from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from typing import Dict, List, Set, Any
 
@@ -21,8 +22,22 @@ from filter import EmbeddingCoarseFilter, encode_queries
 SCRIPT_DIR = os.path.dirname(__file__)
 CONFIG_FILE = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "config.yaml"))
 ROOT_DIR = os.path.dirname(CONFIG_FILE)
-RAW_DIR = os.path.join(ROOT_DIR, "archive", "raw")
-FILTERED_DIR = os.path.join(ROOT_DIR, "archive", "filtered")
+TODAY_STR = datetime.now(timezone.utc).strftime("%Y%m%d")
+ARCHIVE_DIR = os.path.join(ROOT_DIR, "archive", TODAY_STR)
+RAW_DIR = os.path.join(ARCHIVE_DIR, "raw")
+FILTERED_DIR = os.path.join(ARCHIVE_DIR, "filtered")
+
+def log(message: str) -> None:
+  ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+  print(f"[{ts}] {message}", flush=True)
+
+
+def group_start(title: str) -> None:
+  print(f"::group::{title}", flush=True)
+
+
+def group_end() -> None:
+  print("::endgroup::", flush=True)
 
 
 @dataclass
@@ -75,13 +90,13 @@ def load_config() -> dict:
   只要能拿到 subscriptions.keywords / subscriptions.llm_queries 即可。
   """
   if not os.path.exists(CONFIG_FILE):
-    print(f"[WARN] config.yaml 不存在：{CONFIG_FILE}")
+    log(f"[WARN] config.yaml 不存在：{CONFIG_FILE}")
     return {}
 
   try:
     import yaml  # type: ignore
   except Exception:
-    print("[WARN] 未安装 PyYAML，无法解析 config.yaml。")
+    log("[WARN] 未安装 PyYAML，无法解析 config.yaml。")
     return {}
 
   try:
@@ -89,10 +104,10 @@ def load_config() -> dict:
       data = yaml.safe_load(f) or {}
       if isinstance(data, dict):
         return data
-      print("[WARN] config.yaml 顶层结构不是字典，将忽略该配置文件。")
+      log("[WARN] config.yaml 顶层结构不是字典，将忽略该配置文件。")
       return {}
   except Exception as e:
-    print(f"[WARN] 读取 config.yaml 失败：{e}")
+    log(f"[WARN] 读取 config.yaml 失败：{e}")
     return {}
 
 
@@ -184,9 +199,9 @@ def load_paper_pool(path: str) -> List[Paper]:
       if p.id:
         papers.append(p)
     except Exception as e:
-      print(f"[WARN] 解析论文条目失败，将跳过：{e}")
+      log(f"[WARN] 解析论文条目失败，将跳过：{e}")
 
-  print(f"[INFO] 从 {path} 读取到 {len(papers)} 篇论文。")
+  log(f"[INFO] 从 {path} 读取到 {len(papers)} 篇论文。")
   return papers
 
 
@@ -209,7 +224,7 @@ def rank_papers_for_queries(
     }
   """
   if not queries:
-    print("[WARN] 未从 config.yaml 中解析到任何查询（keywords / llm_queries），将直接返回空结果。")
+    log("[WARN] 未从 config.yaml 中解析到任何查询（keywords / llm_queries），将直接返回空结果。")
     return {"queries": [], "papers": {}}
 
   paper_ids = [p.id for p in papers]
@@ -223,7 +238,7 @@ def rank_papers_for_queries(
     if not q_text:
       continue
 
-    print(f"[INFO] 正在处理查询（{q.get('type')}）：tag={q.get('tag') or ''}")
+    log(f"[INFO] 正在处理查询（{q.get('type')}）：tag={q.get('tag') or ''}")
 
     # 查询向量编码：若底层模型（如 Qwen3-Embedding）支持 "query" prompt，则自动使用
     q_emb = encode_queries(
@@ -313,8 +328,8 @@ def save_tagged_results(
   with open(output_path, "w", encoding="utf-8") as f:
     json.dump(payload, f, ensure_ascii=False, indent=2)
 
-  print(f"[INFO] 已将带 tag 的论文和每个查询的 top_k 结果写入：{output_path}")
-  print(f"[INFO] 其中带 tag 的论文数：{len(tagged_papers)}")
+  log(f"[INFO] 已将带 tag 的论文和每个查询的 top_k 结果写入：{output_path}")
+  log(f"[INFO] 其中带 tag 的论文数：{len(tagged_papers)}")
 
 
 def main() -> None:
@@ -325,13 +340,13 @@ def main() -> None:
     "--input",
     type=str,
     default=None,
-    help="可选：只处理指定的原始 JSON 文件；省略时将批量处理 archive/raw 目录下所有 .json 文件。",
+    help="可选：只处理指定的原始 JSON 文件；省略时将批量处理 archive/YYYYMMDD/raw 目录下所有 .json 文件。",
   )
   parser.add_argument(
     "--output",
     type=str,
     default=None,
-    help="可选：当使用 --input 处理单个文件时，自定义输出 JSON 路径；批处理模式下将自动写入 archive/filtered/ 目录，默认后缀 .embedding.json。",
+    help="可选：当使用 --input 处理单个文件时，自定义输出 JSON 路径；批处理模式下将自动写入 archive/YYYYMMDD/filtered 目录，默认后缀 .embedding.json。",
   )
   parser.add_argument(
     "--top-k",
@@ -369,7 +384,7 @@ def main() -> None:
   config = load_config()
   queries = build_queries_from_config(config)
   if not queries:
-    print("[ERROR] 未能从 config.yaml 中解析到 keywords / llm_queries，退出。")
+    log("[ERROR] 未能从 config.yaml 中解析到 keywords / llm_queries，退出。")
     return
 
   # 使用 EmbeddingCoarseFilter 类进行粗筛（模型只加载一次）
@@ -384,7 +399,7 @@ def main() -> None:
   def process_single_file(input_path: str, output_path: str) -> None:
     papers = load_paper_pool(input_path)
     if not papers:
-      print(f"[ERROR] 论文池为空，跳过文件：{input_path}")
+      log(f"[ERROR] 论文池为空，跳过文件：{input_path}")
       return
 
     total_papers = len(papers)
@@ -396,13 +411,13 @@ def main() -> None:
       else:
         blocks = (total_papers - 1) // 1000  # 0: <=1000, 1: 1001~2000, ...
         dynamic_top_k = 50 * (blocks + 1)
-      print(
+      log(
         f"[INFO] 文件 {os.path.basename(input_path)} 原始论文数为 {total_papers} 篇，"
         f"自适应设置每个查询 Top K = {dynamic_top_k}。"
       )
     else:
       dynamic_top_k = args.top_k
-      print(
+      log(
         f"[INFO] 文件 {os.path.basename(input_path)} 使用命令行指定的 Top K = {dynamic_top_k}，"
         f"原始论文数为 {total_papers} 篇。"
       )
@@ -411,10 +426,13 @@ def main() -> None:
     coarse_filter.top_k = dynamic_top_k
 
     # 1) 先用通用粗筛类拿到 embeddings
+    group_start(f"Step 2.2 - compute embeddings ({os.path.basename(input_path)})")
     coarse_result = coarse_filter.filter(items=papers, queries=queries)
+    group_end()
     paper_embeddings = coarse_result["embeddings"]
 
     # 2) 再用当前文件中的 rank_papers_for_queries 做「打 tag + 生成 top_ids」
+    group_start(f"Step 2.2 - rank queries ({os.path.basename(input_path)})")
     result = rank_papers_for_queries(
       model=coarse_filter.model,
       papers=papers,
@@ -422,18 +440,19 @@ def main() -> None:
       queries=queries,
       top_k=dynamic_top_k,
     )
+    group_end()
 
     save_tagged_results(result, output_path)
 
   # 决定处理哪些输入文件：
   # - 如果指定了 --input，则只处理该文件；
-  # - 否则遍历 archive/raw 目录下所有 .json 文件。
+  # - 否则遍历 archive/YYYYMMDD/raw 目录下所有 .json 文件。
   if args.input:
     input_path = args.input
     if not os.path.isabs(input_path):
       input_path = os.path.abspath(os.path.join(ROOT_DIR, input_path))
     if not os.path.exists(input_path):
-      print(f"[ERROR] 指定的输入文件不存在：{input_path}")
+      log(f"[ERROR] 指定的输入文件不存在：{input_path}")
       return
 
     if args.output:
@@ -441,7 +460,7 @@ def main() -> None:
       if not os.path.isabs(output_path):
         output_path = os.path.abspath(os.path.join(ROOT_DIR, output_path))
     else:
-      # 单文件模式下，如未指定输出路径，则写入 archive/filtered，文件名与原始 JSON 保持一致
+      # 单文件模式下，如未指定输出路径，则写入 archive/YYYYMMDD/filtered，文件名与原始 JSON 保持一致
       base = os.path.basename(input_path)
       if base.lower().endswith(".json"):
         base = base[:-5]
@@ -450,20 +469,20 @@ def main() -> None:
     process_single_file(input_path, output_path)
   else:
     if not os.path.isdir(RAW_DIR):
-      print(f"[ERROR] 原始目录不存在：{RAW_DIR}")
+      log(f"[ERROR] 原始目录不存在：{RAW_DIR}")
       return
 
     raw_files = sorted(
       f for f in os.listdir(RAW_DIR) if f.lower().endswith(".json")
     )
     if not raw_files:
-      print(f"[ERROR] 在 {RAW_DIR} 下未找到任何 .json 原始文件。")
+      log(f"[ERROR] 在 {RAW_DIR} 下未找到任何 .json 原始文件。")
       return
 
-    print(f"[INFO] 批量模式：将在 {RAW_DIR} 下处理 {len(raw_files)} 个 JSON 文件。")
+    log(f"[INFO] 批量模式：将在 {RAW_DIR} 下处理 {len(raw_files)} 个 JSON 文件。")
     for name in raw_files:
       input_path = os.path.join(RAW_DIR, name)
-      # 批量模式下，输出文件名与原始文件名保持一致，但目录变为 archive/filtered
+      # 批量模式下，输出文件名与原始文件名保持一致，但目录变为 archive/YYYYMMDD/filtered
       base = name
       if base.lower().endswith(".json"):
         base = base[:-5]

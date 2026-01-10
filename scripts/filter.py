@@ -3,14 +3,20 @@
 
 import numpy as np
 from typing import Any, Dict, List
+import time
+from datetime import datetime, timezone
 
 import torch
 from sentence_transformers import SentenceTransformer
-from tqdm import tqdm
 
 
 # E5 系列推荐使用 query/passsage 前缀来区分检索侧与文档侧
 E5_QUERY_PREFIX = "query: "
+
+
+def log(message: str) -> None:
+  ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+  print(f"[{ts}] {message}", flush=True)
 
 
 def _set_max_seq_length(model: SentenceTransformer, max_length: int | None) -> None:
@@ -72,6 +78,7 @@ def compute_embeddings(
   items: List[Any],
   batch_size: int = 8,
   max_length: int | None = None,
+  log_every: int = 20,
 ) -> np.ndarray:
   """
   为给定列表计算向量表示。
@@ -93,21 +100,33 @@ def compute_embeddings(
   if not texts:
     return np.zeros((0, 0), dtype=np.float32)
 
-  print(f"[INFO] 正在为 {len(texts)} 条记录计算向量表示...")
+  total = len(texts)
+  log(f"[INFO] 正在为 {total} 条记录计算向量表示...")
   encode_kwargs: Dict[str, Any] = {
     "convert_to_numpy": True,
     "normalize_embeddings": True,
     "batch_size": batch_size,
   }
 
-  # 使用自定义进度条展示 paper/s
   embeddings_list: List[np.ndarray] = []
-  with tqdm(total=len(texts), desc="Embedding", unit="paper") as pbar:
-    for start in range(0, len(texts), batch_size):
-      batch = texts[start : start + batch_size]
-      batch_emb = model.encode(batch, **encode_kwargs)
-      embeddings_list.append(batch_emb)
-      pbar.update(len(batch))
+  start_time = time.time()
+  processed = 0
+  next_log_at = log_every if log_every > 0 else 0
+  for start in range(0, total, batch_size):
+    batch = texts[start : start + batch_size]
+    batch_emb = model.encode(batch, **encode_kwargs)
+    embeddings_list.append(batch_emb)
+    processed += len(batch)
+    if log_every > 0:
+      while processed >= next_log_at and next_log_at <= total:
+        elapsed = time.time() - start_time
+        rate = processed / elapsed if elapsed > 0 else 0.0
+        log(f"[INFO] Embedding 进度: {processed}/{total} (~{rate:.2f} paper/s)")
+        next_log_at += log_every
+    elif processed == total:
+      elapsed = time.time() - start_time
+      rate = processed / elapsed if elapsed > 0 else 0.0
+      log(f"[INFO] Embedding 进度: {processed}/{total} (~{rate:.2f} paper/s)")
 
   return np.vstack(embeddings_list)
 

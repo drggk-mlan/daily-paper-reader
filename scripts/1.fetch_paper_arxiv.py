@@ -15,6 +15,18 @@ CATEGORIES_TO_FETCH = [
     "physics", "cond-mat", "hep-ph", "hep-th", "gr-qc", "astro-ph",
 ]
 
+def log(message: str) -> None:
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{ts}] {message}", flush=True)
+
+
+def group_start(title: str) -> None:
+    print(f"::group::{title}", flush=True)
+
+
+def group_end() -> None:
+    print("::endgroup::", flush=True)
+
 
 def fetch_all_domains_metadata_robust(
     days: int = 1,
@@ -27,7 +39,8 @@ def fetch_all_domains_metadata_robust(
     start_str = start_date.strftime("%Y%m%d0000")
     end_str = end_date.strftime("%Y%m%d2359")
     
-    print(f"🌍 [Global Ingest] Window: {start_str} TO {end_str}")
+    group_start("Step 1 - fetch arXiv")
+    log(f"🌍 [Global Ingest] Window: {start_str} TO {end_str}")
     
     # 结果集使用字典去重 (因为有些论文跨领域，比如同时在 cs 和 stat)
     unique_papers = {}
@@ -40,7 +53,8 @@ def fetch_all_domains_metadata_robust(
 
     # 2. 遍历分类进行抓取
     for category in CATEGORIES_TO_FETCH:
-        print(f"🚀 Fetching category: {category} ...")
+        group_start(f"Fetch category: {category}")
+        log(f"🚀 Fetching category: {category} ...")
         
         # 构造查询：cat:cs* AND submittedDate[...]
         # 使用通配符 category* 以覆盖子领域 (如 cs.AI, cs.LG)
@@ -79,37 +93,40 @@ def fetch_all_domains_metadata_robust(
                 count += 1
                 
                 if count % 100 == 0:
-                    print(f"   Category {category}: {count} papers fetched...")
+                    log(f"   Category {category}: {count} papers fetched...")
             
-            print(f"   ✅ Finished {category}: Got {count} new papers.")
+            log(f"   ✅ Finished {category}: Got {count} new papers.")
             
         except Exception as e:
             # 单个分类失败不影响大局，打印错误继续下一个
-            print(f"   ❌ Error fetching category {category}: {e}")
+            log(f"   ❌ Error fetching category {category}: {e}")
             time.sleep(5) # 出错后多歇一会
+        finally:
+            group_end()
 
     # 3. 保存汇总结果
     total_count = len(unique_papers)
-    print(f"\n✅ All Done. Total unique papers fetched: {total_count}")
+    log(f"✅ All Done. Total unique papers fetched: {total_count}")
     
     if total_count > 0:
-        # 若未显式指定输出文件，则按日期命名到项目根目录下的 archive/raw 目录：
-        # <ROOT_DIR>/archive/raw/arxiv_papers_YYYYMMDD.json
+        # 若未显式指定输出文件，则按日期命名到项目根目录下的 archive/YYYYMMDD/raw 目录：
+        # <ROOT_DIR>/archive/YYYYMMDD/raw/arxiv_papers_YYYYMMDD.json
         if not output_file:
             today_str = datetime.now(timezone.utc).strftime("%Y%m%d")
+            archive_dir = os.path.join(ROOT_DIR, "archive", today_str)
+            raw_dir = os.path.join(archive_dir, "raw")
             output_file = os.path.join(
-                ROOT_DIR,
-                "archive",
-                "raw",
+                raw_dir,
                 f"arxiv_papers_{today_str}.json",
             )
 
         os.makedirs(os.path.dirname(output_file) if os.path.dirname(output_file) else ".", exist_ok=True)
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(list(unique_papers.values()), f, ensure_ascii=False, indent=2)
-        print(f"💾 File saved to: {output_file}")
+        log(f"💾 File saved to: {output_file}")
     else:
-        print("⚠️ No papers found. Check your date range or network.")
+        log("⚠️ No papers found. Check your date range or network.")
+    group_end()
 
 if __name__ == "__main__":
     # 建议先用 days=1 测试一下，没问题再跑更长时间窗口

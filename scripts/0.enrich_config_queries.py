@@ -5,6 +5,7 @@
 
 import os
 import json
+from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 import yaml  # type: ignore
@@ -15,6 +16,18 @@ SCRIPT_DIR = os.path.dirname(__file__)
 CONFIG_FILE = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "config.yaml"))
 
 MODEL_NAME = os.getenv("BLT_REWRITE_MODEL", "gemini-3-flash-preview")
+
+def log(message: str) -> None:
+  ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+  print(f"[{ts}] {message}", flush=True)
+
+
+def group_start(title: str) -> None:
+  print(f"::group::{title}", flush=True)
+
+
+def group_end() -> None:
+  print("::endgroup::", flush=True)
 
 
 def build_related_prompt(keyword: str) -> List[Dict[str, str]]:
@@ -127,8 +140,10 @@ def main() -> None:
   if not api_key:
     raise RuntimeError("缺少 BLT_API_KEY 环境变量，无法调用 BLT。")
 
+  group_start("Step 0.0 - load config")
   with open(CONFIG_FILE, "r", encoding="utf-8") as f:
     data = yaml.safe_load(f) or {}
+  group_end()
 
   subs = (data or {}).get("subscriptions") or {}
   keywords = subs.get("keywords") or []
@@ -166,12 +181,15 @@ def main() -> None:
   }
 
   # keywords: 补齐 related
-  for item in keywords:
+  group_start("Step 0.1 - enrich keywords.related")
+  total_kw = len(keywords)
+  for idx, item in enumerate(keywords, start=1):
     if not isinstance(item, dict):
       continue
     keyword = (item.get("keyword") or "").strip()
     if not keyword:
       continue
+    log(f"[0.1] keyword related {idx}/{total_kw}: {keyword}")
     related = item.get("related")
     if not args.force and isinstance(related, list) and related:
       continue
@@ -181,14 +199,17 @@ def main() -> None:
     related_terms = [t.strip() for t in (result.get("related") or []) if str(t).strip()]
     if related_terms:
       item["related"] = related_terms
+  group_end()
 
   # keywords: 补齐 rewrite
-  for item in keywords:
+  group_start("Step 0.2 - enrich keywords.rewrite")
+  for idx, item in enumerate(keywords, start=1):
     if not isinstance(item, dict):
       continue
     keyword = (item.get("keyword") or "").strip()
     if not keyword:
       continue
+    log(f"[0.2] keyword rewrite {idx}/{total_kw}: {keyword}")
     rewrite_text = (item.get("rewrite") or "").strip()
     if not args.force and rewrite_text:
       continue
@@ -198,14 +219,18 @@ def main() -> None:
     new_rewrite = str(result.get("rewrite") or "").strip()
     if new_rewrite:
       item["rewrite"] = new_rewrite
+  group_end()
 
   # llm_queries: 补齐 rewrite
-  for item in llm_queries:
+  group_start("Step 0.3 - enrich llm_queries.rewrite")
+  total_llm = len(llm_queries)
+  for idx, item in enumerate(llm_queries, start=1):
     if not isinstance(item, dict):
       continue
     query = (item.get("query") or "").strip()
     if not query:
       continue
+    log(f"[0.3] llm_query rewrite {idx}/{total_llm}")
     rewrite = (item.get("rewrite") or "").strip()
     if not args.force and rewrite:
       continue
@@ -215,15 +240,18 @@ def main() -> None:
     rewrite_text = str(result.get("rewrite") or "").strip()
     if rewrite_text:
       item["rewrite"] = rewrite_text
+  group_end()
 
   subs["keywords"] = keywords
   subs["llm_queries"] = llm_queries
   data["subscriptions"] = subs
 
+  group_start("Step 0.4 - save config")
   with open(CONFIG_FILE, "w", encoding="utf-8") as f:
     yaml.safe_dump(data, f, allow_unicode=True, sort_keys=False)
 
-  print("[INFO] 已更新 config.yaml 的 related / rewrite 字段。")
+  log("[INFO] 已更新 config.yaml 的 related / rewrite 字段。")
+  group_end()
 
 
 if __name__ == "__main__":
