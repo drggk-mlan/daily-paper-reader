@@ -49,6 +49,13 @@ jobs:
             ~/.cache/torch
           key: ${{ runner.os }}-dpr-${{ hashFiles('requirements.txt') }}
 
+      - name: Clear HF cache on first run
+        run: |
+          if [ ! -f ~/.cache/huggingface/.dpr_cache_ok ]; then
+            rm -rf ~/.cache/huggingface
+            mkdir -p ~/.cache/huggingface
+          fi
+
       - name: Install deps (skip sqlite3)
         run: |
           python - <<'PY'
@@ -69,6 +76,17 @@ jobs:
             ARGS="--run-enrich"
           fi
           python src/main.py $ARGS --embedding-device cpu --embedding-batch-size 8
+
+      - name: Mark HF cache healthy
+        if: ${{ success() }}
+        run: |
+          mkdir -p ~/.cache/huggingface
+          touch ~/.cache/huggingface/.dpr_cache_ok
+
+      - name: Clear HF cache on failure
+        if: ${{ failure() }}
+        run: |
+          rm -rf ~/.cache/huggingface
 
       - name: Cleanup non-recommend archives
         run: |

@@ -138,6 +138,8 @@ def fetch_all_domains_metadata_robust(
     # 1. 计算时间窗口（优先使用上次抓取时间）
     end_date = datetime.now(timezone.utc)
     seen_ids, latest_published_at = load_seen_state()
+    if days is None:
+        days = resolve_days_window(1)
     if latest_published_at:
         start_date = latest_published_at
         source_desc = "latest_published_at"
@@ -147,10 +149,11 @@ def fetch_all_domains_metadata_robust(
             start_date = last_crawl_at
             source_desc = "last_crawl_at"
         else:
-            if days is None:
-                days = resolve_days_window(1)
             start_date = end_date - timedelta(days=days)
             source_desc = f"days_window={days}"
+
+    # 兜底：无论来源如何，都不早于 (now - days_window)
+    start_date = max(start_date, end_date - timedelta(days=days))
 
     if start_date >= end_date:
         start_date = end_date - timedelta(minutes=1)
