@@ -2,6 +2,7 @@
 # Step 6：根据推荐结果生成 Docs（精读区 / 速读区），并更新侧边栏。
 
 import argparse
+import html
 import json
 import os
 import re
@@ -281,6 +282,81 @@ def prepare_paper_paths(docs_dir: str, date_str: str, title: str, arxiv_id: str)
     return md_path, txt_path, paper_id
 
 
+def normalize_sidebar_tag(tag: str) -> str:
+    text = (tag or "").strip()
+    if not text:
+        return ""
+    for prefix in ("keyword:", "query:", "paper:", "ref:", "cite:"):
+        if text.startswith(prefix):
+            return text[len(prefix) :].strip()
+    return text
+
+
+def split_sidebar_tag(tag: str) -> Tuple[str, str]:
+    """
+    将 tag 解析为 (kind, label)：
+    - keyword:xxx -> ("keyword", "xxx")
+    - query:xxx   -> ("query", "xxx")
+    - paper/ref/cite:xxx -> ("paper", "xxx")  # 预留：论文引用/跟踪标签
+    - 其它 -> ("other", 原文本)
+    """
+    raw = (tag or "").strip()
+    if not raw:
+        return ("other", "")
+    for prefix, kind in (
+        ("keyword:", "keyword"),
+        ("query:", "query"),
+        ("paper:", "paper"),
+        ("ref:", "paper"),
+        ("cite:", "paper"),
+    ):
+        if raw.startswith(prefix):
+            return (kind, raw[len(prefix) :].strip())
+    return ("other", raw)
+
+
+def extract_sidebar_tags(paper: Dict[str, Any], max_tags: int = 6) -> List[Tuple[str, str]]:
+    """
+    侧边栏展示的标签：
+    - 优先 llm_tags（更贴近最终推荐意图），并追加 tags（粗召回标签）作为补充
+    - 去重 + 限制数量，避免侧边栏过长
+    """
+    raw: List[str] = []
+    if isinstance(paper.get("llm_tags"), list):
+        raw.extend([str(t) for t in (paper.get("llm_tags") or [])])
+    if isinstance(paper.get("tags"), list):
+        raw.extend([str(t) for t in (paper.get("tags") or [])])
+
+    seen_labels = set()
+    kw: List[Tuple[str, str]] = []
+    q: List[Tuple[str, str]] = []
+    paper_tags: List[Tuple[str, str]] = []
+    other: List[Tuple[str, str]] = []
+
+    for t in raw:
+        kind, label = split_sidebar_tag(t)
+        label = (label or "").strip()
+        if not label:
+            continue
+        if label in seen_labels:
+            continue
+        seen_labels.add(label)
+        if kind == "keyword":
+            kw.append((kind, label))
+        elif kind == "query":
+            q.append((kind, label))
+        elif kind == "paper":
+            paper_tags.append((kind, label))
+        else:
+            other.append((kind, label))
+
+        if max_tags > 0 and len(seen_labels) >= max_tags:
+            break
+
+    # 展示顺序：关键词 -> 智能订阅(query) -> 论文引用(paper) -> 其它
+    return kw + q + paper_tags + other
+
+
 def ensure_text_content(pdf_url: str, txt_path: str) -> str:
     if os.path.exists(txt_path):
         with open(txt_path, "r", encoding="utf-8") as f:
@@ -306,6 +382,10 @@ def build_markdown_content(
     zh_abstract: str,
     tags_html: str,
 ) -> str:
+    def meta_line(label: str, value: str) -> str:
+        v = (value or "").strip()
+        return f"**{label}**: {v} \\\\" if v else ""
+
     title = (paper.get("title") or "").strip()
     authors = paper.get("authors") or []
     published = str(paper.get("published") or "").strip()
@@ -324,16 +404,16 @@ def build_markdown_content(
     if zh_title:
         lines.append(f"# {zh_title}")
     lines.append("")
-    lines.append(f"**Authors**: {', '.join(authors) if authors else 'Unknown'}")
-    lines.append(f"**Date**: {published or 'Unknown'}")
+    lines.append(meta_line("Authors", ", ".join(authors) if authors else "Unknown"))
+    lines.append(meta_line("Date", published or "Unknown"))
     if pdf_url:
-        lines.append(f"**PDF**: {pdf_url}")
+        lines.append(meta_line("PDF", pdf_url))
     if tags_html:
-        lines.append(f"**Tags**: {tags_html}")
+        lines.append(meta_line("Tags", tags_html))
     if score is not None:
-        lines.append(f"**Score**: {score}")
+        lines.append(meta_line("Score", str(score)))
     if evidence:
-        lines.append(f"**Evidence**: {evidence}")
+        lines.append(meta_line("Evidence", evidence))
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -388,7 +468,12 @@ def process_paper(
     return paper_id, title
 
 
-def update_sidebar(sidebar_path: str, date_str: str, deep_entries: List[Tuple[str, str]], quick_entries: List[Tuple[str, str]]) -> None:
+def update_sidebar(
+    sidebar_path: str,
+    date_str: str,
+    deep_entries: List[Tuple[str, str, List[Tuple[str, str]]]],
+    quick_entries: List[Tuple[str, str, List[Tuple[str, str]]]],
+) -> None:
     date_label = format_date_str(date_str)
     day_heading = f"  * {date_label}\n"
 
@@ -427,11 +512,33 @@ def update_sidebar(sidebar_path: str, date_str: str, deep_entries: List[Tuple[st
 
     block: List[str] = [day_heading]
     block.append("    * 精读区\n")
-    for paper_id, title in deep_entries:
-        block.append(f"      * [{title}]({paper_id})\n")
+    for paper_id, title, tags in deep_entries:
+        safe_title = html.escape((title or "").strip() or paper_id)
+        href = f"#/{paper_id}"
+        tag_html = " ".join(
+            f'<span class="dpr-sidebar-tag dpr-sidebar-tag-{html.escape(kind)}">{html.escape(label)}</span>'
+            for kind, label in (tags or [])
+        )
+        tags_block = f'<div class="dpr-sidebar-tags">{tag_html}</div>' if tag_html else ""
+        block.append(
+            "      * "
+            f'<a class="dpr-sidebar-item-link" href="{href}"><div class="dpr-sidebar-title">{safe_title}</div>'
+            f"{tags_block}</a>\n"
+        )
     block.append("    * 速读区\n")
-    for paper_id, title in quick_entries:
-        block.append(f"      * [{title}]({paper_id})\n")
+    for paper_id, title, tags in quick_entries:
+        safe_title = html.escape((title or "").strip() or paper_id)
+        href = f"#/{paper_id}"
+        tag_html = " ".join(
+            f'<span class="dpr-sidebar-tag dpr-sidebar-tag-{html.escape(kind)}">{html.escape(label)}</span>'
+            for kind, label in (tags or [])
+        )
+        tags_block = f'<div class="dpr-sidebar-tags">{tag_html}</div>' if tag_html else ""
+        block.append(
+            "      * "
+            f'<a class="dpr-sidebar-item-link" href="{href}"><div class="dpr-sidebar-title">{safe_title}</div>'
+            f"{tags_block}</a>\n"
+        )
 
     insert_idx = daily_idx + 1
     lines[insert_idx:insert_idx] = block
@@ -468,16 +575,16 @@ def main() -> None:
     deep_list = payload.get("deep_dive") or []
     quick_list = payload.get("quick_skim") or []
 
-    deep_entries: List[Tuple[str, str]] = []
-    quick_entries: List[Tuple[str, str]] = []
+    deep_entries: List[Tuple[str, str, List[Tuple[str, str]]]] = []
+    quick_entries: List[Tuple[str, str, List[Tuple[str, str]]]] = []
 
     for paper in deep_list:
         pid, title = process_paper(paper, "deep", date_str, docs_dir)
-        deep_entries.append((pid, title))
+        deep_entries.append((pid, title, extract_sidebar_tags(paper)))
 
     for paper in quick_list:
         pid, title = process_paper(paper, "quick", date_str, docs_dir)
-        quick_entries.append((pid, title))
+        quick_entries.append((pid, title, extract_sidebar_tags(paper)))
 
     sidebar_path = os.path.join(docs_dir, "_sidebar.md")
     update_sidebar(sidebar_path, date_str, deep_entries, quick_entries)

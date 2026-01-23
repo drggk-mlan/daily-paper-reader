@@ -205,6 +205,82 @@ body.close #paper-chat-container .input-area {
   left: 50%;
 }
 
+/* 侧边栏宽度拖拽时：禁用底部遮罩/输入框的 left 动画，让拖拽更跟手 */
+body.sidebar-resizing #paper-chat-container::before,
+body.sidebar-resizing #paper-chat-container::after,
+body.sidebar-resizing #paper-chat-container .input-area,
+body.sidebar-resizing .sidebar::after {
+  transition: none !important;
+}
+
+/* 侧边栏论文条目：整行可点击 + 标题/标签两行展示 */
+.sidebar-nav .dpr-sidebar-item-link {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  margin: 2px 0;
+  border-radius: 8px;
+  text-decoration: none !important;
+  color: inherit;
+  background: transparent;
+}
+
+/* hover/active 的底色统一由“整行”控制，避免出现只包住文字的小矩形 */
+.sidebar-nav li:hover > a.dpr-sidebar-item-link {
+  background: rgba(0, 0, 0, 0.06); /* 鼠标移入浅灰 */
+}
+
+.sidebar-nav li.active > a.dpr-sidebar-item-link,
+.sidebar-nav a.dpr-sidebar-item-link.active {
+  background: rgba(0, 0, 0, 0.12); /* 选中深一点的灰 */
+}
+
+.sidebar-nav .dpr-sidebar-title {
+  display: block;
+  line-height: 1.25;
+}
+
+/* 让高亮底色覆盖到整行（包含 li 自带的内边距区域） */
+.sidebar-nav li > a.dpr-sidebar-item-link {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+
+.sidebar-nav .dpr-sidebar-tags {
+  margin-top: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.sidebar-nav .dpr-sidebar-tag {
+  display: inline-block;
+  font-size: 11px;
+  line-height: 1.4;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #777;
+}
+
+.sidebar-nav .dpr-sidebar-tag-keyword {
+  color: #2e7d32;
+}
+
+.sidebar-nav .dpr-sidebar-tag-query {
+  color: #1565c0;
+}
+
+.sidebar-nav .dpr-sidebar-tag-paper {
+  color: #5a2bb8;
+}
+
+.sidebar-nav .dpr-sidebar-tag-other {
+  background: rgba(0, 0, 0, 0.06);
+  color: #555;
+}
+
 #paper-chat-container #user-input {
   flex: 1;
   padding: 8px 4px;
