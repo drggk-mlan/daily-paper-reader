@@ -1,0 +1,1945 @@
+Title: Automating Idealness Proofs for Binary Programs with Application to Rectangle Packing
+
+URL Source: https://arxiv.org/pdf/2601.15252v1
+
+Published Time: Thu, 22 Jan 2026 02:16:17 GMT
+
+Number of Pages: 45
+
+Markdown Content:
+# Automating Idealness Proofs for Binary Programs with Application to Rectangle Packing 
+
+Jamie Fravel ∗1, 2 and Robert Hildebrand 11Grado Department of Industrial and Systems Engineering, Virginia Tech, Blacksburg, Virginia, USA 
+
+> 2
+
+Institute of Informatics, Faculty of Mathematics and Physics, Charles University, Prague, Czech Republic 
+
+Abstract 
+
+An integer program is called ideal if its continuous relaxation coincides with its convex hull allowing the problem to be solved as a continuous program and offering substantial computa-tional advantages. Proving idealness analytically can be extraordinarily tedious—even for small formulations—such proofs often span many pages of intricate case analysis which motivates the development of automated verification methods. We develop a general-purpose framework for certifying idealness in Mixed Binary Linear Programs (MBLPs), formulating the verification problem as a linear program when the data is fixed and as a nonconvex quadratic program when the data is parametric. We apply this framework to study several formulations of the rectan-gle packing problem that are conjectured to be pairwise-ideal, obtaining computational proofs where analytic proofs were previously unknown or impractical. As our second contribution, we introduce and model a novel generalization of the rectangle packing problem that enforces edge clearances between selected rectangles. We present both existing and novel MBLP formulations which arise from different encodings of the underlying disjunctive constraints. We perform some computational experiments on these formulations under a strip-packing objective to determine the importance of pairwise-idealness in practice. 
+
+Keywords: Integer Programming, Rectangle Packing, Layout, Disjunction, Computer-Aided Proof, Ideal Formulation. 
+
+# 1 Introduction 
+
+In integer programming, the quality of formulation can have a profound impact on computational tractability. A formulation whose continuous relaxation is tight—meaning it closely approximates the convex hull of integer-feasible solutions—will yield a smaller branch-and-bound tree and a shorter run time. The strongest possible property a formulation can possess is idealness : when the continuous relaxation exactly equals the convex hull, the integer program can be solved as a continuous linear program and completely bypasses branch-and-bound, dramatically improving both solution speed, memory requirements and numerical stability. We formally define this property: 
+
+> ∗
+
+J. Fravel and R. Hildebrand were partially supported by AFOSR grant FA9550-21-1-0107. Any opinions, findings and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the Air Force Office of Scientific Research. J. Fravel is also partially supported by Charles Univ. project PRIMUS 24/SCI/012 and by the project 25-17221S of GAČR. There are no relevant financial or non-financial competing interests to report. 
+
+> ∗
+
+Correspondence to: jfravel@vt.edu 
+
+1
+
+> arXiv:2601.15252v1 [math.OC] 21 Jan 2026
+
+Definition 1 (Ideal) . Consider a mixed-binary linear feasibility set 
+
+PI := (x, y) ∈ Rnc × { 0, 1}nb : Axy
+
+ ≥ b
+
+and its continuous relaxation 
+
+P := (x, y) ∈ Rnc × [0 , 1] nb : Axy
+
+ ≥ b .
+
+We say the formulation PI is ideal if conv( PI ) = P. 
+
+Terminology We use the term ideal following the terminology of Wolsey [48] while Conforti, Cornuéjols and Zambelli [8] use the equivalent term perfect . The related concept of locally ideal ,introduced by Padberg and Rijal [31], refers to idealness of a formulation for a specific portion— usually near the optimum—of a larger optimization problem rather than the complete model. Vielma [45] provides an extensive discussion of this terminology and notes that “ideal comes from the fact that this is the strongest property we can expect from an MIP formulation.” A weaker but related notion is that of a sharp formulation, introduced by Jeroslow and Lowe [18], which requires only that the LP relaxation projects onto the convex hull of feasible solutions. Every locally ideal formulation is sharp, but the converse does not hold. Proving that a given integer program is ideal can be a difficult and tedious task, even for very small instances. As an example, the analytic proof of Theorem 1 (that a simple rectangle packing formulation is pairwise-ideal) is included in Appendix A. This proof is seven pages long. Additionally, no analytic proof of idealness is known for the more complicated formulations given in this paper (Theorems 2 and 4). The complexity of such proofs motivates our development methods to automate the process of identifying and proving idealness. 
+
+Application: Rectangle Packing We demonstrate our idealness-proving framework on the 
+
+rectangle packing problem , which asks how to arrange a collection of axis-aligned rectangles within a container region such that no two rectangles overlap. This fundamental geometric optimization problem arises across diverse application domains: in logistics and warehousing for pallet loading and container packing; in manufacturing for cutting stock optimization where raw materials must be cut into smaller pieces with minimal waste; in facilities planning for floor layout design; and in electronics for VLSI circuit design where components must be placed on a chip [11, 25]. Mixed-integer linear programming provides a natural framework for modeling rectangle packing, but naive formulations typically rely on big-M constraints to encode the disjunctive non-overlapping requirements. Such programs are notorious for producing weak continuous relaxations which motivates the study of ideal formulations for this problem class. We apply our techniques to various mixed-binary models for the Rectangle Packing Problem RPP, obtaining computational proofs of idealness for formulations where analytic proofs were previously unknown or would require prohibitively complex case analysis. 
+
+1.1 Contributions 
+
+We develop an optimization framework, which we call Ideal O’Matic (IOM), for identifying idealness in any Mixed Binary Linear Program (MBLP). IOM is linear when given specific, known input data for the underlying MBLP and is nonconvex quadratic (bilinear) over parametric input data. We say that a mixed-integer programming formulation for the rectangle packing is pairwise-ideal if it is ideal when applied to problem instances with only two rectangles. Ideal O’Matic is instrumental in obtaining the following: 2• A computational proof that the commonly used “Standard Unary” formulation is pairwise-ideal. There already exists an analytic proof of this result for the Floor Layout Problem up to a strict inequality [13]; an adaptation of this proof to RPP is given in Appendix A. 
+
+• A computational proof of pairwise-idealness for the “Refined Unary” formulation given by Huchette, Dey and Vielma, confirming their conjecture [13, Conjecture 1]. 
+
+• A novel counterexample of pairwise-idealness for the binary formulation originally described by Meller, Chen and Sherali [27]. 
+
+• A novel modification of the binary formulation and a computational proof that the modified version is pairwise-ideal. Additionally, we perform several numerical experiments on these formulations to determine the importance of implementing a pairwise-ideal formulation in settings with large numbers of objects. We also vary the models by adding known symmetry-breaking inequalities, experimenting with the impact of Gurobi’s Cuts and Heuristics parameters and incorporating branching priorities. 
+
+1.2 Literature 
+
+ILP for Proofs We find a few examples of integer programming being used to answer questions in theoretical mathematics. Lancia, Pippia and Rinaldi [23] use ILP to search for non-Hamiltonian, 4-regular, 1-tough graphs with sixteen and seventeen nodes; finding none, they confirm an existing conjecture. Our proof scheme follows similar logic. Eifler, Gleixner and Pulaj [10] use ILP to produce a proof that “Chvátal’s conjecture holds for all downsets whose union of sets contains seven elements or less.” Integer programming has also been used to find bounds on graph pebbling number [22], and to support Frankl’s Conjecture [33]. Each of these papers use SCIP’s rational integer linear programming capabilities [9] to avoid floating-point/rounding errors. Unfortunately, SCIP is not yet capable of producing exact solutions to quadratically constrained integer programs—a feature which is vital to our own computational proofs. 
+
+Ideal Integer Programming The concept of ideal (or equivalently, perfect) formulations is treated extensively in the integer programming textbooks by Wolsey [48] and Conforti, Cornuéjols and Zambelli [8]. The related notion of locally ideal formulations was introduced by Padberg and Rijal [31], while the weaker concept of sharp formulations dates to Jeroslow and Lowe [18]. The review paper by Juan Pablo Vielma [45] contains a fair amount of discussion on techniques for constructing ideal integer programs. In [44], Vielma demonstrates a system for constructing small, ideal formulations for disjunctive constraints. In [13], Huchette, Dey and Vielma demonstrate and conjecture idealness for a few rectangle packing MBLP formulations. In his book Linear Optimization and Extensions [30], Manfred Padburg uses the term com-plete strengthening the word ideal to include minimality of representation. He claims that such formulations are quasi-unique. While this holds for any given mixed-integer-linear set, disjunctive programming problems (like rectangle packing) may be represented in a variety of extended spaces with a variety of auxiliary variables. Deciding which of these spaces have reasonably-sized ideal formulations is valuable. Perhaps more valuable is deciding when the computational advantage of idealness is not worth the extra componentry. 
+
+Clearances in Rectangle Packing Clearances—buffer zones around objects that must remain unobstructed—have been studied primarily in the context of row-based layout problems, where 3machines are arranged along material transportation tracks. While this setting differs from ours, the modeling techniques provide useful context. For instance, Keller et al. [21] and Uruk and Akbilek [43] respectively explore construction heuristics and zoning techniques for mutual clearances. Wan et al. [49] present a hybrid GRASP for multi-row layouts, while Yu et al. [50] utilize tabu search for single-row problems. Additionally, Zuo et al. [51] investigate clearance sharing in layout designs. Guan et al. [12] examine a multi-floor layout problem with clearances by developing a MILP model; this problem aims to pack facilities or departments into multiple, distinct floors. Safarzadeh and Koosha [35] introduce fuzzy clearances and propose a MILP alongside a genetic algorithm. 
+
+Packing Heuristics and Other Problem Variants McKendall and Hakobyan [26] employ a genetic algorithm to quickly generate good solutions for the Rectangle Packing Problem (RPP), though it shows inconsistency in convergence compared to an MILP-based approach. Ingole and Singh [16] propose a “Firefly” algorithm, later generalized into a “Biogeography-based” metaheuris-tic [15], both of which yield promising results. In some scenarios, objects are assumed to be fixed to a grid which allows the use of covering models [34] or discrete genetic algorithms for irregularly shaped objects [36, 20]. Nonlinear programs utilizing IPOPT (Interior Point OPTimizer: an open source library of optimization software for continuous, nonlinear problems [17]) allow for free rotations of convex and non-convex polygons [32]. These approaches are compared with other methods that also permit free rotations [24, 40]. They employ a heuristic known as no-fit raster [28] to generate initial solutions, subsequently refined using IPOPT. 
+
+Ideal Rectangle Packing Our work most closely follows that of Huchette, Dey and Vielma [13] on strong integer programming formulations for the floor layout problem. They present several models to handle rectangle packing constraints and study their idealness. Also of interest is Meller, Chen and Sherali [27] which originally described the binary formulation presented herein. Both papers leave conjectures on the pairwise-idealness of their rectangle packing formulations which we resolve. 
+
+1.3 Outline 
+
+We proceed by detailing the construction of our idealness-proving framework in Section 2 before discussing the class of rectangle packing problem we ultimately apply Ideal O’Matic to in Sec-tion 3. Then, Section 4 introduces the four MILP formulations under consideration and proposes the corresponding pairwise-idealness theorems; said theorems are proven in Section 5 by way of Ideal O’Matic. Sections 6 describes some enhancements which can be made to the formulations and details our experimental setup. Section 7 gives the results and some analysis. We conclude in Section 8. The appendix contains the existing analytic proof of Theorem 1 (Appendix A), ad-ditional experimental results (Appendix B), a couple of additional rectangle packing formulations (Appendix C) and some discussion on the completeness of these idealness theorems (Appendix D). 
+
+1.4 Notation 
+
+We denote the set of real numbers by R and the set of integers by Z. For a positive integer k, we write [[ k]] = {1, 2, . . . , k }. Vectors are denoted by bold lowercase letters (e.g., x, δ, b) and matrices by uppercase letters (e.g., A).We write AT to denote the submatrix formed by selecting rows of 
+
+A indexed by the set T . Similarly, (A|b) denotes the augmented matrix formed by appending the column vector b to A. The notation xy
+
+ represents the column vector formed by stacking x above 4y. Generally, our MBLP formulations will have nc continuous variables, nb binary variables and m
+
+constraints and therefore, we will generally have A ∈ R(nc+nb)×m, b ∈ Rm, x ∈ Rnc and y ∈ [0 , 1] nb .
+
+# 2 The Ideal O’Matic: Automating Proofs of Idealness 
+
+We proceed to detail the process of developing our idealness-proving framework which relies on an inverted but equivalent definition of idealness via extreme points: 
+
+Definition 2. A point (x, y) ∈ P is an extreme point of P if it satisfies nc + nb many linearly independent constraints (rows of Axy
+
+ ≥ b) at equality. We say that these constraints are tight to 
+
+(x, y).
+
+Definition 3 (Alternate Ideal Definition) . We say that PI is ideal if each extreme point (x, y) of 
+
+P is integral (i.e., y ∈ { 0, 1}nb ). 
+
+We demonstrate adherence to this definition by actively seeking out counterexamples. If no counterexamples can be found, then P is ideal. A non-negative penalty function ϕ(y) := 1 − 2y − 1
+
+is used to determine if a given variable y takes integer value. In particular, y ∈ { 0, 1} if and only if ϕ(y) = 0 (see Figure 1). It follows that if P has an extreme point (x, y) with any yi satisfying 
+
+ϕ(yi) > 0, then PI is not an ideal formulation. 0.5 10.5 1
+
+y
+
+ϕ    
+
+> (a) ϕ(y) = 1 − | 2y−1|
+
+0.5 1
+
+0.25 
+
+0.5 
+
+y
+
+ϕ    
+
+> (b) ϕ(y) = −y2−y
+
+Figure 1: Some options for the penalty function ϕ. We use (a) as it can be encoded with linear constraints, whereas the quadratic version (b) introduces unnecessary nonlinearities. When looking for extreme points, it is important to remember that bounds 0 ≤ yi ≤ 1 on the integer variables exist and contribute to the nc + nb many tight constraints. However, such simple inequalities are often redundant to other, more complicated constraints. Since we will ultimately be looking for linear independence, discarding redundant constraints can improve performance con-siderably. For the sake of notation, we compose the non-redundant bounds on y into the body constraints, creating a new matrix A′ and vector b′ in the process: 
+
+P = (x, y) ∈ Rnc × [0 , 1] nb : Axy
+
+ ≥ b = (x, y) ∈ Rnc × Rnb : A′xy
+
+ ≥ b′ . (1) To disprove the existence of fractional extreme points, we maximize the penalty function Φ( y) = Pnb 
+
+> i=1
+
+ϕ(yi) over the set of points which are feasible to P and tight to nc + nb linearly independent constraints: 5Ideal O’Matic (IOM) 
+
+Maximize Φ( y) = 1⊤ϕ (IOM.a) s.t. ϕ ≤ 2y (IOM.b) 
+
+ϕ ≤ 2 − 2y (IOM.c) 
+
+A′xy
+
+ ≥ b′ (IOM.d) 
+
+A′xy
+
+ ≤ b′ + M (1 − η) (IOM.e) 
+
+> k
+
+X
+
+> i=1
+
+ηi = nc + nb (IOM.f) 
+
+X
+
+> i∈I
+
+ηi ≤ Rank (A′ 
+
+> I
+
+|b′ 
+
+> I
+
+) ∀ I ∈ I (IOM.g) 
+
+(x, y, ϕ ) ∈ Rnc × Rnb × R (IOM.h) 
+
+η ∈ { 0, 1}k′
+
+(IOM.i) where I is the collection of subsets of [[ m]] that correspond to linearly dependent sets of rows from (A′|b′). Notice that constraint (d) is exactly (1); this ensures basic feasibility of our extreme point. Constraint (e) is a mirror thereof with the inequality swapped and a big-M term to allow its deactivation—if ηi = 1 , then the ith inequality in (d) must be tight. Finally, constraint (f) ensures that the required nc + nb constraints are tight while (g) maintains that the tight constraints are linearly independent; i.e., that they properly correspond to an extreme point. 
+
+Proposition 1. The optimal objective value of IOM is zero if and only if the mixed-binary formu-lation embedded in constraint (IOM.d) is ideal. 
+
+Corollary 1. The embedded mixed-binary formulation is ideal if and only if there exists a subset J
+
+of I for which the optimal objective value of IOM is zero when constraint (IOM.g) is implemented only for sets I ∈ J .Proof. Proposition 1 follows from the construction of IOM: if IOM returns an optimal value of zero, then the tight-intersection of any collection of nc + nb linearly dependent constraints of the embedded mixed-integer formulation P has no fractional yi. That is, none of the P ’s extreme points are fractional. Let P represent the feasible region of IOM and, for any subset J of I, let PJ represent its feasible region when constraint (IOM.g) is implemented only for sets I ∈ J . Notice that P ⊆ P J
+
+since PJ is defined by a subset of the constraints defining P. Naturally, then, 
+
+max {Φ( y) : ( x, y, η) ∈ P} ≤ max {Φ( y) : ( x, y, η) ∈ P J }.
+
+for any subset J of I. But Φ( y) ≥ 0 because y ∈ [0 , 1] nb , so it must be that max {Φ( y) : ( x, y, η) ∈P} = 0 if there exists a subset J of I for which max {Φ( y) : ( x, y, η) ∈ P J } = 0 .
+
+2.1 Separation Problem for Dependence Covers IOM.g 
+
+Often, only a small percentage of the elements of I correspond to useful constraints. In such cases, it is more effective to implement dependence covers (IOM.g) as the need arises; that is, as solutions which are tight to a linearly dependent set of rows of (A′|b′) are identified. Let 
+
+(x∗, y∗, η∗) be an optimal solution to an instance of IOM with an under-full dependence set I and let T = i ∈ [[ m′]] : η∗ 
+
+> i
+
+= 1 . Define the matrix (AT |bT ) ∈ R(nc+nb)×(nc+nb+1) to be made up of the rows of (A′|b′) which correspond to the elements of T so that AT
+
+x∗
+
+> y∗
+
+ = bT .6If rank (AT |bT ) = |T | = nc + nb, then (x∗, y∗) is an extreme point of P and no further action is required. On the other hand, if (AT |bT ) is rank-deficient the point (x∗, y∗) may not be extreme and the corresponding indicator vector η∗ should be removed from the feasible region of (IOM). It is sufficient to append the collection T of tight constraints directly to I and repeat the optimization. However, T may include some unnecessary indices which will reduce the strength of the correspond-ing cover inequality (IOM.g). A better approach is to identify a minimal linearly dependent subset (or circuit ) of T by solving the following minimization problem: 
+
+min ∥p∥0 : (AT |bT )⊤p = 0, p ∈ R|T | \ { 0} . (2) The optimal value of this problem is sometimes called the spark of matrix (AT |bT )⊤; indices with a nonzero optimal multiplier pi correspond to elements of the minimal circuit. As demonstrated in [42], finding the spark of a matrix is generally NP-Hard, so this problem is often approximated by substituting the ℓ0-norm for a ℓ1-norm. Sometimes called basis-pursuit, this approximation can be solved as an LP [6]. There are known conditions under which the ℓ0 and ℓ1 solutions coincide [19] and a fast solution to this problem may be important for finding dependence covers on larger binary programs. However, the following MBLP implemented in Gurobi produced integer solutions and converged rapidly on our pairwise rectangle packing problems, performing well as a separation subroutine. Minimize X
+
+> i∈T
+
+μi + νi (3a) s.t. (AT |bT )⊤p = 0 (3b) 
+
+1 − (M + 1)(1 − μ) ≤ p ≤ M μ (3c) 
+
+−M ν ≤ p ≤ (M + 1)(1 − ν) − 1 (3d) 
+
+μ, ν ∈ {0, 1}|T | (3e) 
+
+p ∈ R|T |. (3f) We have μi = 1 if pi is positive and νi = 1 if it is negative. We also ensure that active p multipliers take an absolute value greater than one to prevent numerical errors and promote integer multipliers. 
+
+Remark 1. We can choose M based on the encoding size of the problem. According to [37, Theorem 10.2], for a rational polyhedron P = {x ∈ Rnb : Ax ≤ b}, vertex complexity ν (the binary encoding size of any vertex or extreme ray of P ), is bounded by 4n2φ, where φ is the facet complexity of ν,i.e., the binary encoding size of the constraints. Let ¯x be any solution to Ax = 0 . Next, A′x ≤ b′ be a modification of Ax = 0 such that xi ≤ − 1
+
+whenever ¯xi < 0, xi ≥ 1 whenever ¯xi > 0. Then there exists a scaling of ¯x that is valid for A′x ≤ b′.The facet complexity of A′x ≤ b′ is then bounded by (nc + nb)n(log( |Amax |) + 2) , assuming that 
+
+|Amax | ≥ 1. Thus, any vertex is bounded in infinity norm by 
+
+M = 2 4n2ν = 2 4n3(nc+nb) log( |Amax |+2) .
+
+This big-M may be prohibitively large for some problems; there also exist MILP formulations of this problem which do not require big-M constants; see [41]. We opted to use (3) since, when applied to our small binary programs, it quickly converges to integer multipliers which where helpful in identifying and demonstrating the general dependencies given in Lemmas 1, 2 and 3. Regardless of the approach used to find it, let p∗ be an optimal (or nearly optimal) solution to (2) so that T ′ = {i ∈ T : p∗
+
+> i
+
+̸ = 0 } represents a minimal row-circuit of (AT |bT ) which, upon being added to I and used in constraint (IOM.g), represents a strong valid inequality which separates η∗.7Remark 2. Any equality constraints in the original mixed-integer formulation are necessarily tight and can be safely discarded from constraint (IOM.e) so long as their number is also subtracted from the right side of (IOM.f) . However, it is important to re-introduce any discarded equalities into 
+
+(AT |bT ) during the separation problem as they can contribute to linear dependence. 
+
+Remark 3. Sometimes, combining several minimally-dependent collections T = Snb 
+
+> i=1
+
+Ti produces a matrix (AT |bT ) with rank equal to those corresponding to any of the Ti’s. In such highly degenerate cases, the dependence cover T is strictly stronger than any of T1, . . . T n and may be used in their stead. It may also be advantageous to include T when its rank is merely less close to those of 
+
+T1, . . . T n, though the individual covers should not be entirely replaced. 
+
+2.2 Parametric Implementation 
+
+In its linear form, IOM can only tell us whether the formulation P is ideal for a given set of input data. Showing more general idealness requires letting the input data ( A and b) vary within the framework of IOM. Such a parametric implementation is a mixed-binary quadratically constrained program that actively searches for an instance of P that has a fractional extreme point. If the optimal objective value of this parametric implementation is zero, then no such instance can be found and the P is ideal for any input data. 
+
+Parametric Ideal O’Matic (PIOM) 
+
+Maximize Φ( y) = 1⊤ϕ (PIOM.a) s.t. (IOM.b) − (IOM.i) (PIOM.b) 
+
+A ∈ A (PIOM.c) 
+
+b ∈ B (PIOM.d) where A and B describe feasible sets for the now variable A and b.A parametric implementation may be tractable if a small but comprehensive subset of I can be identified for a given formulation. 
+
+Remark 4. A data-dependent implementation can be used to solve a separation problem for the parametric implementation if a comprehensive dependence set I is not known. However, any iden-tified dependence covers should be evaluated to verify that they are indeed dependent in general. 
+
+# 3 Rectangle Packing 
+
+We formally define the class of problem which initially motivated this study. Let [[ N ]] = [1 , . . . , N ].
+
+Rectangular Packing Problem (RPP) Input: A rectangular region with dimensions Wx × Wy and a collection B = {Bi}Ni=1 of rectangular objects with dimensions wix × wiy for each i ∈ [[ N ]] .
+
+Output: A placement of the center (cix , c iy ) of each object Bi ∈ B such that all of the objects fit in the region and no object overlaps another. Alternatively, an assertion that no such placement exists. 
+
+3.1 Disjunctive model for Rectangle Packing 
+
+RPP is modeled as a disjunctive program below:  
+
+> 12
+
+wis ≤ cis ≤ Ws − 12 wis ∀ i ∈ [[ N ]] , s ∈ { x, y } (4a) 8_
+
+> (k,l,s )∈Fij
+
+(cks + 12 wks ≤ cls − 12 wls ) ∀ (i, j ) ∈ P (4b) where P = {(i, j ) ∈ [[ N ]] × [[ N ]] : i < j } is the set of all distinct pairs of objects and Fij =
+
+{(i, j, x ), (j, i, x ), (i, j, y ), (j, i, y )} is the set of combinations of i, j and the directions {x, y }. RPP is a disjunctive programming problem and there exist a variety of Mixed-Binary Linear Programming methods for encoding such disjunctions. Now we introduce and justify an additional feature of our variant of rectangle packing. 
+
+Remark 5. The idealness of a given MBLP depends only on the constraint set, not on the objective. We use a strip-packing objective for our experiments in Section 6, but it is irrelevant to our immediate discussion. 
+
+3.2 Clearances 
+
+We include a clearance on each face of each object, given by a vector σi = [ σ−
+
+> ix
+
+, σ −
+
+> iy
+
+, σ +
+
+> ix
+
+, σ +
+
+> iy
+
+]⊤ ∈ R4
+
+for each i ∈ [[ N ]] , to represent some free space required to properly operate or maintain whatever is represented by said object. The term clearance follows standard usage in the facility layout literature [51, 21]. The clearances should lie entirely within the region and are allowed to overlap so long as no object occludes the clearance of another—that is, no physical object may intersect another object’s clearance; see Figures 2 and 3b.         
+
+> (a) An invalid placement due to ob-ject/clearance overlap or occlusion .(b) A valid placement.
+
+Figure 2: Examples of Clearance Occlusion Clearance is an important feature of many practical layout/packing problems: manufacturing machine layouts may require clearances to reduce vibrations in neighboring machines, adequately ventilate the workspace, provide access to maintenance panels, or simply to allow for manual op-eration; circuit boards may require clearances to improve heat dissipation or mitigate crosstalk interference. The disjunctive programming model for RPP with clearances is given by  
+
+> 12
+
+wis + σ− 
+
+> is
+
+≤ cis ≤ Ws − 12 wis − σ+ 
+
+> is
+
+∀ i ∈ [[ N ]] , s ∈ { x, y } (5a) _
+
+> (k,l,s )∈Fij
+
+(cks + 12 wks ≤ cls − 12 wls − max {σ+
+
+> ks
+
+, σ − 
+
+> ls
+
+}) ∀ (i, j ) ∈ P. (5b) Notice that if σi = 0 for each i ∈ [[ N ]] , then (5) reduces exactly to (4). In the pursuit of notational simplicity, we define the precedence margin Pijs = 12 wis + 12 wjs + max {σ+
+
+> is
+
+, σ −
+
+> js
+
+} for each 
+
+(i, j, s ) ∈ P × { x, y }; see Figure 3. Additionally, define the lower bound LB is = 12 wis + σ− 
+
+> is
+
+and upper bound UB is = Ws − 12 wis − σ+ 
+
+> is
+
+for each object Bi in both directions s ∈ { x, y }. We use capital 9Bi
+
+(cix , c iy )
+
+wix 
+
+wiy 
+
+(a) The physical dimensions of object Bi.
+
+Bi
+
+(cix , c iy )
+
+σ+
+
+> iy
+
+σ−
+
+> iy
+
+σ+
+
+> ix
+
+σ−
+
+> ix
+
+(b) The clearance dimensions of object Bi.
+
+Bi
+
+Bj 
+
+> 12
+
+wjx  
+
+> 12
+
+wix σ+
+
+> ix
+
+σ−
+
+> jx
+
+cix 
+
+cjx 
+
+Pijx = 12 wix + max {σ+
+
+> ix
+
+, σ −
+
+> jx
+
+} + 12 wjx 
+
+(c) The precedence margin P ijx between objects Bi and Bj along direction x.
+
+Figure 3: Visualization of the parameters letters for these parameters to emphasize their composite nature. Given this notation, Model 5 collapses to 
+
+cis ∈ [LB is , UB is ] ∀ i ∈ [[ N ]] , s ∈ { x, y } (6a) _
+
+> (k,l,s )∈Fij
+
+(cks + Pkls ≤ cls ) ∀ (i, j ) ∈ P. (6b) Conveniently, additional constraints on displacement between particular pairs of rectangles can be encoded by choosing precedence margins between said pair independent of their clearances. Our theoretical work applies to this more general problem even while our computational experiments all define precedence margins defined based on clearances. 
+
+Definition 4. We call an RPP instance trivial if it can be embedded on a lower dimensional problem or is infeasible, i.e., if Ws = 0 for one or both directions s ∈ { x, y } or UB ks − LB ks = 0 for one or more index (k, s ). We use the term non-trivial to mean that the instance is feasible, has P ∈ R+,and UB ks − LB ks > 0 for every (k, s ) ∈ [[ N ]] × { x, y }. This strict inequality will be enforced by an 
+
+ϵ-tolerance in the proofs of the upcoming theorems. 
+
+# 4 MBLP Embeddings of Disjunctive RPP 
+
+Following notation from Huchette, Dey and Vielma [13], we say that Bi precedes Bj along direction 
+
+s (denoted i ↼ s j) if cis + Pijs ≤ cjs ; that is, if Bi lies far enough ahead of Bj along direction s
+
+so that neither overlaps or occludes the other. Constraint 6b is enforcing the following, four-term disjunction 
+
+D4 
+
+> ij
+
+= (i ↼ x j) ∨ (i ↼ y j) ∨ (j ↼ x i) ∨ (j ↼ y i)
+
+10 for each pair of objects (i, j ) ∈ P. Any mixed-binary linear description of D4 
+
+> ij
+
+will be sufficient to write a complete MBLP formulation for any rectangle packing problem with clearances. This can be done via an extension to a space with many continuous auxiliary variables (see Balas [2]) or via an embedding onto a space of binary variables (see Vielma [46]). Figure 4 illustrates the four disjunctive cases and their binary encodings used in the formulations that follow. 
+
+i ↼ x j   
+
+> δ= (0 ,0)
+> ij
+
+i ↼ y j  
+
+> δ= (1 ,0)
+> i
+> j
+
+j ↼ x i   
+
+> δ= (1 ,1)
+> ji
+
+j ↼ y i  
+
+> δ= (0 ,1)
+> j
+> i
+
+Figure 4: The four disjunctive cases for non-overlapping rectangles i (blue) and j (orange), with their corresponding binary encodings δ = ( δij , δ ji ) used in the binary formulations. 
+
+4.1 Unary Embeddings 
+
+The first formulation we present is widely known, but we adapt the name used by Huchette, Dey and Vielma [13, Eq. (17)]. Our problem variation considers the dimensions of the rectangles to be parameters rather than variables. Hence, w is fixed in our models. 
+
+The Standard Unary Formulation (SU) 
+
+cls ≥ LB ls + ( LB ks + Pkls − LB ls )δkls ∀ (k, l, s ) ∈ Fij (SU.a) 
+
+cks ≤ UB ks + ( UB ls − Pkls − UB ks )δkls ∀ (k, l, s ) ∈ Fij (SU.b) 
+
+cks − cls ≤ UB ks − LB ls + ( LB ls − Pkls − UB ks )δkls ∀ (k, l, s ) ∈ Fij (SU.c) 
+
+δijx + δjix + δijy + δjiy = 1 (SU.d) 
+
+δkls ∈ {0, 1} ∀ (k, l, s ) ∈ Fij (SU.e) where the indicator variable δkls takes value 1 if k ↼ s l and 0 otherwise. Recall that LB ks = 12 wks +
+
+σ−
+
+> ks
+
+, UB ks = Ws − 12 wks − σ+ 
+
+> ks
+
+and P kls = 12 wks + 12 wl + max {σ+
+
+> ks
+
+, σ − 
+
+> ls
+
+} are problem parameters. 
+
+Theorem 1. SU is pairwise-ideal on non-trivial instances with Pkls ≤ UB ls −LB ks for each (k, l, s ) ∈
+
+Fij .
+
+An analytic proof for Theorem 1 up to P kls < UB ls − LB ks is available in Appendix A. This proof is a lengthy case analysis that is largely adapted from a proof in [13, Appendix 2] for a similar formulation to the Floor Layout Problem. As we will see in Lemma 1, extending this proof to include Pkls = UB ls − LB ks requires dealing with many more linear dependencies. Without computer tools like IOM, identifying a comprehensive list of such dependencies can be a daunting task. We present our computational proof in Section 5.1. Appendix D contains an example of a non-ideal instance which has P kls < UB ls − LB ks 
+
+11 Also described in [13, Eq. (19)] is an embedding called the Refined Unary formulation which we present adapted to our setting and notation: 
+
+The Refined Unary Formulation (RU) 
+
+cls ≥ LB ls + ( LB ks + Pkls − LB ls )δkls ∀ (k, l, s ) ∈ Fij (RU.a) 
+
+cks ≤ UB ks + ( UB ls − Pkls − UB ks )δkls ∀ (k, l, s ) ∈ Fij (RU.b) 
+
+cks − cls ≤ Plks − (Plks + Pkls )δkls 
+
++ ( UB ks − Plks − LB ls )δlks 
+
+∀ (k, l, s ) ∈ Fij (RU.c) 
+
+δijs + δjis ≤ 1 ∀ s ∈ { x, y } (RU.d) 
+
+δijx + δjix + δijy + δjiy ≥ 1 (RU.e) 
+
+δkls ∈ {0, 1} ∀ (k, l, s ) ∈ Fij . (RU.f) Model RU shares constraints (a) and (b) with SU but constraint (SU.c) is “refined” into (RU.c). This new constraint contains two indicator variables and takes on three distinct states: 
+
+δkls = 1 , δ lks = 0 ⇒ cls ≥ cks + Pkls ⇒ (k ↼ s l)
+
+δkls = 0 , δ lks = 1 ⇒ cks − cls ≤ UB ks − LB ls ⇒ inactive 
+
+δkls = 0 , δ lks = 0 ⇒ cks ≤ cls + Plks ⇒ (l ↼ 
+
+> 99
+
+s k).
+
+The third state, which does not exist in SU, adds strong spatial discretization to the model without requiring any additional variables. In keeping with Huchette, Dey and Vielma [13, Definition 5.3], we use the notation k ↼ 
+
+> 99
+
+s l to say that k does not precede l along dimension s. With this new state in play, SU.d becomes too restrictive: δkls ′ = 1 → (l ↼ 
+
+> 99
+
+s k) ∧ (k ↼ 
+
+> 99
+
+s l). It is relaxed into RU.d and RU.e. Notice that four binary variables are enough to encode up to 24 = 16 distinct states. This formulation is an embedding of RPP using an eight-term disjunction D8 
+
+> ij
+
+and has demonstrated strong computational performance in practice. Huchette, Dey and Vielma conjecture that (RU) is pairwise ideal; we resolve this conjecture (mostly) affirmatively. 
+
+Theorem 2. RU is pairwise-ideal on non-trivial instances which have Pkls ≤ UB ls − LB ks , Pkls +
+
+LB ks − LB ls > 0 and Pkls + UB ks − UB ls > 0 for each (k, l, s ) ∈ Fij .
+
+We will present a computational proof of Theorem 2 in Section 5.2 as no analytic proof is known. The additional strict inequality conditions are likely due to possibility of having both k ↼ s l
+
+and k ↼ 
+
+> 99
+
+s l simultaneously if cls = cks + Pkls . We expect that these conditions can be dropped from this theorem and that proving this more general form is within the capability of Ideal-O’Matic. Doing so, however, will require dealing with many more sub-cases which we deem outside the scope of this project. More discussion on this topic is given in Section 5.2. 
+
+4.2 Selector Functions for Binary Embeddings 
+
+The simple disjunction D4 
+
+> ij
+
+has only four terms and SU—which uses one binary variable per term— is a one-hot encoding thereof. Geometrically, each term corresponds to a distinct vertex of the 3-simplex. An alternative approach assigns a distinct binary code ¯δkls ∈ { 0, 1}r to each term and allows the disjunction to be modeled using only r = ⌈log 2 4⌉ = 2 binary variables. This logarithmic encoding replaces the simplex with a hypercube [0 , 1] r.The translation between two spaces, in our case the hypercube and the simplex, is mediated by a selector function ς¯δ which takes, as input, a binary code ¯δ ∈ { 0, 1}r and a vector δ ∈ [0 , 1] r and 12 assigns a “weight” to each vertex of the (2 r − 1) -simplex (to each term in our disjunction). For our purposes, a selector ς is valid if it satisfies the Kronecker delta 
+
+(
+
+ς¯δ(δ) = 1 if ¯δ = δ
+
+ς¯δ(δ) = 0 otherwise ∀ ¯δ, δ ∈ { 0, 1}r (7) and partition of unity X
+
+> ¯δ∈{ 0,1}r
+
+ς¯δ(δ) = 1 ∀ δ ∈ { 0, 1}r (8) so that the vector fuction 
+
+ς(δ) =  ς¯δ1(δ), ς ¯δ2(δ), . . . , ς ¯δr(δ) (9) maps vertices of the r-hypercube to those of the (2 r − 1) -simplex. 
+
+Linear Selectors Perhaps the most natural choice of selector function is the Hamming selector :
+
+ςH 
+
+> ¯δ
+
+(δ) = 1 − ¯δ − δ 1 . (10) based on Hamming distance which counts the number of disagreements between two vectors. Un-fortunately, its range [1 , 1 − r] is too. Consider instead the uniform Hamming selector: 
+
+ςU 
+
+> ¯δ
+
+(δ) = min x ∈ R : x ≥ 1 − ¯δ − δ 1 , x ≥ 0 .
+
+Used in a integer linear optimization setting like ours, the minimization may be dropped and the inequalities projected into the constraints. This will result in another integer linear program. Unfortunately, the Hamming selector does not preserve idealness. In fact 
+
+Proposition 2. There does not exist a linear selector function on r ≥ 2 which satisfies (8) for interior points δ ∈ (0 , 1) r.Proof. Any linear function may be expressed in the following form: 
+
+ςL 
+
+> ¯δ
+
+(δ) = c0 +
+
+> r
+
+X
+
+> i=1
+
+ciδi.
+
+Thus, condition (7) reduce to: 
+
+(
+
+c0 + Pri=1 ci ¯δi = 1 
+
+c0 + Pri=1 ci(1 − ¯δi) = 0 →
+
+(Pri=1 ci ¯δi = 1 − c0
+
+Pri=1 ci ¯δi = c0 + Pri=1 ci
+
+→ 2c0 +
+
+> r
+
+X
+
+> i=1
+
+ci = 1 (11) for every ¯δ ∈ { 0, 1}r. Recall (8) and consider the point δ =   12 , 12 , . . . , 12
+
+:
+
+X
+
+> ¯δ∈{ 0,1}r
+
+c0 +
+
+> r
+
+X
+
+> i=1
+
+ciδi
+
+!
+
+= 1 → X
+
+> ¯δ∈{ 0,1}r
+
+c0 +
+
+> r
+
+X
+
+> i=1
+
+ci
+
+2
+
+!
+
+= 1 
+
+which, by (11), becomes P¯δ∈{ 0,1}r 12 = 1 and is clearly violated if r ≥ 2.Fundamentally, any linear selector will not properly map the hypercube to the simplex—interior points will be mapped onto points outside of the simplex. The Hamming selector is still good enough 
+
+to construct a valid formulation around, but this failure to preserve the convex structure is the root cause of non-idealness in formulations based on Hamming distance or any other linear selector. 13 The Multilinear Selector 
+
+There is a canonical choice of selector function. The multilinear interpolation of the Kronecker delta is given by 
+
+ςM 
+
+> ¯δ
+
+(δ) = 
+
+> r
+
+Y
+
+> i=1
+
+δ¯δi 
+
+> i
+
+(1 − δi)1−¯δi . (12) which takes the value one if and only if δ = ¯δ. ςM 
+
+> ¯δ
+
+(δ) has a probabilistic interpretation: if each 
+
+δi represents an independent Bernoulli random variable with success probability δi, then ςM 
+
+> ¯δ
+
+(δ) is the probability of observing outcome ¯δ. It is known that any boolean function (like the Kronecker delta) has a unique multilinear, exact polynomial representation [29, Definition 1.1] so, in addition to correctly mapping interior points, this selector is unique. Its use is, to our knowledge, novel in the context. 
+
+4.3 Binary Embeddings 
+
+Using the selector function framework, we write the binary formulation parameterized by the choice of selector ς. Assign each disjunctive term (k, l, s ) ∈ Fij a distinct code ¯δkls ∈ { 0, 1}2 according to the reflective Gray code: (i, j, x ) 7 → (0 , 0) , (i, j, y ) 7 → (1 , 0) , (j, i, x ) 7 → (1 , 1) , (j, i, y ) 7 → (0 , 1) . This particular order gives the basis of the FLP-SP formulation introduced in [27] and lends itself well to the addition of some known symmetry-breaking inequalities which we will discuss in Section 6.6. The FLP variant of this formulation is given in [13, Section 5.2]. The BLDP1 formulation from [5, Eqns. (37)-(43)] arises from a different assignment of indicator codes. 
+
+The Simple Binary Formulation (SB) 
+
+cls ≥ LB ls + ( LB ks + Pkls − LB ls ) ς¯δkls (δ) ∀ (k, l, s ) ∈ Fij (SB.a) 
+
+cks ≤ UB ks + ( UB ls − Pkls − UB ks ) ς¯δkls (δ) ∀ (k, l, s ) ∈ Fij (SB.b) 
+
+cks − cls ≤ UB ks − LB ls + ( LB ls + Pkls − UB ks ) ς¯δkls (δ) ∀ (k, l, s ) ∈ Fij (SB.c) 
+
+δ ∈ {0, 1}2 (SB.d) This formulation arises from substituting a selector function ς¯δkls in place of δkls within SU. Con-straint SU.d is naturally satisfied by (8). 
+
+The Linear Formulation (SB-L) Using the uniform Hamming selector ςU in SB yields a mixed-binary linear formulation for RPP with only two binary variables per pair of objects. The minimization is dropped and the two inequalities are projected out: x ≥ 0 becomes the static bounds c ∈ [LB , UB ] while x ≥ 1 − ¯δ − δ 1 becomes the primary, precedence constraints. This is exactly the binary formulation from Huchette, Dey and Vielma [13]. Adding the sequence-pair inequalities in Section 7.2 results in the FLP-SP formulation from [27]. Unfortunately. . . 
+
+Theorem 3. SB-L is not pairwise-ideal in general. 
+
+While an explicit counterexample is given in Appendix C 1, this result should be clear from the interior-failure of linear selectors (Proposition 2). So we proceed to construct a novel formulation from the multilinear selector. 
+
+The Multilinear Formulation (SB-M) Using the multilinear selector ςM in SB yields a   
+
+> 1See CounterexampleSBL.nb in our repository (footnote 2) for a generalized counterexample.
+
+14 mixed-binary multilinear formulation for RPP with only two binary variables per pair of objects. It is easily linearizeable via McCormick envelope: 
+
+δij + δji − ∆ij ≤ 1 δij − ∆ij ≥ 0 δji − ∆ij ≥ 0 ∆ij ≥ 0
+
+so that ∆ij = δij δji is a continuous variable. 
+
+Theorem 4. SB-M is pairwise-ideal for non-trivial instances with Pkls ≤ UB ls − LB ks for each 
+
+(k, l, s ) ∈ Fij .
+
+We will present a computational proof of Theorem 4 in Section 5.3 as no analytic proof is known. Letting δ = ( δij , δ ji ), the reduction of ˜h ¯δ, δ for each input code ¯δ is given in Table 1. Table 1: Gray code assignment and selector terms for SB-L and SB-M. 
+
+(k, l, s ) ¯δkls Dij term ςH 
+
+> ¯δ
+
+(δ) ςM 
+
+> ¯δ
+
+(δ)(i, j, x ) (0 , 0) i ↼ x j 1 − δij − δji 1 − δij − δji + ∆ (i, j, y ) (1 , 0) i ↼ y j δij − δji δij − ∆(j, i, x ) (1 , 1) j ↼ x i δij + δji − 1 ∆(j, i, y ) (0 , 1) j ↼ y i δji − δij δji − ∆
+
+Remark 6 (Connection to Independent Branching) . The selector function framework connects to the theory of logarithmic formulations and independent branching developed by Vielma and Nemhauser [47] and Huchette and Vielma [14]. The multilinear selector corresponds to their independent branch-ing construction, which suggests a deeper relationship between the choice of ς and the inheritance of idealness from unary to binary formulations. We leave the full development of this connection for future work, and instead verify idealness computationally using the Ideal-O’Matic framework in Section 5.3. 
+
+Table 2: The sizes of each formulation with respect to the number  N
+
+> 2
+
+ of pairs of objects to be packed. An asterisk ∗ indicates that the formulation is known to be pairwise ideal under some widely applicable conditions. Formulation Constraints Auxiliary Variables Disjunctive Precedence Bounds Logic Continuous Binary Terms SU* 4 8 1 0 4 4
+
+RU* 4 8 2 0 4 8
+
+SB-L 4 16 0 0 2 4
+
+SB-M* 4 8 3 1 2 4
+
+Remark 7. The multilinear selector ςM is not valid for the refined formulation since the auxiliary variables δ for RU are not restricted to the simplex (compare (SU.d) to (RU.d) and (RU.e) ). Two binary variables are insufficient to encode this space or the eight-term disjunction it represents. 
+
+# 5 Computer-aided Proofs 
+
+In this section, we use IOM to demonstrate the idealness of the various formulations. All Python scripts, model files, logs, and solution files supporting these results are available in our GitHub 15 repository. 2 Throughout this section, we use the term realization in reference to a constraint as it applies to a specific index. For example, the (i, j, x ) realization of (rRU.a), denoted (rRU.a ijx ), is given by 
+
+cjx ≥ LB jx + ( LB ix + Pijx − LB jx )δijx .
+
+When it is clear from context which model we are discussing, this will be abbreviated: (akls ).These proofs should be interpreted with some caution; we use a relatively large ϵ-tolerance of  
+
+> W
+> 10
+
+to enforce strict inequality conditions. We discuss this and other numerical issues in Section 5.4. 
+
+5.1 SU is Pairwise-Ideal (Computer-aided proof of Theorem 1) 
+
+Consider the continuous relaxation of SU: 
+
+Continuous Relaxation of SU (rSU) 
+
+cls ≥ LB ls + ( LB ks + Pkls − LB ls )δkls ∀ (k, l, s ) ∈ Fij (rSU.a) 
+
+cks ≤ UB ks + ( UB ls − Pkls − UB ks )δkls ∀ (k, l, s ) ∈ Fij (rSU.b) 
+
+cks − cls ≤ UB ks − LB ls + ( LB ls − Pkls − UB ks )δkls ∀ (k, l, s ) ∈ Fij (rSU.c) 
+
+δkls ≥ 0 ∀ (k, l, s ) ∈ Fij (rSU.d) 
+
+δijx + δjix + δijy + δjiy = 1 (rSU.e) 
+
+Lemma 1. The following collections of constraints represent a comprehensive set of dependence covers for model rSU. For any given index (k, l, s ) ∈ Fij :1. (akls ), (bkls ), (ckls ) and (dkls ) are linearly dependent when tight. 2. If Pkls = UB ls − LB ks , then the following are linearly dependent when tight: A. (akls ), (bkls ) and (ckls );B. (akls ), (alks ) and (clks ) or C. (bkls ), (blks ) and (clks ) with i. (dkls ′
+
+), (dlks ′
+
+) and (e);ii. (akls ′
+
+), (bkls ′
+
+), (ckls ′
+
+), (dlks ′
+
+) and (e) or iii. (alks ′
+
+), (blks ′
+
+), (clks ′
+
+), (dkls ′
+
+) and (e).3. If Pkls = UB ls − LB ks and P lks = UB ks − LB ls , then the following are linearly dependent when tight: A. (akls ) and (blks );B. (akls ), (bkls ) and (clks ) or C. (ckls ) and (clks )
+
+with i. (dkls ′
+
+), (dlks ′
+
+) and (e);ii. (akls ′
+
+), (bkls ′
+
+), (ckls ′
+
+), (dlks ′
+
+) and (e) or iii. (alks ′
+
+), (blks ′
+
+), (clks ′
+
+), (dkls ′
+
+) and (e).D. Also, (akls ), (alks ), (bkls ), (blks ), (ckls ) and (clks ) have a rank of three. 
+
+We will not formally prove Lemma 1 here as these linear dependencies can be verified by direct computation. 3 These collections of constraints are sufficient to demonstrate the pairwise idealness of SU via a parametric implementation of IOM.   
+
+> 2https://github.com/jfravel/Ideal-O-Matic
+> 3See ProofLemmaSU.nb in our repository (footnote 2) for explicit combination-based evidence.
+
+16 Computational Proof of Theorem 1 up to ϵ = W 
+
+> 10
+
+. We implement PIOM on rSU over several cases which are indexed by {0, 1}2×2. For i ∈ { k, l }, let j = {k, l } \ i and define our binary indexing matrix C such that: 
+
+Csi =
+
+(
+
+0, if UB js − Pijs − LB is ≥ ϵ
+
+1, if UB js − Pijs − LB is = 0 
+
+Recall that linear integer programming does not allow for constraints featuring strict inequalities. For this reason, the condition Csi = 0 includes a constant ϵ which enforces the strict condition Pkls > UB ls − LB ks . Unfortunately, numerical instability makes IOM untenable as ϵ decreases; we set ϵ = W 
+
+> 10
+
+. This leaves a non-negligible gap in our proof. However, demonstrating that pairwise idealness holds in the limit ϵ → 0 provides strong evidence (particularly given that a traditional proof exists under the strict inequality [Appendix A]). Model SU has a great deal of symmetry, so we need only analyze the following six index-cases: (1) 
+
+0 00 0
+
+
+
+(2) 
+
+1 00 0
+
+
+
+(3) 
+
+1 10 0
+
+
+
+(4) 
+
+1 01 0
+
+
+
+(5) 
+
+1 11 0
+
+
+
+(6) 
+
+1 11 1
+
+
+
+Notice that all other elements of {0, 1}2×2 are obtainable from one of these matrices by mirroring vertically (swapping all axes s which have P kls = UB ls − LB ks ) or mirroring the two elements in a given row (swapping the orderings kl ↔ lk which have P kls = UB ls − LB ks ). Since SU is symmetric with respect to such swaps, these six cases are sufficient to demonstrate the full Theorem. In each case, we set W = M = 10 w.l.o.g. along with ϵ = 1 . We let LB, UB and P vary up to the conditions of each case and set the following Gurobi parameters: NumericFocus →3,
+
+IntegralityFocus →1, FeasibilityTol →1e-9 , IntFeasTol →1e-9 and MIPGapAbs →1e-9 . Fi-nally, we include the linear dependencies identified in Lemma 1 to IOM.g to the relevant cases. Since we anticipate an optimal objective function value of zero, it is prudent to ask the solver to prioritize the dual bound rather than letting it wrestle with feasibility tolerances finding trivial improve-ments to the primal solution. We set the following Gurobi parameters to that end: MIPFocus →3,
+
+Heuristics →0, RINS →0, ImproveStartTime →1e10 , Presolve →2 and Aggregate →2. These set-tings improve our runtime by orders of magnitude (especially in cases 1 and 4) and slightly reduce the primal objective function values throughout the solve. In particular, turning off RINS (Re-laxation Induced Neighborhood Search) prevents Gurobi from using a heuristic which searches for nearby primal solutions that may violate feasibility slightly. 4
+
+Each case gives an optimal objective function value of zero in: (1) 0.58 sec. (2) 23.2 sec. (3) 0.47 sec. (4) 49.0 sec. (5) 32.6 sec. (6) 0.10 sec. To further verify these results, we run the linear form of IOM on the instances (LB , UB , P) identified by PIOM; again the relevant dependence covers are added. In each case, an optimal objective value of zero is returned in about a tenth of a second. 5
+
+Remark 8. We additionally verify case (1) in FICO Xpress and SCIP both with primal heuristics turned off. Xpress finds a dual bound of 8.4e-5 in 32 seconds and SCIP a bound of 4.3e-6 in 640 seconds. Note that we did not adjust any default tolerances for these solvers.   
+
+> 4These IOM computations where run on an Linux server featuring a Intel Xeon E5-2630 v3 with sixteen cores at 3200 MHz and 125 Gb of memory. Version 13.0.0 of Gurobi is used.
+> 5Results are summarized in PIOM/Results/P-SU-Results.json within our repository(footnote 2).
+
+17 5.2 RU is Pairwise-Ideal (Computer-aided proof of Theorem 2) 
+
+Consider the continuous relaxation of RU: 
+
+Continuous Relaxation of RU (rRU) 
+
+cls ≥ LB ls + ( LB ks + Pkls − LB ls )δkls ∀ (k, l, s ) ∈ Fij (rRU.a) 
+
+cks ≤ UB ks + ( UB ls − Pkls − UB ks )δkls ∀ (k, l, s ) ∈ Fij (rRU.b) 
+
+cks − cls ≤ Plks − (Plks + Pkls )δkls 
+
++ ( UB ks − Plks − LB ls )δlks 
+
+∀ (k, l, s ) ∈ Fij (rRU.c) 
+
+δkls ≥ 0 ∀ (k, l, s ) ∈ Fij (rRU.d) 
+
+δijs + δjis ≤ 1 ∀ s ∈ { x, y } (rRU.e) 
+
+δijx + δjix + δijy + δjiy ≥ 1 (rRU.f) 
+
+Lemma 2. The following collections of constraints represent a comprehensive set of dependence covers for model rRU. 1. For any (k, l, s ) ∈ Fij , we have: A. (es) and (f) with (dkls ′
+
+) and (dlks ′
+
+) are linearly dependent B. (es) is linearly dependent with with any of the following: i. (akls ), (bkls ), (ckls ) and (dkls )
+
+ii. (akls ), (alks ), (bkls ) and (blks )
+
+iii. (ckls ), (clks ), (dkls ) and (dlks )
+
+iv. (akls ), (alks ), (clks ) and (dkls )
+
+v. (bkls ), (blks ), (clks ) and (dkls )
+
+vi. (ckls ), (clks ), (blks ) and (akls ) or vii. (dkls ), (dlks ), (blks ) and (akls )
+
+C. The union of the collections in B has rank five. D. Adding (es′
+
+) and (f) to any collection in B-C which already contains (dkls ) and (dlks )
+
+increases its rank by only one. Further adding (dkls ′
+
+) and (dlks ′
+
+) again increases rank by only one. E. Adding (f), (dkls ′
+
+) and (dlks ′
+
+) to any collection in B-C increases its rank by only one. 2. If Pkls = UB ls − LB ks for some (k, l, s ) ∈ Fij , we have: A. (alks ), (blks ), (clks ) and (dlks ) are linearly dependent. B. (dkls ) may be removed from any collection in 1.B which contains it without sacrificing linear dependence. 
+
+Again, these linear dependencies can be verified by direct computation. 6 These collections of constraints are sufficient to demonstrate the pairwise idealness of RU via a parametric implemen-tation of IOM. 
+
+Computational Proof of Theorem 2. [Up to ϵ = r 
+
+> 10
+
+] This proof parallels that of Theorem 1 with one notable exception. Model rRU has some additional linear dependencies (which allow for fractional degenerate extreme points) under two conditions for each (k, l, s ) ∈ Fij :
+
+• Pkls + LB ks − LB ls = 0 and • Pkls + UB ks − UB ls = 0 .  
+
+> 6See ProofLemmaRU.nb in our repository (footnote 2) for explicit combination-based evidence.
+
+18 We simply forbid these cases by again using the small constant ϵ:
+
+• Pkls + LB ks − LB ls ≥ ϵ and • Pkls + UB ks − UB ls ≥ ϵ.With these additional constraints in mind, we proceed to analyze the same six cases detailed in the proof of Theorem 1 independently. They are again sufficient by the symmetry of RU. In each case, we add the relevant dependence covers identified in Lemma 2. Each case gives an optimal objective function value of zero in: (1) 9.19 sec. (2) 0.64 sec. (3) 0.59 sec. (4) 0.45 sec. (5) 0.51 sec. (6) 0.51 sec. To further verify these results, we run the linear form of IOM on the instances (LB , UB , P) identified by PIOM. Again, the relevant dependence covers are added. In each case, an optimal objective value of zero is returned in about a tenth of a second. 7
+
+Remark 9. We additionally verify case (1) in FICO Xpress v9.8.0 and SCIP v10 both with primal heuristics turned off. Neither managed to converge within 4.5 hours. Xpress had Primal/Dual values of 1.5 e-4/2.6 e-3. SCIP found 0/3.7 3-1. Note that we did not adjust any default tolerances for these solvers. 
+
+We conjecture that RU is pairwise-ideal for all non-trivial instances, but evaluating each of the strict conditions would increase the caseload from six to fifty-six. Such an exhaustive analysis is beyond the scope of the present work. 
+
+5.3 SB-M is Pairwise-Ideal (Computer-aided proof of Theorem 4) 
+
+Recall the theorem in question, 
+
+Theorem 4. SB-M is pairwise-ideal for non-trivial instances with Pkls ≤ UB ls − LB ks for each 
+
+(k, l, s ) ∈ Fij .
+
+and consider the continuous relaxation of SB-M: 
+
+Continuous Relaxation of SB-M (rSB) 
+
+cls ≥ LB ls + ( LB ks + Pkls − LB ls ) ςM
+
+> ¯δkls
+
+(δ) ∀ (k, l, s ) ∈ Fij (rSB.a) 
+
+cks ≤ UB ks + ( UB ls − Pkls − UB ks ) ςM
+
+> ¯δkls
+
+(δ) ∀ (k, l, s ) ∈ Fij (rSB.b) 
+
+cks − cls ≤ UB ks − LB ls + ( LB ls + Pkls − UB ks ) ςM
+
+> ¯δkls
+
+(δ) ∀ (k, l, s ) ∈ Fij (rSB.c) 
+
+δkl ≥ 0 ∀ { k, l } = {i, j } (rSB.d) 
+
+δkl ≤ 1 ∀ { k, l } = {i, j } (rSB.e) 
+
+δkl − ∆ij ≥ 0 ∀ k, l ∈ { i, j } (rSB.f) 
+
+δij + δji − ∆ij ≤ 1 (rSB.g) 
+
+∆ij ≥ 0 (rSB.h) Again, we use the term realization in reference to a constraint as it applies to a specific index. For example, the (i, j, x ) realization of (rSB.a), denoted (aijx ), is given by 
+
+cjx ≥ LB jx + ( LB ix + Pijx − LB jx ) ςM(0 ,0) (δ)  
+
+> 7Results are summarized in PIOM/Results/P-RU-Results.json within our repository(footnote 2).
+
+19 Lemma 3. Having only two binary variables, SB-M has a collection of linear dependencies which is trickier to visualize than the unary models. To keep the body of this Lemma legible, we define some placeholder constraint references: 
+
+(κkls ) = 
+
+
+
+(fkl ) if s = y, 
+
+(g) if s = x ∧ (k, l ) = ( i, j ),
+
+(h) if s = x ∧ (k, l ) = ( j, i ).
+
+Assuming tightness on each of the relevant constraints: 1. For any values of UB , LB and P:A. (κkls ), (akls ), (bkls ) and (ckls ) are linearly dependent for any (k, l, s ) ∈ Fij . As a result, adding (akls ), (bkls ) and (ckls ) to any other collection already containing (κkls ) increases its rank by only two. B. For either index {k, l } = {i, j }, the following are linearly dependent: i. (dkl ), (fkl ) and (h) and ii. (ekl ), (flk ) and (g);2. If Pkls = UB ls − LB ks , then we have: A. (akls ), (bkls ) and (ckls ) are linearly independent; B. Constraints (κkls ′
+
+) and (κlks ′
+
+) (where s′ ∈ { x, y }\{ s}) are linearly independent with both: i. (akls ), (alks ) and (clks ) and ii. (bkls ), (blks ) and (clks ).3. If Pijs = UB js − LB is and Pjis = UB is − LB js for either s ∈ { x, y }, then we have: A. (aijs ), (bijs ), (cijs ), (ajis ), (bjis ) and (cjis ) have a rank of three. B. (κijs ′
+
+) and (κjis ′
+
+) are linearly dependent with each of the following: i. (aijs ) and (bjis ), ii. (ajis ) and (bijs ) and iii. (cjis ) and (cijs ).Additionally, combining i-iii gives a collection with rank four. Proof. Lemma 3 is less obvious than its earlier counterparts because SB-M is more convoluted; its axes x and y are entangled in a way that SU and RU are not. We provide proof sketches for each entry. 8
+
+1. A. Assuming tightness on (κkls ) implies ςM
+
+> ¯δkls
+
+= 0 and the remaining constraints reduce to 
+
+cls ≥ LB ls , cks ≤ UB ks and cks − cls ≤ UB ks − LB ls .
+
+B. In either case, simply subtracting in order of appearance results in 0 = 0 .2. A. Regardless of ςM
+
+> ¯δkls
+
+. Add (bkls ) to (ckls ) and subtract (akls ).
+
+B. Assuming tightness on (κkls ′
+
+) and (κlks ′
+
+) implies that one of either ςM
+
+> ¯δkls
+
+or ςM
+
+> ¯δlks
+
+takes the value one. If ςM
+
+> ¯δkls
+
+= 1 , then the remaining constraints are clearly dependent. If ςM
+
+> ¯δlks
+
+= 1 ,then the dependence requires P kls = UB ls − LB ks .3. A. In addition to the two corresponding combinations from 2.A , the multipliers 
+
+ −LB is + UB is LB js − UB js 0 LB js − UB js −LB is + UB is 0 
+
+also result in 0 = 0 . This new combination is the only one to reference constraints with both indices— (i, j, s ) and (j, i, s )—so, these combinations are linearly independent.   
+
+> 8See ProofLemmaSBM.nb in our repository (footnote 2) for explicit combination-based evidence.
+
+20 B. As in 2.B , tightness on (κijs ′
+
+) and (κjis ′
+
+) implies that ςM 
+
+> ¯δijs
+
+= 1 or ςM 
+
+> ¯δjis
+
+= 1 exclusively. Then, subtracting the first element of the sub-case from the second gives exactly UB js −
+
+Pijs − LB is = 0 or UB is − Pjis − LB js = 0 respectively. These are exactly the conditions for 3.
+
+Computational Proof of Theorem 4. [Up to ϵ = r 
+
+> 10
+
+] Yet again, this proof parallels that of Theorem 1 with one exception. Models SU and RU have axes which are relatively distinct; the delta with different s indices do not have much interaction. Model SB-M, on the other hand, has highly entangled axes because of the reduced number of binary variables. As a reminder, we define a binary indexing matrix C such that: 
+
+Csi =
+
+(
+
+0 if UB js − Pijs − LB is ≥ ϵ, 
+
+1 if UB js − Pijs − LB is = 0 
+
+Rather than analyzing a restricted set of cases of the matrix C (as in the last two proofs) we need to run PIOM on SB-M over each C ∈ { 0, 1}2×2. Additionaly, Gurobi was having trouble proving optimality when Parametric Ideal O’Matic was applied to this particular model; some instances obtained a dual bound under 1e-5 within sixty seconds, but failed to fully converge within one hour. These instances are marked with an asterisk and their dual bounds are provided. 
+
+0 00 0
+
+
+
+Optimum of 0 in 70 seconds 
+
+1 00 0
+
+
+
+*Primal/Dual of 3.67e-10 /5.21e-7 
+
+0 10 0
+
+
+
+*Primal/Dual of 1.48e-8 /4.26e-7 
+
+0 01 0
+
+
+
+*Primal/Dual of 1.85e-9 /5.04e-7 
+
+0 00 1
+
+
+
+*Primal/Dual of 1.74e-9 /5.97e-7 
+
+1 10 0
+
+
+
+Optimum of 0 in 7.01 seconds 
+
+0 01 1
+
+
+
+Optimum of 0 in 7.72 seconds 
+
+1 01 0
+
+
+
+*Primal/Dual of 8.11e-10 /4.86e-7 
+
+0 11 0
+
+
+
+*Primal/Dual of 2.94e-9 /6.92e-7 
+
+1 00 1
+
+
+
+*Primal/Dual of 7.35e-10 /4.61e-7 
+
+0 10 1
+
+
+
+*Primal/Dual of 3.12e-9 /9.55e-7 
+
+1 11 0
+
+
+
+Optimum of 7.99e-8 in 19.3 seconds 
+
+1 10 1
+
+
+
+Optimum of 9.13e-11 in 33.2 seconds 
+
+1 01 1
+
+
+
+Optimum of 2.52e-9 in 87.3 seconds 
+
+0 11 1
+
+
+
+Optimum of 1.12e-9 in 113 seconds 
+
+1 11 1
+
+
+
+Optimum of 0 in 0.54 seconds To further verify these results, we run the linear form of IOM on the instances (LB , UB , P)
+
+identified by PIOM. Again, the relevant dependence covers are added but, for these easier problems, we tighten some of Gurobi’s other parameters: NumericFocus → 3 and FeasibilityTol → 1e-9 . In each case, an optimal objective value of zero is returned in about a tenth of a second. 9  
+
+> 9Results are summarized in PIOM/Results/P-SBM-Results.json within our repository(footnote 2).
+
+21 5.4 Holes In Our Proofs and their Implications 
+
+Our computational proofs have two glaring holes when compared to traditional proof techniques: the use of an ϵ = r 
+
+> 10
+
+tolerance on our case-conditions and non-triviality constraint and the many feasibility tolerances employed within Gurobi (and other modern, floating-point solvers). Both of these issues stem from the inherent instability of floating-point arithmetic. As ϵ decreases, it becomes easier for the solver to exploit its feasibility tolerances and produce a fractional “extreme point” which is tight to a constraint-set that becomes linearly dependent when 
+
+ϵ = 0 . To mitigate this issue, we select a relatively large value of ϵ. Since we are also analyzing the limiting behavior, we feel that ϵ = r 
+
+> 10
+
+provides reasonable evidence of idealness. We have mentioned that solvers based on exact or rational arithmetic do exist for integer linear programs—the most prevalent is probably SCIP [9, 3]. Such software would bypass the feasibility tolerance issues and improve numerical stability as our ϵ-gap decreases. The full, strict inequality of the conditions will remain unachievable. Unfortunately, our proofs rely on quadratically-constrained programming for which no rational solver is yet available. PIOM will need to remain a floating-point endeavor for now. It can certainly be argued that these tolerance issues undermine the rigor of Ideal-O’Matic as a proof framework. Regardless of one’s stance on this matter, Ideal-O’Matic reveals interesting structural properties of these MBLP models. According to Lemma 1, avoiding a positive PIOM value under Model SU requires about 45 dependence covers. Model SB-M (Lemma 3) requires 68 while RU requires about 150 covers (Lemma 2) without even accounting for the additional parameter conditions identified in the proof of Theorem 2. In some sense, Model RU’s idealness is more delicate than that of its peers; it contains many more linear dependencies that must be accounted for. These linear dependencies present a challenge to traditional techniques for proving idealness—even identifying them without some kind of automation would be enormously tedious. 
+
+# 6 Experimental Setup 
+
+Having established pairwise-idealness for several formulations, we turn our curiosity to the question of performance. Our goals are threefold: (1) to decide how these formulations compare, (2) to investigate the effect that pairwise-idealness has on solver performance and (3) to discuss some simple enhancements which can be applied to MBLP rectangle packing models. Please note: we do not claim any competitiveness with state of the art techniques for solving rectangle packing problems. We are primarily interested in investigating the practical effect of pairwise-idealness. To this end we complete a few computational experiments on several data sets: (1) Under default settings (2) With Cuts and Heuristics disabled (3) Adding a valid “sequence-pair” inequalities and a branching rule (4) In SCIP to allow for as pure a branch-and-bound scheme as possible. Each test is performed in Gurobi 13.0.0 (or SCIP 10) through Python 3 on a Linux server featuring a Intel Xeon E5-2630 v3 with sixteen cores at 3200 MHz and 125 Gb of memory. First, we detail our objective function and instance generation schemes before broaching the branching rules and valid inequalities. 22 6.1 Objective Function 
+
+Having not needed any particular rectangle packing objective up to this point, we finally define the optimization problem used in our computational experiments 
+
+The Rectangular Strip-Packing Problem (SPP) 
+
+A version of RPP which seeks the minimum value of Wy under which a packing of the N objects into an Wx × Wy region is feasible. This is implemented as follows: Minimize h (13a) s.t. h ≥ ciy + 12 wiy + σ+ 
+
+> iy
+
+∀ i ∈ [[ N ]] (13b) 
+
+cis ∈ [LB is , UB is ] ∀ i ∈ [[ N ]] , s ∈ { x, y } (13c) _
+
+> (k,l,s )∈Fij
+
+(cks + Pkls ≤ cls ) ∀ (i, j ) ∈ P. (13d) We chose this objective for its simplicity; it requires no additional disjunctive constraints and only one additional continuous variable h. This allows us to compare the different MBLP embeddings of (13d) relatively directly. We maintain a hard upper bound Wy based on a greedy solution described in Section 6.3. 
+
+6.2 Instance Generation 
+
+We chose 2DCPackGen [39], a random instance generator for a variety of two-dimensional cutting and packing problems, to generate strip packing instances. All problems feature a 100-unit wide strip and objects between 5 and 30 units in either direction according to a random sampling of the Beta(2,5) distribution (the “small and square” characteristic). Instances were generated with each of N = 10 , 15 , 20 and 25 before clearances were added. Each side of each object has a 50% chance to be given a clearance according to a uniform distribution between zero and the dimension of the parent object. Our problem instances are available in our repository (see footnote 2). 
+
+6.3 Warm Starts 
+
+While Gurobi usually finds initial feasible solutions to the Strip Packing Problem quickly, they are often relatively sparse and result in poor initial estimations of the optimal height. We implemented a greedy heuristic to generate better initial solutions: (1) Order the objects in increasing order of height ( σ− 
+
+> iy
+
++ wiy + σ+
+
+> iy
+
+); (2) Pack objects in a row along the base of the strip until adding another object would overflow the bounds; (3) given the tallest physical object and tallest clearance of the first row, pack objects in a row above the first until adding another object would overflow the bounds while making sure that no occlusion occurs between the rows; and (4) repeat step (3) until all objects have been packed. See Figure 5 for an example of Gurobi’s initial solutions and those generated greedily. More sophisticated approaches, such as those described in [4], [26], or [16], could yield further improvements, but our focus is on exact methods and this greedy heuristic provides a simple way to ensure that each formulation starts from a comparable initial solution. 
+
+6.4 Additional Formulations 
+
+We include two additional formulations in our experiments: Naive Unary (NU) and the Hybrid Unary (HU). Naive Unary removes the dynamic variable bounds—(SU.a) and (SU.b)—from SU while Hybrid Unary adds (SU.c) to RU—this is the original refined formulation described in [13]. 23 (a) Gurobi’s solution starts with an optimality gap of 84.6%. 
+
+> (b) The greedy solution starts with an optimality gap of 79.1%.
+
+Figure 5: Two possible initial solutions to the N = 50 Strip Packing Problem. In Appendix C, we provide some additional details including a proof that NU is not ideal and some evidence that HU is .
+
+6.5 Cuts and Heuristics 
+
+Gurobi has a large number of cutting plane and heuristic routines that improve the performance of most general ILPs. To investigate whether the reduced number of binary variables in the binary formulations offers an advantage in a pure branch-and-bound setting, we experiment with disabling Gurobi’s cuts and heuristics parameters. Contrary to expectation, we observe generally better performance with these features disabled—see Table 3. 
+
+6.6 Symmetry Breaking Inequalities 
+
+Consider a set of three rectangles i, j and k and notice that if i ↼ s j and j ↼ s k, then it must also be that i ↼ s k. This relationship can be enforced in SU and RU by adding the inequality 
+
+δijs + δjks − δiks ≤ 1 and holds for any permutation of the triple: 
+
+The Unary Sequence-Pair Inequalities (SPU) 
+
+δijs + δjks − δiks ≤ 1 ∀ (i, j, k ) ∈ T, s ∈ { x, y }
+
+where T := {i, j, k ∈ [[ N ]] : i < j < k } is the set of distinct triples of object indices. This can be derived by applying the lower McCormick envelope to δiks ≥ δijs δjks for all triples (i, j, k ) of objects. The indicator variables lose their obvious interpretations in the binary formulations, but similar sequence inequalities are still possible. Described in [13, Appendix D.2] but originally from [27], the following inequalities are valid for any three objects Bi, Bj and Bk under SB: 
+
+The Binary Sequence-Pair Inequalities (SPB) 
+
+0 ≤ δij + δjk − δik ≤ 1 ∀ (i, j, k ) ∈ T
+
+0 ≤ δji + δkj − δki ≤ 1 ∀ (i, j, k ) ∈ T
+
+24 Bk
+
+# Bj
+
+# Bi
+
+Figure 6: A symmetric solution. It is clear that i ↼ x j, j ↼ x k and i ↼ y j which implies an indicator solution of δij = (0 , 0) , δjk = (0 , 0) and δik = (1 , 0) and violates SPB. Instead, SPB requires that 
+
+δik = (0 , 0) which implies i ↼ x k—another valid solution. There also exists some literature [1] on breaking symmetry between identical objects. In prob-lems with many identical objects, such inequalities can vastly improve performance. However, our random instances have (at most) very few identical objects; we do not expect any performance gains from breaking this symmetry. 
+
+6.7 Branching Priority 
+
+Given the poor performance of cuts (and heuristics) on this problem, we implement a branching scheme inspired by the work of Sherali, Fraticelli and Meller [38] in hopes of improving the per-formance of pure branch-and-bound. The position of a large object will have a more noticeable, global impact on the indicator variables than will the position of a small object. In particular, the precedence between a pair of large objects ought to be established early in the branch-and-bound tree. For this reason, we assign each indicator δijs a branching priority given by: 
+
+min {σis , σ js } +
+
+
+
+max  
+
+> k∈[[ N]]
+
+{σks } + 1 
+
+  
+
+min {wis , w js } +
+
+
+
+max  
+
+> k∈[[ N]]
+
+{wks } + 1 
+
+
+
+min( ai, a j )
+
+
+
+(14) where σis = σ+ 
+
+> is
+
++ σ− 
+
+> is
+
+and ai = wix wiy for each i ∈ [[ N ]] . This expression places emphasis, first, on physical area; followed by physical size in the relevant direction; and lastly, on the combined size of clearances in the relevant direction. Since the indicator variables δij = ( δij , δ ji ) do not have a clear connection to the direction 
+
+s ∈ { x, y }, we drop direction from the branching priority. Thus, both δij and δji are given a branching priority value according to: 
+
+min {σi, σ j } +
+
+
+
+max  
+
+> k∈[[ N]]
+
+{σk} + 1 
+
+
+
+min( ai, a j ) (15) where σi = σix + σiy and ai = wix wiy for each i ∈ [[ N ]] . In either case, Gurobi is now more likely to branch on precedence indicators between pairs of large objects with large clearances. Naturally, adding a priority metric to the indicator variables does not affect the pairwise-idealness of the parent formulation. 25 7 Results 
+
+7.1 Cuts and Heuristics 
+
+Our experiment with Gurobi’s Cuts and Heuristics parameters proved fruitful. In most cases (all except for N = 35 ), the fastest convergence appears with these parameters disabled—see Table 3. The unary formulations seem to outperform the binary, but the difference is not drastic. This agrees with the conclusions in Huchette, Dey and Vielma [13]. As one might expect from disabling primal-focused solver methods, dual performance is improved at the cost of primal. For smaller 
+
+N (10-25) this has a net positive impact on convergence, but the solver benefits from the primal techniques on our larger data sets—see Figure 7. Table 3: Cuts and Heuristics results. Six data sets are evaluated under each formulation in Gurobi. The runtime is reported if the model converged in under one hour; otherwise, the percent pri-mal/dual gap is reported. Largest and smallest values are highlighted for each data set. N C & H NU SU RU HU SB-L SB-M 
+
+10 ✗ 0.24s 0.79s 0.86s 0.36s 0.32s 0.88s 
+
+✓ 1.44s 1.87s 2.94s 6.46s 10.9s 20.6s 15 ✗ 501s 188s 32.9s 140s 160s 2215s 
+
+✓ 412s 452s 188s 443s 1002s 1856s 20 ✗ 39% 35% 37% 38% 37% 44% 
+
+✓ 41% 40% 43% 38% 42% 49% 25 ✗ 49% 49% 52% 51% 53% 53% 
+
+✓ 51% 51% 52% 51% 50% 51% 35 ✗ 50% 50% 53% 50% 52% 52% 
+
+✓ 49% 48% 51% 49% 48% 48% 50 ✗ 76% 72% 82% 79% 70% 76% 
+
+✓ 75% 72% 74% 75% 77% 77% 
+
+7.2 Sequence Pair and Branching 
+
+Our experiment with Branching Rules and Sequence Pair Inequalities also produced interesting results. While the unary formulations (NU, SU, RU and HU) saw little change, the binary for-mulations (SB-L and SB-M) achieved a significant performance boost. With these enhancements, the binary formulations become top performers—see Table 4. Gurobi’s Cuts and Heuristics pa-rameters continue to degrade performance, though the effect is reduced—see Figure 8. The binary formulations see improvement in both primal and dual performance while the unary formulations see little change—see Figure 9. 
+
+7.3 SCIP Branch-and-Bound 
+
+Our last experiments are conducted in SCIP 10 which is more modular and allows us to run our models in a (mostly) pure Branch-and-Bound setting. In particular we set Presolve → OFF ,
+
+Separating → OFF and Heuristics → OFF in addition to a number of sub-settings to thoroughly disable presolve, cuts (seperating) and heuristics. These experiments are conducted on three new instances with N = 15 and N = 25 .The results are nearly identical across the formulations for N = 25 , which we attribute to SCIP being less performant than Gurobi—none of the formulations managed to find a primal solution 26 Figure 7: Selected convergence plots for the Cuts and Heuristics experiment Table 4: Branching Rule and Sequence Pair Inequalities results. Six data sets are evaluated under each formulation in Gurobi. The runtime is reported if the model converged in under one hour; otherwise, the percent primal/dual gap is reported. Largest and smallest values are highlighted for each data set. N C & H NU SU RU HU SB-L SB-M 
+
+10 ✗ 0.29s 1.15s 0.67s 0.66s 0.57s 0.39s 
+
+✓ 4.54s 2.24s 6.96s 3.69s 2.68s 3.39s 15 ✗ 102s 237s 61.0s 167s 54.3s 121s 
+
+✓ 304s 739s 356s 295s 155s 248s 20 ✗ 34% 36% 38% 41% 31% 32% 
+
+✓ 38% 40% 40% 39% 35% 34% 25 ✗ 51% 51% 53% 52% 49% 48% 
+
+✓ 51% 52% 53% 52% 51% 51% 35 ✗ 48% 48% 52% 51% 49% 49% 
+
+✓ 48% 48% 51% 52% 49% 48% 50 ✗ 81% 82% 82% 82% 69% 69% 
+
+✓ 72% 74% 77% 77% 77% 77% 27 Figure 8: The effect of Cuts and Heuristics is reduced under the Branching Rule and Sequence Pair Inequalities. 
+
+> (a) Binary Formulations
+> (b) Unary Formulations
+
+Figure 9: Convergence plots from our experiment with Branching Rules and Sequence Pair Inequal-ities. 28 better than the one given by the heuristic warm start. The two binary formulations (SB-L and SB-M) perform best for all N = 15 instances by achieving smaller primal values (dual performance is nearly identical across formulations). Having fewer binary variables should help under Branch-and-Bound. Contrary to expectation, the refined formulations (RU and HU) perform worst and largely failed to beat the heuristic warm start within one hour. Notably, NU visits an order of magnitude more nodes than any other formulation, perhaps because it has fewer constraints; it also performs well. See Tables 5, 6 and 7 for more details. No significant advantage is observed from formulations which are pairwise-ideal. Table 5: A nearly-pure branch-and-bound comparison in SCIP. The runtime is reported if the model converged in under one hour; otherwise, the percent primal/dual gap is reported. Largest and smallest values are highlighted for each data set. N Inst. NU SU RU HU SB-L SB-M 
+
+15 0 47% 41% 45% 1 288s 2% 11% 9% 2 18% 26% 3 43% 44% 25 0 68% 68% 68% 68% 68% 68% 1 57% 57% 57% 57% 57% 57% 2 58% 58% 58% 58% 58% 58% 3 61% 61% 61% 61% 61% 61% 48% 40% 48% 35% 76.3s 15% 42% 42% 15% 52% 52% 52% 39% Table 6: Primal Values found in each of the SCIP Branch-and-Bound experiments. Largest and smallest values are highlighted for each data set. An asterisk is added if no primal solution was found better than the heuristic warm start. N Inst. NU SU RU HU SB-L SB-M 
+
+15 0 60.0 54.0 62.1 1 51.0 56.0 55.0 2 55.0 61.0 3 53.0 54.0 25 0 *106.2 *106.2 *106.2 *106.2 *106.2 *106.2 1 *99.2 *99.2 *99.2 *99.2 *99.2 *99.2 2 *97.9 *97.9 *97.9 *97.9 *97.9 *97.9 3 *93.4 *93.4 *93.4 *93.4 *93.4 *93.4 *62.1 *62.1 53.0 50.0 *77.0 50.0 53.0 *78.1 *78.1 53.0 *62.1 *62.1 *62.1 49.0 
+
+# 8 Conclusions 
+
+Our primary contributions have been the development of two complementary frameworks for gener-ating computer-aided proofs of idealness for mixed binary linear programs: the optimization-based Ideal O’Matic (PIOM) and an algebraic vertex enumeration approach. The algebraic method pro-vides independent verification without relying on floating-point optimization, completing proofs in seconds rather than hours for the formulations studied. Using these tools, we confirm a prominent conjecture made by the authors of [13] and correct a non-ideal formulation for the rectangle packing problem. We also perform several experiments to determine the impact of pairwise idealness in prac-29 Table 7: Nodes Visited in each of the SCIP Branch-and-Bound experiments. Largest and smallest values are highlighted for each data set. An asterisk is added to instances which converged. N Inst. NU SU RU HU SB-L SB-M 
+
+15 0 7.0 e6 2.1 e6 3.9 e6 6.8 e6 2.0 e61 *8.4 e5 2.8 e6 5.2 e6 *1.8 e5 1.9 e62 7.7 e6 2.1 e6 4.5 e6 6.8 e6 2.6 e63 7.1 e6 2.1 e6 4.1 e6 7.6 e6 2.2 e625 0 2.5 e6 1.2 e5 1.0 e6 1.5 e6 4.3 e51 2.7 e6 1.4 e5 1.2 e6 2.5 e6 4.3 e52 2.8 e6 1.6 e5 1.1 e6 1.6 e6 5.0 e53 2.5 e6 1.2 e5 1.4 e6 1.9 e6 4.9 e51.0 e78.4 e61.0 e71.0 e74.8 e64.7 e64.8 e64.4 e6tice; we find that the impact is negligible. Sequence Pair inequalities do improve the performance of both binary formulations giving them a marginal lead in practice. Future contributions could include the use of a rational/exact solver like SCIP [9, 3] to ver-ify the linear, instanced IOM results without any floating point error. VIPR [7] could also be used to output certificates that serve as proofs of idealness. The algebraic enumeration approach could be extended to other problem classes where binary solutions exhibit parameter-independence, potentially enabling rapid idealness verification for a broader family of formulations. Additional experiments could also be performed. There exists a huge variety of objective functions which could be applied to these formulations that may behave differently; in particular, an objective that is not so far removed from the binary variables may perform better under Gurobi’s default branch-and-cut scheme. Our tests are not competitive with state of the art solution techniques, more research may be done to bring them up to parity. 
+
+Data Disclosure: The data that support the findings of this study and the Python scripts used to generate it are openly available in our GitHub repository (see footnote 2). Only synthetic data, generated specifically for this study, was used. A complete description of our data generation scheme is given in Section 6.2. 
+
+Interests Disclosure: There are no relevant financial or non-financial competing interests to report. 
+
+# References 
+
+[1] Ricardo Andrade and Ernesto G Birgin. “Symmetry-breaking constraints for packing identical rectangles within polyhedra”. In: Optimization Letters 7.2 (2013), pp. 375–405. doi : 10.1007/ s11590-011-0425-9 .[2] Egon Balas. “Disjunctive programming: Properties of the convex hull of feasible points”. In: 
+
+Discrete Applied Mathematics 89.1 (1998), pp. 3–44. issn : 0166-218X. doi : 10.1016/S0166-218X(98)00136-X .[3] Suresh Bolusani et al. The SCIP Optimization Suite 9.0 . 2024. arXiv: 2402.17702 [math.OC] .
+
+url : https://arxiv.org/abs/2402.17702 .30 [4] Andreas Bortfeldt. “A genetic algorithm for the two-dimensional strip packing problem with rectangular pieces”. In: European Journal of Operational Research 172.3 (2006), pp. 814–837. 
+
+issn : 0377-2217. doi : 10.1016/j.ejor.2004.11.016 .[5] Ignacio Castillo and Tapio Westerlund. “An epsilon-accurate model for optimal unequal-area block layout design”. In: Computers and Operations Research 32.3 (2005), pp. 429–447. issn :0305-0548. doi : 10.1016/S0305-0548(03)00246-6 .[6] Scott Shaobing Chen, David L. Donoho and Michael A. Saunders. “Atomic Decomposition by Basis Pursuit”. In: SIAM Review 43.1 (2001), pp. 129–159. doi : 10.1137/S003614450037906X .[7] Kevin KH Cheung, Ambros Gleixner and Daniel E Steffy. “Verifying integer programming results”. In: Integer Programming and Combinatorial Optimization: 19th International Con-ference, IPCO 2017, Waterloo, ON, Canada, June 26-28, 2017, Proceedings 19 . Springer. 2017, pp. 148–160. isbn : 978-3-319-59250-3. doi : 10.1007/978-3-319-59250-3_13 .[8] Michele Conforti, Gérard Cornuéjols and Giacomo Zambelli. Integer Programming . Vol. 271. Graduate Texts in Mathematics. Cham: Springer, 2014. isbn : 978-3-319-11007-3. doi : 10. 1007/978-3-319-11008-0 .[9] Leon Eifler and Ambros Gleixner. “A computational status update for exact rational mixed integer programming”. In: Mathematical Programming 197.2 (2023), pp. 793–812. doi : 10. 1007/s10107-021-01749-5 .[10] Leon Eifler, Ambros Gleixner and Jonad Pulaj. “A Safe Computational Framework for Integer Programming Applied to Chvátal’s Conjecture”. In: ACM Trans. Math. Softw. 48.2 (May 2022). issn : 0098-3500. doi : 10.1145/3485630 .[11] Loris Faina. “A survey on the cutting and packing problems”. In: Bollettino dell’Unione Matematica Italiana 13.4 (Aug. 2020), pp. 567–572. issn : 2198-2759. doi : 10.1007/s40574-020-00253-6 .[12] Chao Guan, Zeqiang Zhang and Silu Liu. “An Exact Formulation for Multi-Workshop Facility Layout Problem with Clearance Bounds”. In: 2019 IEEE International Conference on Indus-trial Engineering and Engineering Management (IEEM) . 2019, pp. 1583–1587. doi : 10.1109/ IEEM44572.2019.8978631 .[13] Joey Huchette, Santanu S. Dey and Juan Pablo Vielma. “Strong mixed-integer formulations for the floor layout problem”. In: INFOR: Information Systems and Operational Research 56.4 (July 2017), pp. 392–433. issn : 1916-0615. doi : 10.1080/03155986.2017.1346916 .[14] Joey Huchette and Juan Pablo Vielma. “A Combinatorial Approach for Small and Strong Formulations of Disjunctive Constraints”. In: Mathematics of Operations Research 44.3 (2019), pp. 793–820. doi : 10.1287/moor.2018.0946 .[15] Supriya Ingole and Dinesh Singh. “Fixed and flexible shape facility layout problems using biogeography-based optimisation algorithm”. In: International Journal of Industrial and Sys-tems Engineering 37.1 (2021), p. 84. issn : 1748-5045. doi : 10.1504/ijise.2021.112469 .[16] Supriya Ingole and Dinesh Singh. “Unequal-area, fixed-shape facility layout problems using the firefly algorithm”. In: Engineering Optimization 49.7 (2017), pp. 1097–1115. doi : 10.1080/ 0305215X.2016.1235327 .[17] IPOPT Documentation . Accessed: 2025-06-10. url : https://coin- or.github.io/Ipopt/ index.html .31 [18] R. G. Jeroslow and J. K. Lowe. “Modelling with integer variables”. In: Mathematical Program-ming at Oberwolfach II . Ed. by Bernhard Korte and Klaus Ritter. Berlin, Heidelberg: Springer Berlin Heidelberg, 1984, pp. 167–184. isbn : 978-3-642-00915-0. doi : 10.1007/BFb0121015 .[19] Anatoli Juditsky and Arkadi Nemirovski. “On verifiable sufficient conditions for sparse signal recovery via L1 minimization”. In: Mathematical programming 127 (2011), pp. 57–88. doi :
+
+10.1007/s10107-010-0417-z .[20] Bonfim Amaro Junior et al. “A biased random-key genetic algorithm using dotted board model for solving two-dimensional irregular strip packing problems”. In: 2020 IEEE Congress on Evolutionary Computation (CEC) . 2020. doi : 10.1109/CEC48606.2020.9185794 .[21] B. Keller. “Construction heuristics for the single row layout problem with machine-spanning clearances”. In: INFOR: Information Systems and Operational Research 57.1 (2019), pp. 32– 55. doi : 10.1080/03155986.2017.1393729 .[22] Franklin Kenter and Daphne Skipper. “Integer-Programming Bounds on Pebbling Numbers of Cartesian-Product Graphs”. In: Combinatorial Optimization and Applications . Ed. by Donghyun Kim, R. N. Uma and Alexander Zelikovsky. Cham: Springer International Publishing, 2018, pp. 681–695. doi : 10.1007/978-3-030-04651-4_46 .[23] Giuseppe Lancia, Eleonora Pippia and Franca Rinaldi. “Using Integer Programming to Search for Counterexamples: A Case Study”. In: Mathematical Optimization Theory and Operations Research . Ed. by Alexander Kononov et al. Cham: Springer International Publishing, 2020, pp. 69–84. isbn : 978-3-030-49988-4. doi : 10.1007/978-3-030-49988-4_5 .[24] Xiaoping Liao et al. “Visual nesting system for irregular cutting-stock problem based on rubber band packing algorithm”. In: Advances in Mechanical Engineering 8.6 (2016). doi :
+
+10.1177/1687814016652080 .[25] Andrea Lodi, Silvano Martello and Michele Monaci. “Two-dimensional packing problems: A survey”. In: European Journal of Operational Research 141.2 (2002), pp. 241–252. issn : 0377-2217. doi : https://doi.org/10.1016/S0377-2217(02)00123-6 .[26] Alan McKendall and Artak Hakobyan. “An Application of an Unequal-Area Facilities Layout Problem with Fixed-Shape Facilities”. In: Algorithms 14.11 (2021). issn : 1999-4893. doi : 10. 3390/a14110306 .[27] Russell D. Meller, Weiping Chen and Hanif D. Sherali. “Applying the sequence-pair represen-tation to optimal facility layout designs”. In: Operations Research Letters 35.5 (2007), pp. 651– 659. issn : 0167-6377. doi : 10.1016/j.orl.2006.10.007 .[28] Leandro R. Mundim, Marina Andretta and Thiago Alves de Queiroz. “A biased random key genetic algorithm for open dimension nesting problems using no-fit raster”. In: Expert Systems with Applications 81 (2017), pp. 358–371. issn : 0957-4174. doi : 10.1016/j.eswa.2017.03. 059 .[29] Noam Nisan and Mario Szegedy. “On the degree of Boolean functions as real polynomials”. In: Computational complexity 4.4 (1994), pp. 301–313. doi : 10.1007/BF01263419 .[30] Manfred Padberg. Linear Optimization and Extensions . Vol. 12. Algorithms and Combina-torics. Springer Science & Business Media, 1999. isbn : 978-3-540-65833-7. doi : 10.1007/978-3-662-12273-0 .32 [31] Manfred Padberg and Minendra P. Rijal. “Locally Ideal LP Formulations I”. In: Location, Scheduling, Design and Integer Programming . Vol. 3. International Series in Operations Re-search & Management Science. Boston, MA: Springer, 1996. isbn : 978-1-4613-1379-3. doi :
+
+10.1007/978-1-4613-1379-3 .[32] Jeinny Peralta, Marina Andretta and José Fernando Oliveira. “SOLVING IRREGULAR STRIP PACKING PROBLEMS WITH FREE ROTATIONS USING SEPARATION LINES”. In: Pesquisa Operacional 38.2 (2018), pp. 195–214. issn : 0101-7438. doi : 10 . 1590 / 0101 -7438.2018.038.02.0195 .[33] Jonad Pulaj. “Cutting planes for families implying Frankl’s conjecture”. In: Mathematics of Computation 89.322 (2020), pp. 829–857. doi : 10.1090/mcom/3461 .[34] Marcos Okamura Rodrigues and Franklina M.B. Toledo. “A clique covering MIP model for the irregular strip packing problem”. In: Computers & Operations Research 87 (2017), pp. 221– 234. issn : 0305-0548. doi : 10.1016/j.cor.2016.11.006 .[35] Soroush Safarzadeh and Hamidreza Koosha. “Solving an extended multi-row facility layout problem with fuzzy clearances using GA”. In: Applied Soft Computing 61 (2017), pp. 819–831. 
+
+issn : 1568-4946. doi : https://doi.org/10.1016/j.asoc.2017.09.003 .[36] André Kubagawa Sato et al. “A study in pairwise clustering for bi-dimensional irregular strip packing using the dotted board model”. In: IFAC-PapersOnLine 51.11 (2018), pp. 284–289. 
+
+doi : 10.1016/j.ifacol.2018.08.297 .[37] Alexander Schrijver. Theory of linear and integer programming . en. Wiley Series in Discrete Mathematics & Optimization. Chichester, England: John Wiley & Sons, Apr. 1998. isbn :978-0-4708-6059-5. [38] Hanif D. Sherali, Barbara M. P. Fraticelli and Russell D. Meller. “Enhanced Model Formu-lations for Optimal Facility Layout”. In: Operations Research 51.4 (2003), pp. 629–644. doi :
+
+10.1287/opre.51.4.629.16096 .[39] Elsa Silva, José F. Oliveira and Gerhard Wäscher. “2DCPackGen: A problem generator for two-dimensional rectangular cutting and packing problems”. In: European Journal of Oper-ational Research 237.3 (2014), pp. 846–856. issn : 0377-2217. doi : 10.1016/j.ejor.2014. 02.059 . url : https://sites.google.com/gcloud.fe.up.pt/cutting- and- packing-tools/2dcpackgen .[40] Yuriy Stoyan, Alexander Pankratov and Tatiana Romanova. “Cutting and packing problems for irregular objects with continuous rotations: mathematical modelling and non-linear op-timization”. In: Journal of the Operational Research Society 67.5 (2016), pp. 786–800. doi :
+
+10.1057/jors.2015.94 .[41] Andreas M. Tillmann. “Computing the spark: mixed-integer programming for the (vector) matroid girth problem”. In: Computational Optimization and Applications 74.2 (June 2019), pp. 387–441. issn : 1573-2894. doi : 10.1007/s10589-019-00114-9 .[42] Andreas M. Tillmann and Marc E. Pfetsch. “The Computational Complexity of the Restricted Isometry Property, the Nullspace Property, and Related Concepts in Compressed Sensing”. In: IEEE Transactions on Information Theory 60.2 (2014), pp. 1248–1259. doi : 10.1109/ TIT.2013.2290112 .[43] Zeynep Uruk and Nevra Akbilek. “Zoning Constrained Machine Layout Problem with Mutual Clearances”. In: Scientia Iranica 0.0 (2022). issn : 2345-3605. doi : 10 . 24200 / sci . 2022 . 57877.5453 .33 [44] Juan Pablo Vielma. “Embedding formulations and complexity for unions of polyhedra”. In: 
+
+Management Science 64.10 (2018), pp. 4721–4734. doi : 10.1287/mnsc.2017.2856 .[45] Juan Pablo Vielma. “Mixed Integer Linear Programming Formulation Techniques”. In: SIAM Review 57.1 (2015), pp. 3–57. doi : 10.1137/130915303 . eprint: https://doi.org/10.1137/ 130915303 . url : https://doi.org/10.1137/130915303 .[46] Juan Pablo Vielma. “Mixed Integer Linear Programming Formulation Techniques”. In: SIAM Review 57.1 (2015), pp. 3–57. doi : 10.1137/130915303 .[47] Juan Pablo Vielma and George L. Nemhauser. “Modeling Disjunctive Constraints with a Logarithmic Number of Binary Variables and Constraints”. In: Mathematical Programming 
+
+128.1–2 (2011), pp. 49–72. doi : 10.1007/s10107-009-0295-4 .[48] Laurence A. Wolsey. Integer Programming . 2nd. Hoboken, NJ: John Wiley & Sons, 2020. isbn :978-1-119-60647-5. [49] Xiaodong Li Xing Wan Xingquan Zuo and Xinchao Zhao. “A hybrid multiobjective GRASP for a multi-row facility layout problem with extra clearances”. In: International Journal of Production Research 60.3 (2022), pp. 957–976. doi : 10.1080/00207543.2020.1847342 .[50] Meng Yu, Xingquan Zuo and Chase C. Murray. “A tabu search heuristic for the single row layout problem with shared clearances”. In: 2014 IEEE Congress on Evolutionary Computation (CEC) . 2014, pp. 819–825. doi : 10.1109/CEC.2014.6900353 .[51] X. Q. Zuo, C. C. Murray and A. E. Smith. “Sharing clearances to improve machine layout”. In: International Journal of Production Research 54.14 (2016), pp. 4272–4285. doi : 10.1080/ 00207543.2016.1142134 .34 Appendices 
+
+# A An Analytic Proof of Theorem 1 
+
+This proof is largely a copy of the one in Appendix B of Huchette, Dey and Vielma [13]. The original proof is for the Floor Layout Problem which is a related but slightly more complicated version of rectangle packing—the objects have variable dimension. 
+
+Proof of Theorem 1 for Pkls ̸ = UB lks − LB kls . Notice that constraints (SU.c), (SU.d), and (SU.e) clearly enforce the non-overlapping condition. Thus we begin by demonstrating the validity of (SU.a) and (SU.b) by considering the following cases for each s ∈ { x, y } and {k, l } = {i, j }:
+
+• If δkls = 0 and δlks = 0 , then (SU.a) and (SU.b) reduce to LB ks ≤ cks ≤ UB ks which ensures that object i is entirely contained within the region. 
+
+• If δkls = 1 and δlks = 0 , then (SU.a) and (SU.b) reduce to LB ks ≤ cks ≤ UB ls − Pkls which tightens the upper bound under the assumption that (k ↼ s l).
+
+• If δkls = 0 and δlks = 1 , then (SU.a) and (SU.b) reduce to LB ls + Plks ≤ cks ≤ UB ks which tightens the lower bound under the assumption that (l ↼ s k).
+
+• δkls = 1 and δlks = 1 is not feasible by (SU.d). To demonstrate the idealness of formulation SU, we need to show that every extreme point solution to its relaxation has δij ∈ { 0, 1}4; or instead, by contraposition, that no solution with fractional elements in δij is an extreme point. Since the two directions x and y are largely independent of one another (outside of constraint (SU.d)), we consider the following projection of the continuous relaxation of SU onto just one: 
+
+ci ≥ LB i(1 − δji ) + ( LB j + Pji )δji (16a) 
+
+ci ≤ UB i(1 − δij ) + ( UB j − Pij )δij (16b) 
+
+cj ≥ LB j (1 − δij ) + ( LB i + Pij )δij (16c) 
+
+cj ≤ UB j (1 − δji ) + ( UB i − Pji )δji (16d) 
+
+ci + Pij ≤ cj + Mij (1 − δij ) (16e) 
+
+cj + Pji ≤ ci + Mji (1 − δji ) (16f) 
+
+δij + δji ≤ 1 (16g) 
+
+δij ≥ 0 (16h) 
+
+δji ≥ 0 (16i) Now take some arbitrary solution  ˆc, ˆδ feasible to (16) such that ˆδij ∈ (0 , 1) . Knowing that the argument for fractional ˆδji follows analogously, we proceed to show that  ˆc, ˆδ is not an extreme point of (16) by case analysis. Since ˆδij > 0, (16g) implies that ˆδji < 1. Further, constraint (16h) is not tight and our case analysis will branch first on the tightness of constraint (16i). Before we get to that, notice that if (16b) and (16c) are both tight, we would have 
+
+cj = LB j + ( LB i + Pij − LB j )ˆδij 
+
+cj − LB j + ( LB j − Pij − LB i)ˆδij = 0
+
+35 ci = UB i + ( UB j − Pij − UB i)ˆδij 
+
+ci + Pij = UB i + ( UB j − Pij − UB i)ˆδij + Pij 
+
+= cj − LB j + ( LB j − Pij − LB i)ˆδij + UB i + Pij + ( UB j − Pij − UB i)ˆδij 
+
+= cj + UB i + Pij − LB j + ( UB j − Pij − UB i + LB j − Pij − LB i)ˆδij 
+
+= cj + UB i + Pij − LB j − (UB i + Pij − LB j − UB j + Pij + LB i)ˆδij 
+
+= cj + Mij − (Mij − UB j + Pij + LB i)ˆδij 
+
+= cj + Mij 
+
+ 1 − ˆδij 
+
+ −  Pij − (UB j − LB i)ˆδij 
+
+> cj + Mij 
+
+ 1 − ˆδij 
+
+ since Pij < UB j − LB i
+
+which contradicts constraint (16e). Thus, constraints (16b) and (16c) cannot both be tight. By a similar argument, under the assumption that (16i) is not tight ( ˆδji > 0), constraints (16a) and (16d) cannot both be tight. Now, we outline our case analysis: I. Constraint (16i) is tight. i. Constraint (16f) is tight. ii. Constraint (16f) is not tight. II. Constraint (16i) is not tight. i. Constraints (16e) and (16f) are both tight. a. Constraint (16g) is tight. b. Constraint (16g) is not tight. ii. At most one of constraints (16e) and (16f) is tight. a. Constraint (16g) is not tight. b. Constraint (16g) is tight. We will show that at most three linearly independent constraints from (16) can be tight in each case. I.i. Constraint (16i) being tight implies that (16g) is not tight. Constraint (16f) also being tight further implies 
+
+cj + Pji = ci + Mji 
+
+= ci + UB j + Pji − LB i
+
+⇒ cj − ci = UB j − LB i. (17) Notice that (16a) and (16d) reduce to ci ≥ LB i and cj ≤ UB j which must be tight since their difference is exactly (17). However, this also implies that at most three of (16a), (16d), (16f), and (16i) form a linearly independent set. It remains only to show that none of the remaining constraints can be tight. Now assume, for the sake of contradiction, that (16b) and (16c) are tight. Recalling that Pij ̸ = UB j − LB i and reducing, we are respectively left with: 36 LB i = UB i(1 − δij ) + ( UB j − Pij )δij 
+
+> UB i(1 − δij ) + LB iδij 
+
+⇒ LB i(1 − δij ) > UB i(1 − δij )
+
+⇒ LB i > UB i,
+
+UB j = LB j (1 − δij ) + ( LB i + Pij )δij 
+
+< LB j (1 − δij ) + UB j δij 
+
+⇒ UB j (1 − δij ) < LB j (1 − δij )
+
+⇒ UB j < LB j .
+
+Such bounds are clearly infeasible and we have our contradiction. The only remaining constraint is (16e) which reduces to P ij − (UB j − LB i) ≤ Mij 
+
+ 1 − ˆδij 
+
+.
+
+Notice that the left-hand side is negative while the right-hand side is strictly positive, thus (16e) cannot be tight. I.ii. As above, constraint (16i) being tight implies that (16g) is not tight. However, the non-tightness of (16f) implies: 
+
+cj + Pji < ci + Mji 
+
+< ci + UB j + Pji − LB i
+
+⇒ cj − ci < UB j − LB i. (18) Notice that (16a) and (16d) reduce to ci ≥ LB i and cj ≤ UB j ; by comparing their difference to (18), we find that at most one of (16a) and (16d) may be tight. Assume, for the sake of contradiction, that (16a) and (16b) are both tight and consider their difference: 
+
+ci − ci = UB i(1 − δij ) + ( UB j − Pij )δij − LB i
+
+= UB i − LB i + ( UB j − Pij − UB i)δij 
+
+> UB i − LB i − (UB i − LB i)δij 
+
+> UB i − LB i
+
+> 0.
+
+Thus, (16a) and (16b) cannot both be tight. Assume, again for the sake of contradiction, that (16a), (16c), and (16e) are all tight and consider the sum (16a) − (16c) − (16e): 
+
+ci − cj − ci − Pij = LB i − LB j (1 − δij ) − (LB i + Pij )δij − cj − Mij (1 − δij )0 = LB i + Pij − LB j (1 − δij ) − (LB i + Pij )δij − Mij (1 − δij )0 = (LB i + Pij )(1 − δij ) − LB j (1 − δij ) − Mij (1 − δij )0 = (LB i + Pij − LB j − UB i − Pij + LB j )(1 − δij )0 = (LB i − UB i)(1 − δij ) < 0.
+
+This is a contradiction, so it cannot be that (16a), (16c), and (16e) are all tight. By a similar argument, we can show that (16b), (16d), and (16e) are all tight. Recalling that we previously demonstrated that (16c) and (16d) cannot both be tight. Therefore, at most two of (16 a−16 e)
+
+can be simultaneously tight in addition to (16i) and this case has no extreme point. 37 II.i.a. Constraint (16g) being tight while (16i) is not tight implies that (16h) cannot be tight. Consider first a reduction of (16e), (16f), and (16g): 
+
+
+
+ci + Pij = cj + Mij (1 − ˆδij )
+
+cj + Pji = ci + Mji (1 − ˆδji )ˆδij + ˆδji = 1
+
+(
+
+ci − cj = Mij (1 − ˆδij ) − Pij 
+
+ci − cj = Pji − Mji ˆδij 
+
+Pji − Mji ˆδij = Mij (1 − ˆδij ) − Pij 
+
+(Mij − Mji )ˆδij = Mij − Pij − Pji 
+
+(Mji − Mij )ˆδij = Pij + Pji − UB i − Pij + LB j
+
+ˆδij = Pji − (UB i − LB j )
+
+Mji − Mij 
+
+.
+
+Which is only positive if M ji < Mij since the numerator is negative. Now consider expanding the denominator under this assumption: 
+
+ˆδij = Pji − (UB i − LB j )
+
+Mji − Mij 
+
+= Pji − UB i + LB j
+
+UB j + Pji − LB i − UB i − Pij + LB j
+
+= (Pji − UB i + LB j )(Pji − UB i + LB j ) − (Pij − UB j + LB i) .
+
+Each of the parenthetical terms is negative and the denominator has a smaller absolute value than the numerator, so ˆδij > 1 which violates (16g). Thus this case is actually infeasible. II.i.b. In this case, constraints (16e) and (16f) are tight while (16g) and (16i) are not. Consider an 38 instance where (16a) and (16b) are also both tight: 
+
+
+
+ci = LB i(1 − δji ) + ( LB j + Pji )δji 
+
+ci = UB i(1 − δij ) + ( UB j − Pij )δij 
+
+ci + Pij = cj + Mij (1 − δij )
+
+cj + Pji = ci + Mji (1 − δji )
+
+
+
+ci = LB i + ( LB j + Pji − LB i)δji 
+
+ci = UB i + ( UB j − Pij − UB i)δij 
+
+cj = ci + Pij − Mij + Mij δij 
+
+cj = ci − Pji + Mji − Mji δji 
+
+(
+
+cj = UB i + Pij − UB i − Pij + LB j + ( UB j − Pij − UB i)δij + Mij δij 
+
+cj = LB i − Pji + UB j + Pji − LB i + ( LB j + Pji − LB i)δji − Mji δji 
+
+(
+
+cj = LB j + ( UB j − Pij − UB i + UB i + Pij − LB j )δij 
+
+cj = UB j + ( LB j + Pji − LB i − UB j − Pji + LB i)δji 
+
+(
+
+cj = LB j + ( UB j − LB j )δij 
+
+cj = UB j + ( LB j − UB j )δji 
+
+(δij = cj −LB j 
+
+> UB j−LB j
+
+δji = UB j −cj 
+
+> UB j−LB j
+
+δij + δji = cj − LB j
+
+UB j − LB j
+
++ UB j − cj
+
+UB j − LB j
+
+= cj − LB j + UB j − cj
+
+UB j − LB j
+
+= UB j − LB j
+
+UB j − LB j
+
+= 1
+
+which violates the non-tightness assumption on (16g), so at most one of (16a) and (16b) can be tight. Similar algebra will demonstrate that at most one of (16c) and (16d) can be tight; so, by considering earlier arguments, we see that at most one of (16 a − 16 d) can be tight. This leaves at most three tight constraints and this case has no extreme point. II.ii.a In this case, w.l.o.g, assume that constraint (16e) is tight while (16f), (16g), and (16i) are not. This means that ˆδji is fractional and thus, by earlier argument, at most two of (16 a − 16 d)
+
+can be tight. This leaves at most three tight constraints and this case has no extreme point. II.ii.b In this case, w.l.o.g, assume that constraints (16e) and (16g) are tight while (16f) and (16i) 39 are not. First, suppose that (16a) and (16c) are tight alongside (16g): 
+
+
+
+ci = LB i(1 − ˆδji ) + ( LB j + Pji )ˆδji 
+
+cj = LB j (1 − ˆδij ) + ( LB i + Pij )ˆδij 
+
+ˆδij + ˆδji = 1
+
+(
+
+ci = LB i(1 − ˆδji ) + ( LB j + Pji )ˆδji 
+
+cj = LB j ˆδji + ( LB i + Pij )(1 − ˆδji )
+
+(
+
+ci = LB i + ( LB j + Pji − LB i)ˆδji 
+
+cj = LB i + Pij + ( LB i + Pij + LB j )ˆδji 
+
+ci − cj = LB i + ( LB j + Pji − LB i)ˆδji − LB i − Pij − (LB i + Pij + LB j )ˆδji 
+
+ci − cj = (LB j + Pji − LB i − LB i − Pij − LB j )ˆδji − Pij 
+
+ci + Pij − cj = (Pji − LB i − LB i − Pij )ˆδji .
+
+Subtracting this from the tight form of (16e) gives a contradiction. Mij (1 − δij ) = (Pji − LB i − LB i − Pij )ˆδji 
+
+UB i + Pij − LB j = Pji − 2LB i − LB i − Pij 
+
+0 = Pji − (UB i − LB j ) − 2LB i − 2Pij 
+
+< 0 − 2LB i − 2Pij since P ji < (UB i − LB j )
+
+< 0
+
+A similar contradiction can be achieved by supposing that (16b) and (16d) are tight instead. Thus, by combining with earlier arguments, at most one of (16 a − 16 d) can be tight. This leaves at most three tight constraints and this case has no extreme point. Having completed the case analysis of the projection (16), it remains only to rigorously establish that the full dimensional formulation SU is ideal. To do this, consider a fractional solution (ˆc, ˆδ)
+
+to the continuous relaxation of SU and assume, for the sake of contradiction, that it is an extreme point. That is, assume that (ˆc, ˆδ) is tight to at least seven linearly independent inequalities in addition to satisfying equation (SU.d). There must exist a dimension ˆs ∈ { x, y } in which at least four of these tight inequalities exist; call the other dimension ˆt. Each of these dimensions projects into its own variant of (16) and there are then four cases to consider: 1. A fractional ˆδˆs necessitates a fractional extreme point in the projected system (16) which is a contradiction as we have already demonstrated that (16) has no fractional extreme points. 2. If (16g) is not tight in direction ˆt, then a fractional ˆδˆt implies a fractional ˆδˆs by equality constraint (SU.d). We have already shown that this is a contradiction. 3. On the other hand, if (16g) is tight in the direction ˆt, then a fractional ˆδˆt implies that neither (16h) nor (16i) is tight in the direction ˆt while both are tight in the direction of ˆs. However, (SU.d) is linearly dependent with a tight (16g) in the direction ˆt and tight (16h) and (16i) in the direction of ˆs.Since (16) has only four variables it cannot support more than four linearly independent tight constraints, so such a fractional solution is only an extreme point if it is tight to three constraints in the direction ˆt in addition to (16g). This is not achievable: by the proof of case 40 II.i.a above, we know that only one of (16e) and (16f) may be tight; further, by the proof of case II.ii.ab, we also know that at most one of (16a)-(16d) may be tight. 4. Finally, if ˆt has fewer than three of the tight inequalities; then ˆs must have at least five. But the projected system (16) has only four variables and cannot support five or more linearly independent, tight constraints. 41 B Additional Tables and Plots 
+
+> Table 8: Additional results from our experiment with Gurobi’s  Cuts  and  Heuristics  parameters (Table 3) Primal Value  Dual Bound N C & H  NU  SU  RU  HU  SB-L  SB-M  NU  SU  RU  HU  SB-L  SB-M
+> 10  ✗ 39  39  39  39  39  39  39  39  39  39  39  39
+> ✓ 39  39  39  39  39  39  39  39  39  39  39  39 15  ✗ 45  45  45  45  45  45  45  45  45  45  45  45
+> ✓ 45  45  45  45  45  45  45  45  45  45  45  45 20  ✗ 79  77  78  77  79  81  48  50  49  48  50  45
+> ✓ 78  77  80  78  79  80  46  46  46  48  46  41 25  ✗ 71  71  71  70  72  72  36  36  34  34  34  34
+> ✓ 70  70  71  70  68  69  34  34  34  34  34  34 35  ✗ 96  96  102  96  99  99  48  48  48  48  48  48
+> ✓ 94  93  97  95  92  93  48  48  48  48  48  48 50  ✗ 164  168  190  163  171  173  39  47  35  35  51  42
+> ✓ 153  151  155  160  156  152  37.5  41.7  40.0  40  36.1  35.4 Solution Count  Node Count N C & H  NU  SU  RU  HU  SB-L  SB-M  NU  SU  RU  HU  SB-L  SB-M
+> 10  ✗ 10  10  7 8 8 8 1.1 e4 3.2 e4 2.5 e4 6.5 e3 1.3 e4 8.7 e3
+> ✓ 7 5 8 10  5 8 5.0 e3 3.6 e3 5.1 e3 8.2 e3 1.8 e4 2.6 e415  ✗ 10  10  10  10  9 10  7.2 e6 7.6 e5 6.6 e4 2.0 e5 7.2 e5 8.4 e6
+> ✓ 10  10  10  10  10  10  6.8 e4 5.7 e4 2.2 e4 3.4 e4 1.8 e5 5.8 e520  ✗ 10  10  10  10  10  10  3.2 e7 1.4 e7 5.6 e6 2.7 e6 1.0 e7 7.1 e6
+> ✓ 10  10  10  10  10  10  8.1 e5 5.9 e5 4.5 e5 1.6 e5 6.3 e5 9.2 e525  ✗ 10  10  10  10  10  10  3.6 e7 1.4 e7 5.6 e6 2.4 e6 9.2 e6 6.3 e6
+> ✓ 10  10  10  10  10  10  7.1 e5 4.6 e5 2.9 e5 2.0 e5 3.8 e5 5.3 e535  ✗ 10  10  10  10  10  10  2.2 e7 8.5 e6 2.8 e6 1.4 e6 7.0 e6 4.1 e6
+> ✓ 10  10  10  10  10  10  3.7 e5 3.0 e5 1.7 e5 1.2 e5 3.4 e5 2.3 e550  ✗ 10  10  3 10  10  10  1.2 e7 5.0 e6 7.4 e5 2.6 e5 2.4 e6 1.8 e6
+> ✓ 10  10  10  10  10  10  7.2 e4 1.1 e5 5.7 e4 1.6 e4 1.3 e5 5.3 e4
+
+42 Table 9: Additional results from our experiment with Branching Rules and Sequence Pair Inequalities (Table 4). An asterisk is added to primal values which failed to beat the heuristic warm start. Primal Value  Dual Bound N C & H  NU  SU  RU  HU  SB-L  SB-M  NU  SU  RU  HU  SB-L  SB-M 
+
+> 10  ✗ 39  39  39  39  39  39  39  39  39  39  39  39
+> ✓ 39  39  39  39  39  39  39  39  39  39  39  39 15  ✗ 45  45  45  45  45  45  45  45  45  45  45  45
+> ✓ 45  45  45  45  45  45  45  45  45  45  45  45 20  ✗ 76  78  78  78  77  78  50  50  48  46  53  53
+> ✓ 77  80  80  79  77  76  48  48  48  48  50  50 25  ✗ 70  69  72  71  70  69  34  34  34  34  36  36
+> ✓ 70  71  73  71  69  70  34  34  34  34  34  34 35  ✗ 93  93  101  98  94  94  48  48  48  48  48  48
+> ✓ 92  93  97  99  94  92  48  48  48  48  48  48 50  ✗ 180  191  *191.6  *191.6  157  155  35  35  35  35  48  48
+> ✓ 145  153  171  171  153  150  40  40  40  40  35  35 Solution Count  Node Count N C & H  NU  SU  RU  HU  SB-L  SB-M  NU  SU  RU  HU  SB-L  SB-M
+> 10  ✗ 7 9 7 7 7 7 3.8 e3 1.6 e4 7.9 e3 4.9 e3 1.2 e4 8.9 e3
+> ✓ 8 9 10  9 6 8 6.8 e3 1.4 e3 5.2 e3 2.6 e3 7.7 e3 8.9 e315  ✗ 10  10  10  10  10  9 6.5 e4 1.6 e5 4.2 e4 1.0 e5 3.2 e5 4.5 e5
+> ✓ 10  10  10  10  10  10  2.2 e4 3.9 e4 2.7 e4 1.8 e4 3.7 e4 8.0 e420  ✗ 10  10  10  10  10  10  7.5 e5 6.3 e5 4.7 e5 2.7 e5 4.8 e6 3.2 e6
+> ✓ 10  10  10  10  10  10  5.7 e4 1.3 e5 7.1 e4 2.8 e4 4.1 e5 4.2 e525  ✗ 10  10  10  10  10  10  8.0 e5 5.7 e5 4.7 e5 3.7 e5 5.0 e6 2.5 e6
+> ✓ 10  10  10  10  10  10  1.2 e5 4.9 e4 4.1 e4 2.9 e4 2.9 e5 3.3 e535  ✗ 10  10  10  10  10  10  2.3 e5 2.0 e5 1.3 e5 1.0 e5 1.6 e6 9.6 e5
+> ✓ 10  10  10  10  10  10  1.4 e4 1.9 e4 1.3 e4 6.7 e3 1.1 e5 6.0 e450  ✗ 5 2 1 1 10  10  1.4 e4 5.2 e3 2.6 e3 2.3 e3 2.9 e5 2.2 e5
+> ✓ 10  10  10  10  10  10  399  1 1 1 3.4 e3 867
+
+43 C Counterexamples and Other RPP Embeddings 
+
+First, our counterexample to idealness for SB-L. 
+
+Proof of Theorem 3. Consider the problem instance with two 2 × 2 objects with no clearances in a 
+
+10 ×10 region so that LB 1x, LB 2x, LB 1y, LB 2y = 1 , UB 1x, UB 2x, UB 1y, UB 2y = 9 and P 12 x, P21 x, P12 y, P21 y =2. Notice that the SB constraints {(aijx ), (aijy ), (bijx ), (bjix ), (cijx ), (cijy )} with ς ← ςU, are given by: 
+
+0 1 0 0 2 20 0 0 1 −2 2
+
+−1 0 0 0 2 20 0 −1 0 −2 2
+
+−1 1 0 1 10 10 0 0 −1 1 −10 10 
+
+
+
+c1x
+
+c2x
+
+c1y
+
+c2y
+
+δ12 
+
+δ21 
+
+
+
+≥
+
+
+
+31
+
+−7
+
+−92
+
+−8
+
+
+
+which is full rank and satisfied at equality by c1x = 9 , c2x = 1 , c1y = 9 , c2y = 1 , δ12 = 12 and 
+
+δ21 = 12 . The above solution is feasible to the other constraints and so is a fractional extreme point of the relaxation. Thus, SB-L is not generally pairwise-ideal. In fact, this collection of constraints always induces a δ12 = δ21 = 12 solution regardless of problem instance. See CounterexampleSBL.nb in our repository (footnote 2) for a generalization of this counterexample. Simpler even than model SU is the following naive formulation which does away with the dynamic bounds on C (SU.a and SU.b) in favor of static ones: 
+
+The Naive Unary Formulation (NU) 
+
+cks − cls ≤ M − (Pkls + M )δkls ∀ (k, l, s ) ∈ Fij (NU.a) 
+
+δijx + δjix + δijy + δjiy = 1 (NU.b) 
+
+cis ∈ [LB is , UB is ] ∀ i ∈ [[ N ]] , s ∈ { x, y } (NU.c) 
+
+δkls ∈ {0, 1} ∀ (k, l, s ) ∈ Fij (NU.d) 
+
+Theorem 5. NU is not pairwise-ideal in general. Proof. Consider the problem instance with two 2 × 2 objects with no clearances in a 10 × 10 region so that LB 1x, LB 2x, LB 1y, LB 2y = 1 , UB 1x, UB 2x, UB 1y, UB 2y = 9 and P 12 x, P21 x, P12 y, P21 y = 2 .Let M take its smallest valid value (UB kls − LB lks = 8 ) and notice that the lower bounds on c, the lower bounds on δ01 x and δ10 x, (NU.a 01 y) and (NU.d) are given by: 
+
+
+
+−1 0 0 0 0 0 0 00 −1 0 0 0 0 0 00 0 −1 0 0 0 0 00 0 0 −1 0 0 0 00 0 0 0 −1 0 0 00 0 0 0 0 −1 0 00 0 0 0 1 −1 10 00 0 1 1 0 0 1 1
+
+
+
+c1x
+
+c2x
+
+δ12 x
+
+δ21 x
+
+c1y
+
+c2y
+
+δ12 y
+
+δ21 y
+
+
+
+≥
+
+
+
+−1
+
+−100
+
+−1
+
+−181
+
+
+
+This 8-constraint system is full rank (lower triangular) and satisfied at equality by c1x = 1 , c2x = 1 ,
+
+δ12 x = 0 , δ21 x = 0 , c1y = 1 , c2y = 1 , δ12 y = 45 and δ21 y = 15 . The above solution is feasible to the other constraints and is therefore a fractional extreme point of the relaxation. Thus, N U is not generally pairwise-ideal. See CounterexampleNU.nb in our repository (footnote 2) for more evidence and a slight generalization of this counterexample. 44 Another formulation combines SU and RU: 
+
+The Hybrid Unary Formulation (HU) 
+
+cls ≥ LB ls + ( LB ks + Pkls − LB ls )δkls ∀ (k, l, s ) ∈ Fij (HU.a) 
+
+cks ≤ UB ks + ( UB ls − Pkls − UB ks )δkls ∀ (k, l, s ) ∈ Fij (HU.b) 
+
+cks − cls ≤ UB ks − LB ls + ( LB ls − Pkls − UB ks )δkls ∀ (k, l, s ) ∈ Fij (HU.c) 
+
+cks − cls ≤ Plks − (Plks + Pkls )δkls 
+
++ ( UB ks − Plks − LB ls )δlks 
+
+∀ (k, l, s ) ∈ Fij (HU.d) 
+
+δijs + δjis ≤ 1 ∀ s ∈ { x, y } (HU.e) 
+
+δijx + δjix + δijy + δjiy ≥ 1 (HU.f) 
+
+δkls ∈ {0, 1} ∀ (k, l, s ) ∈ Fij . (HU.g) This is actually the version of RU presented in [13] but, in the non-relaxed integer programming setting, HU.c is redundant to HU.d. Using Ideal-O’Matic on HU requires all of the dependence covers from both Lemma 1 and 2 in addition to some new ones. Instead, we will just notice that adding valid inequalities to an ideal LP results in an ideal LP. If you are curious, the new covers are given in ProofLemmaHU.nb in our repository (footnote 2). 
+
+# D Counter Example for P kls > UB lks − LB kls 
+
+Such problem instances are “trivial” because they can be embedded in a lower dimensional problem. In particular, the variable δkls may be given the value zero and projected out of the IP because 
+
+k ↼ s l is infeasible. 
+
+Theorem 6. SU is not generally pairwise-ideal if Pkls > UB lks − LB kls .Proof. Consider the problem instance with on a 10 × 10 region with one 2 × 2 object and one 2 × 6
+
+object with σ+2y = 3 (a positive y clearance of 3 on object 2). We have LB 1x, LB 2x, LB 1y = 1 ,LB 2y = 3 , UB 1x, UB 2x, UB 1y = 9 , UB 2y = 4 , P 12 x, P21 x, P12 y = 2 and , P21 y = 7 . Notice that UB 1y − P21 y − LB 2y = 9 − 7 − 3 = −1 < 0 and consider the constraints (rSU.b 1x), (rSU.b 2x),(rSU.e), (rSU.d 2x), (rSU.a 2y), (rSU.a 1y), (rSU.b 2y) and (rSU.d 1y) as given below: 
+
+
+
+1 0 2 0 0 0 0 00 1 0 2 0 0 0 00 0 1 1 0 0 1 10 0 0 −1 0 0 0 00 0 0 0 −1 0 0 90 0 0 0 0 −1 0 00 0 0 0 0 1 0 20 0 0 0 0 0 −1 0
+
+
+
+c1x
+
+c2x
+
+δ12 x
+
+δ21 x
+
+c1y
+
+c2y
+
+δ12 y
+
+δ21 y
+
+
+
+≥
+
+
+
+9910
+
+−1
+
+−340
+
+
+
+This 8-constraint system is full rank and satisfied at equality by c1x = 8 , c2x = 9 , δ12 x = 12 , δ21 x = 0 ,
+
+c1y = 5 .5, c2y = 3 , δ12 y = 12 and δ21 y = 15 . The above solution is feasible to the other constraints and is therefore a fractional extreme point of the relaxation. See CounterexampleSU.nb in our repository (footnote 2) for complete evidence. 45
