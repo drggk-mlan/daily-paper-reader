@@ -196,6 +196,66 @@ def looks_truncated(text: str) -> bool:
     return False
 
 
+def quick_summary_is_valid(text: str) -> bool:
+    """
+    快速摘要的格式校验：
+    - 必须包含 **问题** / **方法** / **结论** 三行
+    - 每行必须以中文句号/问号/感叹号或英文标点结尾，避免半句
+    """
+    s = (text or "").strip()
+    if not s:
+        return False
+
+    lines = [l.strip() for l in s.splitlines() if l.strip()]
+    want = {"**问题**", "**方法**", "**结论**"}
+    got = set()
+    for l in lines:
+        for k in want:
+            if l.startswith(k):
+                got.add(k)
+    if got != want:
+        return False
+
+    def line_ok(prefix: str) -> bool:
+        line = next((l for l in lines if l.startswith(prefix)), "")
+        if not line:
+            return False
+        # 必须以句末标点结束，避免“在/中/的”等半句截断
+        return line.endswith(("。", "！", "？", ".", "!", "?"))
+
+    return line_ok("**问题**") and line_ok("**方法**") and line_ok("**结论**")
+
+
+def quick_summary_invalid_reason(text: str) -> str:
+    s = (text or "").strip()
+    if not s:
+        return "empty"
+    lines = [l.strip() for l in s.splitlines() if l.strip()]
+    want = {"**问题**", "**方法**", "**结论**"}
+    got = set()
+    for l in lines:
+        for k in want:
+            if l.startswith(k):
+                got.add(k)
+    if got != want:
+        missing = sorted(list(want - got))
+        return f"missing_fields:{','.join(missing)}"
+
+    def line_ok(prefix: str) -> bool:
+        line = next((l for l in lines if l.startswith(prefix)), "")
+        if not line:
+            return False
+        return line.endswith(("。", "！", "？", ".", "!", "?"))
+
+    bad = []
+    for k in ("**问题**", "**方法**", "**结论**"):
+        if not line_ok(k):
+            bad.append(k)
+    if bad:
+        return f"bad_punctuation:{','.join(bad)}"
+    return "unknown"
+
+
 def extract_section_tail(md_text: str, heading: str) -> str:
     """
     从 md 中提取某个自动生成段落（heading）后的尾部内容。
@@ -225,6 +285,40 @@ def strip_auto_sections(md_text: str) -> str:
         return md_text
     cut = min(cut_points)
     return md_text[:cut].rstrip()
+
+
+def normalize_meta_tldr_line(md_text: str) -> Tuple[str, bool]:
+    """
+    兼容历史版本：TLDR 行曾被写成 '**TLDR**: xxx \\'。
+    这里把 TLDR 行末尾的反斜杠去掉。
+    """
+    if not md_text:
+        return md_text, False
+    changed = False
+    lines = md_text.splitlines()
+    out: List[str] = []
+    for line in lines:
+        if line.startswith("**TLDR**"):
+            new_line = line.rstrip()
+            if new_line.endswith("\\"):
+                new_line = new_line[:-1].rstrip()
+            if new_line != line:
+                changed = True
+            out.append(new_line)
+        else:
+            out.append(line)
+    return "\n".join(out), changed
+
+
+def ensure_single_sentence_end(text: str) -> str:
+    """
+    给 TLDR/短句补一个句末标点（避免重复 '。。'）。
+    """
+    s = (text or "").strip()
+    if not s:
+        return s
+    s = s.rstrip("。.!?！？")
+    return s + "。"
 
 
 def upsert_auto_block(md_path: str, heading: str, content: str) -> None:
@@ -299,6 +393,8 @@ def generate_deep_summary(md_file_path: str, txt_file_path: str, max_retries: in
             if not summary:
                 continue
             last = summary
+            if os.getenv("DPR_DEBUG_STEP6") == "1":
+                log(f"[DEBUG][STEP6] deep_summary attempt={attempt} len={len(summary)} tail={summary[-20:]!r}")
             if "（完）" in summary and not looks_truncated(summary):
                 return summary
             # 续写一次：避免输出被截断
@@ -310,6 +406,8 @@ def generate_deep_summary(md_file_path: str, txt_file_path: str, max_retries: in
             cont = call_blt_text(LLM_CLIENT, cont_messages, temperature=0.3, max_tokens=2048)
             cont = (cont or "").strip()
             merged = f"{summary}\n\n{cont}".strip()
+            if os.getenv("DPR_DEBUG_STEP6") == "1":
+                log(f"[DEBUG][STEP6] deep_summary_cont attempt={attempt} len={len(cont)} merged_tail={merged[-20:]!r}")
             if "（完）" in merged and not looks_truncated(merged):
                 return merged
         except Exception as e:
@@ -331,7 +429,7 @@ def generate_quick_summary(title: str, abstract: str, max_retries: int = 3) -> s
         "**问题**：<一句话>\n"
         "**方法**：<一句话>\n"
         "**结论**：<一句话>\n\n"
-        "要求：总长度尽量控制在 180 字以内，避免输出被截断；不要输出其它说明文字。"
+        "不要输出其它说明文字。"
     )
     messages = [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}, {"role": "user", "content": format_prompt}]
 
@@ -341,20 +439,9 @@ def generate_quick_summary(title: str, abstract: str, max_retries: int = 3) -> s
             summary = (summary or "").strip()
             if not summary:
                 continue
-            if looks_truncated(summary):
-                # 再请求一次“重新输出完整版本”，尽量避免末尾被截断
-                fix_messages = [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                    {"role": "user", "content": format_prompt},
-                    {"role": "user", "content": "注意：上一版输出疑似被截断，请重新输出一版完整可读的 3 行内容，每行必须以句号“。”结尾。"},
-                ]
-                fixed = call_blt_text(LLM_CLIENT, fix_messages, temperature=0.2, max_tokens=512)
-                fixed = (fixed or "").strip()
-                if fixed and not looks_truncated(fixed):
-                    return fixed
-            if not looks_truncated(summary):
-                return summary
+            if os.getenv("DPR_DEBUG_STEP6") == "1":
+                log(f"[DEBUG][STEP6] quick_summary attempt={attempt} len={len(summary)} valid={quick_summary_is_valid(summary)} reason={quick_summary_invalid_reason(summary)}")
+            return summary
         except Exception as e:
             log(f"[WARN] 速读总结失败（第 {attempt} 次）：{e}")
             time.sleep(2 * attempt)
@@ -513,9 +600,13 @@ def build_markdown_content(
     zh_abstract: str,
     tags_html: str,
 ) -> str:
-    def meta_line(label: str, value: str) -> str:
+    def meta_line(label: str, value: str, add_slash: bool = True) -> str:
         v = (value or "").strip()
-        return f"**{label}**: {v} \\" if v else ""
+        if not v:
+            return ""
+        if add_slash:
+            return f"**{label}**: {v} \\"
+        return f"**{label}**: {v}"
 
     title = (paper.get("title") or "").strip()
     authors = paper.get("authors") or []
@@ -557,7 +648,8 @@ def build_markdown_content(
     if evidence:
         lines.append(meta_line("Evidence", evidence))
     if tldr:
-        lines.append(meta_line("TLDR", tldr))
+        # TLDR 行不需要尾部反斜杠
+        lines.append(meta_line("TLDR", tldr, add_slash=False))
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -589,6 +681,15 @@ def process_paper(
         except Exception:
             existing = ""
 
+        # 修复历史格式：TLDR 行末尾不应带反斜杠
+        fixed, changed = normalize_meta_tldr_line(existing)
+        if changed:
+            with open(md_path, "w", encoding="utf-8") as f:
+                f.write(fixed + ("\n" if not fixed.endswith("\n") else ""))
+            existing = fixed
+            if os.getenv("DPR_DEBUG_STEP6") == "1":
+                log(f"[DEBUG][STEP6] fixed TLDR trailing slash: {os.path.basename(md_path)}")
+
         if section == "deep":
             tail = extract_section_tail(existing, "论文详细总结（自动生成）")
             if tail and not looks_truncated(tail):
@@ -602,17 +703,18 @@ def process_paper(
             return paper_id, title
         else:
             tail = extract_section_tail(existing, "速览摘要（自动生成）")
-            if tail and not looks_truncated(tail):
+            # 若已经有速览摘要且不是 TLDR 回退，则保持不变
+            if tail and not tail.lstrip().startswith("**TLDR**"):
                 return paper_id, title
+            if os.getenv("DPR_DEBUG_STEP6") == "1" and tail:
+                log(f"[DEBUG][STEP6] quick_summary needs fix: {os.path.basename(md_path)} reason={quick_summary_invalid_reason(tail)} tail={tail[-40:]!r}")
 
             abstract_en = (paper.get("abstract") or "").strip()
             summary = generate_quick_summary(title, abstract_en)
-            if summary and looks_truncated(summary):
-                summary = None
             if not summary:
                 tldr = (paper.get("llm_tldr_cn") or paper.get("llm_tldr") or "").strip()
                 if tldr:
-                    summary = f"**TLDR**：{tldr}。"
+                    summary = f"**TLDR**：{ensure_single_sentence_end(tldr)}"
             if summary:
                 upsert_auto_block(md_path, "速览摘要（自动生成）", summary)
             return paper_id, title
@@ -635,12 +737,10 @@ def process_paper(
             upsert_auto_block(md_path, "论文详细总结（自动生成）", summary)
     else:
         summary = generate_quick_summary(title, abstract_en)
-        if summary and looks_truncated(summary):
-            summary = None
         if not summary:
             tldr = (paper.get("llm_tldr_cn") or paper.get("llm_tldr") or "").strip()
             if tldr:
-                summary = f"**TLDR**：{tldr}。"
+                summary = f"**TLDR**：{ensure_single_sentence_end(tldr)}"
         if summary:
             upsert_auto_block(md_path, "速览摘要（自动生成）", summary)
 
