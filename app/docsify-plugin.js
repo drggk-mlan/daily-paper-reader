@@ -775,6 +775,35 @@ window.$docsify = {
         }
       };
 
+      // 为切页动效准备一个“正文包装层”，避免把聊天浮层/白色遮罩一起做淡入淡出（否则会闪烁）
+      const DPR_PAGE_CONTENT_CLASS = 'dpr-page-content';
+
+      const ensurePageContentRoot = () => {
+        const section = document.querySelector('.markdown-section');
+        if (!section) return null;
+        const existing = section.querySelector(
+          `:scope > .${DPR_PAGE_CONTENT_CLASS}`,
+        );
+        if (existing) return existing;
+
+        const root = document.createElement('div');
+        root.className = DPR_PAGE_CONTENT_CLASS;
+        // 将当前渲染出来的正文内容整体移入 root（此时 chat 模块尚未插入，避免把输入框一起移入）
+        while (section.firstChild) {
+          root.appendChild(section.firstChild);
+        }
+        section.appendChild(root);
+        return root;
+      };
+
+      const getPageAnimEl = () => {
+        const section = document.querySelector('.markdown-section');
+        if (!section) return null;
+        return (
+          section.querySelector(`:scope > .${DPR_PAGE_CONTENT_CLASS}`) || section
+        );
+      };
+
       const applyPaperTitleBar = () => {
         const file = vm && vm.route ? vm.route.file : '';
         if (!isPaperRouteFile(file)) {
@@ -785,12 +814,14 @@ window.$docsify = {
 
         const section = document.querySelector('.markdown-section');
         if (!section) return;
+        const root =
+          section.querySelector(`:scope > .${DPR_PAGE_CONTENT_CLASS}`) || section;
 
         // 防止重复插入
-        const existing = section.querySelector('.dpr-title-bar');
+        const existing = root.querySelector('.dpr-title-bar');
         if (existing) existing.remove();
 
-        const h1s = Array.from(section.querySelectorAll('h1'));
+        const h1s = Array.from(root.querySelectorAll('h1'));
         if (!h1s.length) return;
 
         // 约定：如果有两个 h1，则第一个为英文、第二个为中文；
@@ -816,7 +847,7 @@ window.$docsify = {
           bar.classList.add('dpr-title-single');
         }
 
-        section.insertBefore(bar, section.firstChild);
+        root.insertBefore(bar, root.firstChild);
 
         // 字体自适应：让标题条高度稳定，长标题自动缩小
         requestAnimationFrame(() => {
@@ -1200,8 +1231,8 @@ window.$docsify = {
           return;
         }
 
-        const section = document.querySelector('.markdown-section');
-        if (!section) {
+        const animEl = getPageAnimEl();
+        if (!animEl) {
           window.location.hash = target;
           return;
         }
@@ -1209,7 +1240,7 @@ window.$docsify = {
         const exitClass =
           direction === 'backward' ? 'dpr-page-exit-right' : 'dpr-page-exit-left';
 
-        section.classList.add('dpr-page-exit', exitClass);
+        animEl.classList.add('dpr-page-exit', exitClass);
         // 等退场动画结束后再切换路由
         setTimeout(() => {
           window.location.hash = target;
@@ -1390,7 +1421,9 @@ window.$docsify = {
           }
           if (lockHorizontal) {
             // 阻止浏览器的横向滑动/回退动效，让切换更“丝滑”
-            e.preventDefault();
+            if (e.cancelable) {
+              e.preventDefault();
+            }
           }
         };
 
@@ -1428,11 +1461,15 @@ window.$docsify = {
           lowerId === 'readme' ||
           routePath === '/' ||
           routePath === '';
+        const file = vm && vm.route ? vm.route.file : '';
+        const isPaperPage = isPaperRouteFile(file);
 
         // A. 对正文区域进行一次全局公式渲染（支持 $...$ / $$...$$）
         const mainContent = document.querySelector('.markdown-section');
         if (mainContent) {
-          renderMathInEl(mainContent);
+          // 先创建正文包装层，避免后续切页动画影响聊天浮层
+          const root = isPaperPage ? ensurePageContentRoot() : null;
+          renderMathInEl(root || mainContent);
         }
 
         // 论文页标题条排版（只对 docs/YYYYMM/DD/*.md 生效）
@@ -1445,19 +1482,28 @@ window.$docsify = {
         prefetchAdjacent();
 
         // 页面入场动画：根据上一跳的方向做滑入
-        const section = document.querySelector('.markdown-section');
-        if (section) {
+        const animEl = getPageAnimEl();
+        if (animEl) {
           // 清理上一次退场残留（防止极端情况下没清掉）
-          section.classList.remove('dpr-page-exit', 'dpr-page-exit-left', 'dpr-page-exit-right');
+          animEl.classList.remove(
+            'dpr-page-exit',
+            'dpr-page-exit-left',
+            'dpr-page-exit-right',
+          );
           const enter = DPR_TRANSITION.pendingEnter;
           DPR_TRANSITION.pendingEnter = '';
           if (enter && !prefersReducedMotion()) {
-            section.classList.add('dpr-page-enter', enter);
+            animEl.classList.add('dpr-page-enter', enter);
             requestAnimationFrame(() => {
               // 触发 transition 到“静止态”
-              section.classList.add('dpr-page-enter-active');
+              animEl.classList.add('dpr-page-enter-active');
               setTimeout(() => {
-                section.classList.remove('dpr-page-enter', 'dpr-page-enter-active', 'enter-from-left', 'enter-from-right');
+                animEl.classList.remove(
+                  'dpr-page-enter',
+                  'dpr-page-enter-active',
+                  'enter-from-left',
+                  'enter-from-right',
+                );
               }, DPR_TRANSITION_MS + 40);
             });
           }

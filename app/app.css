@@ -904,36 +904,44 @@ body.dpr-paper-page .markdown-section h1.dpr-title-hidden {
 }
 
 /* 论文页“整页切换”动效：左右滑动/方向键切换时，正文区域做轻量滑入滑出 */
-body.dpr-paper-page .markdown-section.dpr-page-exit,
-body.dpr-paper-page .markdown-section.dpr-page-enter {
+body.dpr-paper-page .markdown-section .dpr-page-content {
+  position: relative;
+  /* 让动效前后字体观感一致（避免 subpixel ↔ grayscale 的切换感） */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+}
+
+body.dpr-paper-page .markdown-section .dpr-page-content.dpr-page-exit,
+body.dpr-paper-page .markdown-section .dpr-page-content.dpr-page-enter {
   will-change: transform, opacity;
 }
 
 /* 退场：当前页淡出 + 向左右微移 */
-body.dpr-paper-page .markdown-section.dpr-page-exit {
+body.dpr-paper-page .markdown-section .dpr-page-content.dpr-page-exit {
   transition: transform var(--dpr-transition-ms, 320ms) ease-out,
     opacity var(--dpr-transition-ms, 320ms) ease-out;
   opacity: 0;
 }
-body.dpr-paper-page .markdown-section.dpr-page-exit.dpr-page-exit-left {
+body.dpr-paper-page .markdown-section .dpr-page-content.dpr-page-exit.dpr-page-exit-left {
   transform: translateX(-36px);
 }
-body.dpr-paper-page .markdown-section.dpr-page-exit.dpr-page-exit-right {
+body.dpr-paper-page .markdown-section .dpr-page-content.dpr-page-exit.dpr-page-exit-right {
   transform: translateX(36px);
 }
 
 /* 入场：新页从左右微移位置淡入，active 时过渡到静止态 */
-body.dpr-paper-page .markdown-section.dpr-page-enter {
+body.dpr-paper-page .markdown-section .dpr-page-content.dpr-page-enter {
   transition: none;
   opacity: 0;
 }
-body.dpr-paper-page .markdown-section.dpr-page-enter.enter-from-left {
+body.dpr-paper-page .markdown-section .dpr-page-content.dpr-page-enter.enter-from-left {
   transform: translateX(-36px);
 }
-body.dpr-paper-page .markdown-section.dpr-page-enter.enter-from-right {
+body.dpr-paper-page .markdown-section .dpr-page-content.dpr-page-enter.enter-from-right {
   transform: translateX(36px);
 }
-body.dpr-paper-page .markdown-section.dpr-page-enter.dpr-page-enter-active {
+body.dpr-paper-page .markdown-section .dpr-page-content.dpr-page-enter.dpr-page-enter-active {
   transition: transform var(--dpr-transition-ms, 320ms)
       cubic-bezier(0.2, 0.9, 0.2, 1),
     opacity var(--dpr-transition-ms, 320ms) cubic-bezier(0.2, 0.9, 0.2, 1);
@@ -942,13 +950,29 @@ body.dpr-paper-page .markdown-section.dpr-page-enter.dpr-page-enter-active {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.dpr-paper-page .markdown-section.dpr-page-exit,
-  body.dpr-paper-page .markdown-section.dpr-page-enter,
-  body.dpr-paper-page .markdown-section.dpr-page-enter.dpr-page-enter-active {
+  body.dpr-paper-page .markdown-section .dpr-page-content.dpr-page-exit,
+  body.dpr-paper-page .markdown-section .dpr-page-content.dpr-page-enter,
+  body.dpr-paper-page .markdown-section .dpr-page-content.dpr-page-enter.dpr-page-enter-active {
     transition: none !important;
     transform: none !important;
     opacity: 1 !important;
   }
+}
+
+/* 兼容 Docsify vue 主题对 `.markdown-section > *` 的样式（引入 dpr-page-content 包装层后需要补回） */
+.markdown-section > .dpr-page-content > * {
+  box-sizing: border-box;
+  font-size: inherit;
+}
+.markdown-section > .dpr-page-content > :first-child {
+  margin-top: 0 !important;
+}
+/* 避免主题的 `.markdown-section>:not(h1..h6) code` 误作用到包装层，先还原，再按原规则应用到包装层的直接子元素 */
+.markdown-section > .dpr-page-content code {
+  font-size: inherit;
+}
+.markdown-section > .dpr-page-content > :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) code {
+  font-size: 0.8rem;
 }
 
 article.markdown-section {
