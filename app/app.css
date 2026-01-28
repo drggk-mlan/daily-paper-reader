@@ -1331,6 +1331,32 @@ article.markdown-section {
   pointer-events: none;
 }
 
+/* JSON 下载按钮 */
+.sidebar-day-download-btn {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  margin-left: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.03);
+  color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: background-color 120ms ease-out, border-color 120ms ease-out, color 120ms ease-out;
+  vertical-align: middle;
+  line-height: 1;
+}
+.sidebar-day-download-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.25);
+  color: rgba(0, 0, 0, 0.7);
+}
+.sidebar-day-download-btn:active {
+  background: rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
 /* 日期分组展开/收起动效：由 JS 动态设置 max-height，这里负责过渡效果 */
 .sidebar-day-content {
   overflow: hidden;
