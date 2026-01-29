@@ -4,3 +4,4 @@ pymupdf
 arxiv
 numpy
 sentence-transformers
+PyYAML
