@@ -330,12 +330,12 @@ def fetch_all_domains_metadata_robust(
             source_desc = "latest_published_at"
         else:
             last_crawl_at = load_last_crawl_at()
-        if last_crawl_at:
-            start_date = last_crawl_at
-            source_desc = "last_crawl_at"
-        else:
-            start_date = end_date - timedelta(days=days)
-            source_desc = f"days_window={days}"
+            if last_crawl_at:
+                start_date = last_crawl_at
+                source_desc = "last_crawl_at"
+            else:
+                start_date = end_date - timedelta(days=days)
+                source_desc = f"days_window={days}"
 
     # 兜底：无论来源如何，都不早于 (now - days_window)
     start_date = max(start_date, end_date - timedelta(days=days))
